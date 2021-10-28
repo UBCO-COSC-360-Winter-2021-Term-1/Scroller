@@ -1,0 +1,81 @@
+:root {
+  --background-light-theme: #f3f3f3;
+	--background-light-theme-header: #fff;
+	--navigation-link-default: #000;
+	--navigation-link-hover: #673AB7;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	font-family: 'Poppins', sans-serif;
+}
+
+body {
+	background-color: var(--background-light-theme);
+}
+
+header {
+	background-color: var(--background-light-theme-header);
+	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
+	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
+}
+
+ul {
+	padding: 0;
+	margin: 0;
+	display: flex;
+	height: auto;
+}
+
+ul > li {
+	list-style-type: none;
+}
+
+ul > li > a {
+	color: var(--navigation-link-default);
+
+}
+
+.brand {
+	color: var(--navigation-link-hover) !important;
+	font-size: 1.4em;
+	text-decoration: none !important;
+}
+
+ul > li > a:hover{
+	color: var(--navigation-link-hover);
+}
+
+.header-search-input {
+	padding-left: 0;
+	border: 1px solid transparent;
+	background-color: #f3f3f3;
+	line-height: 1.5;
+	padding: 0.375em 0.375em;
+	border-radius: 5px;
+}
+
+.header-search-input:focus {
+	border: 1px solid transparent;
+	outline: none;
+}
+
+.header-icon {
+	background-color: var(--background-light-theme);
+	padding: 0.475em 0.75em;
+	border-radius: 5px;
+	text-decoration: none;
+}
+
+.header-icon:hover {
+	color: #fff;
+	background-color: var(--navigation-link-hover);
+	transition: .5s;
+}
+
+.active-sign-in-header {
+	background-color: var(--navigation-link-hover);
+	color: #fff;
+	padding: 0.475em 2em;
+}
