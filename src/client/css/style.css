@@ -57,20 +57,6 @@ ul > li > a:hover{
 	color: var(--navigation-link-hover);
 }
 
-.header-search-input {
-	padding-left: 0;
-	border: 1px solid transparent;
-	background-color: #f3f3f3;
-	line-height: 1.5;
-	padding: 0.375em 0.375em;
-	border-radius: 5px;
-}
-
-.header-search-input:focus {
-	border: 1px solid transparent;
-	outline: none;
-}
-
 .header-icon {
 	background-color: var(--background-light-theme);
 	padding: 0.475em 0.75em;
@@ -167,6 +153,19 @@ ul > li > a:hover{
 	font-size: 0.9em;
 	border-bottom: 2px solid #919191;
 	line-height: 2;
+}
+
+.topic-threads > article > .row > .col-sm-10 > p > img {
+	max-width: 100%;
+}
+
+.thread-name{
+	color: #858383 !important;
+	font-size: 0.8em;
+}
+
+.thread-name > a {
+	color: var(--navigation-link-hover);
 }
 
 .topic-threads > article > .row > .col-sm-10 > h4 > a {
