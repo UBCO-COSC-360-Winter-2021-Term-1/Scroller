@@ -155,7 +155,7 @@ ul > li > a:hover{
 	line-height: 2;
 }
 
-.topic-threads > article > .row > .col-sm-10 > p > img {
+.topic-threads > article > .row > .col-sm-10 > p > img, .topic-threads > article > .row > .col-sm-10 > p > iframe {
 	max-width: 100%;
 }
 
@@ -233,4 +233,66 @@ ul > li > a:hover{
 	color: #fff;
 	display: block;
 	padding: 0.75em 0;
+}
+
+.top-threads-container {
+	background-color: #fff;
+	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
+	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
+}
+
+.top-threads-container > h5 {
+	font-size: 1.1em;
+}
+
+.top-thread-img-list {
+	display: block;
+	width: 2em;
+	height: 2em;
+	border-radius: 50%;
+}
+
+.top-thread-info-name > span > a {
+	color: var(--navigation-link-hover);
+}
+
+.top-thread-info-upvote > span {
+	color: #858383;
+}
+
+.first-place {
+	color: gold;
+}
+
+.second-place {
+	color: silver;
+}
+
+.third-place {
+	color: #CD7F32;
+}
+
+.top-thread-info-upvote > i {
+	color: var(--navigation-link-hover);
+}
+
+.useful-links > .row > .col-md-6 > nav ul li > a {
+	color: #858383;
+	margin-bottom: .5em;
+}
+
+.useful-links > .row > .col-md-6 > nav ul li > a:hover {
+	color: var(--navigation-link-hover);
+}
+
+.useful-links {
+	background-color: #fcfcfc;
+	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
+	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
+}
+
+.useful-links > .row > .col-md-6 > h5 {
+	font-size: 1em !important;
+	text-transform: uppercase;
+	font-weight: 600;
 }
