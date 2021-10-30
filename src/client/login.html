@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Bootstrap CDN -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+	<!-- Fonts -->
+	<link rel="stylesheet" href="css/fonts.css">
+	<!-- Custom CSS -->
+	<link rel="stylesheet" href="css/style.css">
+
+	<script src="https://kit.fontawesome.com/104f28ad82.js" crossorigin="anonymous"></script>
+	<title>Scroller | Login</title>
+</head>
+<body>
+	<main class="login-page w-75">
+		<div class="row">
+			<div class="col-md-6 bg-white">
+				<div class="login-container p-4 py-5 mt-5 mx-auto w-100">
+					<a href="/" class="d-flex align-items-center brand me-3 fs-2 mb-5">
+						<i class="fas fa-mouse"></i><span class="ms-2">Scroller</span>
+					</a>		
+
+					<form method="POST">
+						<div class="mb-4">
+							<label for="emailInput" class="form-label text-uppercase">Email Address</label>
+							<input type="email" id="emailLoginInput" placeholder="john@scroller.ca">
+						</div>
+						<div class="mb-4">
+							<label for="passwordInput" class="form-label text-uppercase">Password</label>
+							<input type="password" id="passwordLoginInput" placeholder="Password">
+						</div>
+						<div class="btn-container text-uppercase d-flex justify-content-between mt-5">
+							<button type="submit">Login</button>
+							<button type="submit">Create Account</button>
+						</div>
+
+						<p class="text-center mt-4 login-container-help-restore">Forgotten your login details? <a href="/restore">Get Help Signing in</a></p>
+						
+						<div class="system-message mt-5 bg-danger d-inline-flex px-3 py-2">
+							
+							<div class="align-self-center">
+								<i class="fas fa-exclamation-triangle"></i>
+							</div>
+							<div class="ms-3 mt-2 align-self-center">
+								<h5>Oops...</h5>
+								<p>Unfortunately, your account was terminated due violation of our Terms of Services.</p>
+							</div>
+						
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="col-md-6 d-none d-md-block d-xl-block bg-white">
+				<div class="login-desc-container text-light position-relative">
+					<div class="login-desc-bg-image"></div>
+					<div class="login-desc-container-content position-absolute top-50 start-50 translate-middle fade-in-text">
+						<h5 class="text-uppercase mt-5 fw-light">Welcome to</h5>
+						<h2 class="text-uppercase mt-3 fw-bolder mb-3">Our Community</h2>
+						<hr>
+						<p class="mt-3">Please, login to access our community</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+</body>
+</html>
