@@ -440,3 +440,14 @@ ul > li > a:hover{
 	font-size: 0.9em;
 	color: #fff;
 }
+
+.img-error-vector {
+	width: 100%;
+	height: auto;
+}
+
+.btn-back-err {
+	color: #000;
+	border: 2px solid var(--navigation-link-hover);
+	transition: .5s ease-out;
+}
