@@ -304,7 +304,7 @@ ul > li > a:hover{
 	font-weight: 600;
 }
 
-.login-page {
+.login-page, .register-page {
 	position: absolute;
   top: 50%;
   left: 50%;
@@ -369,7 +369,7 @@ ul > li > a:hover{
 	width: fit-content;
 }
 
-#emailLoginInput, #passwordLoginInput {
+#emailLoginInput, #passwordLoginInput, #userNameRegisterInput, #emailRegisterInput, #passwordRegisterInput, #passwordRepeatRegisterInput, #codeRegisterConfirmInput {
 	display: block;
 	background-color: transparent !important;
 	width: 100%;
@@ -426,7 +426,7 @@ ul > li > a:hover{
 	transition: .3s ease-in;
 }
 
-.system-message > div:first-child > .fa-exclamation-triangle {
+.system-message > div:first-child > .fa-exclamation-triangle, .system-message > div:first-child > .fa-info {
 	color: #fff;
 	font-size: 2em;
 }
@@ -450,4 +450,72 @@ ul > li > a:hover{
 	color: #000;
 	border: 2px solid var(--navigation-link-hover);
 	transition: .5s ease-out;
+}
+
+.register-desc-container {
+	height: 80vh;
+}
+
+.register-desc-bg-image {
+	background-image: url('../img/bg-register.jpg');
+	background-repeat: no-repeat;
+	height: 80vh;
+	max-height: 100%;
+	background-size: cover;
+	background-position: right;
+}
+
+.register-page > .row > .col-md-6:last-child, .login-page > .row > .col-md-6:last-child {
+	padding-right: 0;
+}
+
+.bg-info-custom {
+	background-color: var(--navigation-link-hover);
+}
+
+.go-next {
+	background-color: var(--navigation-link-hover) !important;
+	color: #fff !important;
+}
+
+.go-back {
+	background-color: transparent !important;
+	border: 1px solid var(--navigation-link-hover) !important;
+	color: #000 !important;
+	transition: .5s ease-in;
+}
+
+.go-back:hover {
+	background-color: var(--navigation-link-hover) !important;
+	transition: .5s ease-in;
+	color: #fff !important;
+}
+
+.success-register-step-one {
+	font-size: 2em;
+	font-weight: 500;
+}
+
+.register-take-back-btn {
+	color: #fff;
+	background-color: var(--navigation-link-hover);
+	padding: 0.8em;
+	border-radius: 15px;
+}
+
+.register-take-back-btn:hover {
+	color: #fff !important;
+}
+
+.register-confirm-final, .register-confirm-final:hover {
+	color: #fff !important;
+}
+
+.register-confirm-desc-bg-image {
+	background-image: url('../img/bg-register-confirm.jpg');
+	background-repeat: no-repeat;
+	height: 80vh;
+	max-height: 100%;
+	background-size: cover;
+	background-position: right;
 }
