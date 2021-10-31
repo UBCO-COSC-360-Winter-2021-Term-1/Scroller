@@ -196,7 +196,6 @@ ul > li > a:hover{
 .post-info-container.override {
 	padding-bottom: 1em;
 	border-bottom: 2px solid #919191;
-	line-height: 2;
 }
 
 .post-info-container > .profile-info-sm > span > a {
