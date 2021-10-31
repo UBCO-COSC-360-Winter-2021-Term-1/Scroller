@@ -49,13 +49,14 @@
 			</div>
 		</nav>
 	</header>
-    <div class="thread-navbar mb-5">
-        <div class="img-thread-background"></div>
-        <div class="bg-light">
-            <div class="w-75 mx-auto">
-                <div class="d-inline-flex justify-content-center w-50">
-                    <img id="img-thread-profile" src="https://styles.redditmedia.com/t5_2w6fe/styles/communityIcon_i2p5luk77aw71.png?width=256&s=12b348e74c8bf7b05b009036c055dd133fb929a1" 
-                    alt="thread_profile_picture" class="img-thumbnail me-2">
+	<!-- Thread Information -->
+	<div class="thread-navbar mb-5">
+		<div class="img-thread-background"></div>
+			<div class="bg-light">
+				<div class="w-75 mx-auto">
+					<div class="d-inline-flex justify-content-center w-50">
+					<img id="img-thread-profile" src="https://styles.redditmedia.com/t5_2w6fe/styles/communityIcon_i2p5luk77aw71.png?width=256&s=12b348e74c8bf7b05b009036c055dd133fb929a1" 
+								alt="thread_profile_picture" class="img-thumbnail me-2">
 					<div class="py-2">
 						<h3 class="">Animemes</h3>
 						<h5 class="thread-sm-link">t/Animemes</h5>
@@ -63,12 +64,13 @@
 					<div class="py-2 ms-3">
 						<button type="button" class="join-thread-button">Join</button>
 					</div>
-                </div>
-            </div>
-        </div>
-    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Main Content -->
 	<main class="w-75 mx-auto">
-        <div class="row">
+  	<div class="row">
 			<div class="col-md-2 menu">
 				<h6 class="text-uppercase">Menu</h6>
 				<nav class="mt-3">
@@ -82,6 +84,14 @@
 				</nav>
 			</div>
 			<div class="col-md-6 topic-threads overflow-auto mx-auto mb-4">
+				<!-- Disabled Thread -->
+				<div class="system-message bg-danger mb-3">
+					<div class="system-message-content d-inline-flex px-3 py-3 w-100">
+						<i class="fas fa-ban text-center my-auto text-light"></i>
+						<p class="ms-3 my-auto">This thread was disabled by Administrator.<br><span class="fw-bolder">Reason:</span> Violation of Community Guidelines.</p>
+					</div>
+				</div>
+				<!-- Normal Content-->
 				<div class="d-inline-flex flex-fill bg-white mb-4 w-100 p-3 rounded">
 					<div class="w-50">
 						<button class="sort-thread-button me-4">
@@ -121,7 +131,7 @@
 							</div>
 							<div class="reply-post my-3">
 								<form method="post">
-									<h6>Comment as <span><a href="/account/1">d3li0n.</a></span></h6>
+									<h6>Comment as <span><a href="/account/1">d3li0n</a>.</span></h6>
 									<textarea name="post-comment" id="postComment" class="w-100"></textarea>
 									<button type="submit" class="btn btn-sm btn-reply-post">Post Reply</button>
 								</form>
