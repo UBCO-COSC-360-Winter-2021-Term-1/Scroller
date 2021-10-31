@@ -162,6 +162,11 @@ ul > li > a:hover{
 	line-height: 2;
 }
 
+.topic-threads > article > .row > .col-sm-10 > p.no-border {
+	border-bottom: none;
+	padding-bottom: 1em;
+}
+
 .topic-threads > article > .row > .col-sm-10 > p > img, .topic-threads > article > .row > .col-sm-10 > p > iframe {
 	max-width: 100%;
 }
@@ -186,6 +191,12 @@ ul > li > a:hover{
 .post-info-container > .profile-info-sm > span {
 	font-size: 0.9em;
 	padding-top: 0.1em;
+}
+
+.post-info-container.override {
+	padding-bottom: 1em;
+	border-bottom: 2px solid #919191;
+	line-height: 2;
 }
 
 .post-info-container > .profile-info-sm > span > a {
@@ -450,4 +461,82 @@ ul > li > a:hover{
 	color: #000;
 	border: 2px solid var(--navigation-link-hover);
 	transition: .5s ease-out;
+}
+
+.img-thread-background {
+	background: url('https://styles.redditmedia.com/t5_2w6fe/styles/bannerBackgroundImage_0k64724z6aw71.png?width=4000&s=836b3baec32aac4f055fbd1b6f38827e3964419c') center center / cover no-repeat;
+	height: 15em;
+}
+
+#img-thread-profile {
+	border-radius: 100%;
+	border: 4px solid #FFF;
+	height: auto;
+	width: 6em;
+	display: inline-block;
+	position: relative;
+	top: -1em;
+}
+
+.thread-sm-link {
+	color: #858383;
+	font-size: 0.8em; 
+}
+
+.thread-navbar {
+	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
+	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
+}
+
+.join-thread-button {
+    color: #000;
+	background-color: transparent;
+	border: 1px solid var(--navigation-link-hover);
+	border-radius: 20px;
+	padding: 0.275em 0.275em;
+	width: 5em;
+	transition: 0.5s ease-in;
+}
+
+.join-thread-button:hover {
+	background-color: var(--navigation-link-hover);
+	color: #fff;
+	transition: 0.5s ease-in;
+}
+
+.sort-thread-button {
+	color: #000;
+	background-color: transparent;
+	border-radius: 20px;
+	border-color: transparent;
+	padding: 0.275em 0.275em;
+	width: 5em;
+}
+
+.sort-thread-button:hover {
+	background-color: var(--navigation-link-hover);
+	color: #fff;
+}
+
+.search-thread {
+	border: none;
+	border-bottom: 2px solid var(--navigation-link-hover);
+}
+
+#postComment {
+	height: 8em;
+	resize: none;
+}
+
+.reply-post > h6 {
+	font-size: 0.9em;
+}
+
+.btn-reply-post {
+	background-color: var(--navigation-link-hover) !important;
+	color: #fff;
+}
+
+.btn-reply-post:hover {
+	color: #fff;
 }
