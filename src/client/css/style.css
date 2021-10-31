@@ -607,3 +607,39 @@ ul > li > a:hover{
 	background-size: cover;
 	background-position: right;
 }
+
+.notification-message {
+	background-color: #fff;
+	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
+	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
+}
+
+.notification-message > .fa-comment-alt, .notification-message > .fa-comments, .notification-message > .voted-down, .notification-message > .voted-up, .notification-message > .fa-trash-alt, .notification-message > .fa-ban {
+	font-size: 2em;
+}
+
+.notification-message > .voted-down {
+	color: #BD3F32;
+}
+
+.notification-message > .voted-up {
+	color: var(--navigation-link-hover);
+}
+
+.notification-message > p > a {
+	color: var(--navigation-link-hover);
+}
+
+.topic-threads > .system-message {
+	display: block;
+	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
+	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
+}
+
+.system-message-content > .fa-ban {
+	font-size: 2em;
+}
+
+.reply-post > form > h6 > span > a{
+	color: var(--navigation-link-hover);
+}
