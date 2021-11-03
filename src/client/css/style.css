@@ -462,10 +462,17 @@ ul > li > a:hover{
 	transition: .5s ease-out;
 }
 
+.img-thread-background {
+	height: 15em;
+	background-repeat: no-repeat; 
+	background-size: cover;
+	background-position: center center;
+}
+
 #img-thread-profile {
 	border-radius: 100%;
-	border: 4px solid #FFF;
-	height: auto;
+	border: 1px solid #FFF;
+	height: 6em;
 	width: 6em;
 	display: inline-block;
 	position: relative;
@@ -646,4 +653,11 @@ ul > li > a:hover{
 	max-height: 100%;
 	background-size: cover;
 	background-position: right;
+}
+
+.thread-hide, .thread-delete {
+	background-color: transparent;
+	font-size: small;
+	color:  #858383;
+	border: none;
 }
