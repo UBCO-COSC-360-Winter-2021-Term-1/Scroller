@@ -196,7 +196,6 @@ ul > li > a:hover{
 .post-info-container.override {
 	padding-bottom: 1em;
 	border-bottom: 2px solid #919191;
-	line-height: 2;
 }
 
 .post-info-container > .profile-info-sm > span > a {
@@ -315,7 +314,7 @@ ul > li > a:hover{
 	font-weight: 600;
 }
 
-.login-page, .register-page {
+.login-page, .register-page, .recover-page {
 	position: absolute;
   top: 50%;
   left: 50%;
@@ -380,7 +379,7 @@ ul > li > a:hover{
 	width: fit-content;
 }
 
-#emailLoginInput, #passwordLoginInput, #userNameRegisterInput, #emailRegisterInput, #passwordRegisterInput, #passwordRepeatRegisterInput, #codeRegisterConfirmInput {
+#emailLoginInput, #passwordLoginInput, #userNameRegisterInput, #emailRegisterInput, #passwordRegisterInput, #passwordRepeatRegisterInput, #codeRegisterConfirmInput, #emailConfirmRecoverInput, #passwordNewInput, #passwordNewConfirmInput {
 	display: block;
 	background-color: transparent !important;
 	width: 100%;
@@ -536,7 +535,7 @@ ul > li > a:hover{
 	color: #fff;
 }
 
-.register-desc-container {
+.register-desc-container, .recover-desc-container {
 	height: 80vh;
 }
 
@@ -549,7 +548,7 @@ ul > li > a:hover{
 	background-position: right;
 }
 
-.register-page > .row > .col-md-6:last-child, .login-page > .row > .col-md-6:last-child {
+.register-page > .row > .col-md-6:last-child, .login-page > .row > .col-md-6:last-child, .recover-page > .row > .col-md-6:last-child {
 	padding-right: 0;
 }
 
@@ -587,7 +586,7 @@ ul > li > a:hover{
 	border-radius: 15px;
 }
 
-.register-take-back-btn:hover {
+.register-take-back-btn:hover, .recover-confirm-final {
 	color: #fff !important;
 }
 
@@ -597,6 +596,51 @@ ul > li > a:hover{
 
 .register-confirm-desc-bg-image {
 	background-image: url('../img/bg-register-confirm.jpg');
+	background-repeat: no-repeat;
+	height: 80vh;
+	max-height: 100%;
+	background-size: cover;
+	background-position: right;
+}
+
+.notification-message {
+	background-color: #fff;
+	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
+	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
+}
+
+.notification-message > .fa-comment-alt, .notification-message > .fa-comments, .notification-message > .voted-down, .notification-message > .voted-up, .notification-message > .fa-trash-alt, .notification-message > .fa-ban {
+	font-size: 2em;
+}
+
+.notification-message > .voted-down {
+	color: #BD3F32;
+}
+
+.notification-message > .voted-up {
+	color: var(--navigation-link-hover);
+}
+
+.notification-message > p > a {
+	color: var(--navigation-link-hover);
+}
+
+.topic-threads > .system-message {
+	display: block;
+	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
+	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
+}
+
+.system-message-content > .fa-ban {
+	font-size: 2em;
+}
+
+.reply-post > form > h6 > span > a {
+	color: var(--navigation-link-hover);
+}
+
+.recover-confirm-desc-bg-image {
+	background-image: url('../img/bg-recover.jpg');
 	background-repeat: no-repeat;
 	height: 80vh;
 	max-height: 100%;
