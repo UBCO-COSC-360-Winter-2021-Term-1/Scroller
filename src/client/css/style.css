@@ -84,7 +84,7 @@ ul > li > a:hover{
 	padding: 0.475em 2em;
 }
 
-#img-header-profile {
+.img-header-profile {
 	display: block;
 	width: 1.5em;
 	height: 1.5em;
@@ -463,14 +463,16 @@ ul > li > a:hover{
 }
 
 .img-thread-background {
-	background: url('https://styles.redditmedia.com/t5_2w6fe/styles/bannerBackgroundImage_0k64724z6aw71.png?width=4000&s=836b3baec32aac4f055fbd1b6f38827e3964419c') center center / cover no-repeat;
 	height: 15em;
+	background-repeat: no-repeat; 
+	background-size: cover;
+	background-position: center center;
 }
 
 #img-thread-profile {
 	border-radius: 100%;
-	border: 4px solid #FFF;
-	height: auto;
+	border: 1px solid #FFF;
+	height: 6em;
 	width: 6em;
 	display: inline-block;
 	position: relative;
@@ -651,4 +653,11 @@ ul > li > a:hover{
 	max-height: 100%;
 	background-size: cover;
 	background-position: right;
+}
+
+.thread-hide, .thread-delete {
+	background-color: transparent;
+	font-size: small;
+	color:  #858383;
+	border: none;
 }
