@@ -481,7 +481,7 @@ ul > li > a:hover{
 
 .thread-sm-link {
 	color: #858383;
-	font-size: 0.8em; 
+	font-size: 1em; 
 }
 
 .thread-navbar {
@@ -660,4 +660,11 @@ ul > li > a:hover{
 	font-size: small;
 	color:  #858383;
 	border: none;
+}
+
+.load-comments {
+	border: none;
+	background-color: var(--navigation-link-hover);
+	color: #fff;
+	padding: 0.475em 0.475em;
 }
