@@ -481,7 +481,7 @@ ul > li > a:hover{
 
 .thread-sm-link {
 	color: #858383;
-	font-size: 0.8em; 
+	font-size: 1em; 
 }
 
 .thread-navbar {
@@ -723,11 +723,17 @@ ul > li > a:hover{
 	border: none;
 }
 
+.load-comments {
+	border: none;
+	background-color: var(--navigation-link-hover);
+	color: #fff;
+	padding: 0.475em 0.475em;
+}
+
 .topic-threads > .system-message.error-content > .no-content {
 	max-width: 100%;
 	width: 50%;
 }
-
 
 .topic-threads > .system-message.error-content > p {
 	font-size: 1.1em;
