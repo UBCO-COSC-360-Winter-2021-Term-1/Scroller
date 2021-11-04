@@ -546,6 +546,14 @@ ul > li > a:hover{
 	height: 80vh;
 }
 
+#img-header-profile {
+	display: block;
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 50%;
+}
+
+
 .register-desc-bg-image {
 	background-image: url('../img/bg-register.jpg');
 	background-repeat: no-repeat;
@@ -655,6 +663,59 @@ ul > li > a:hover{
 	background-position: right;
 }
 
+.create-thread-title-container > .description > p {
+	color: #858383;
+}
+
+.create-thread-suggested-name {
+	color: #858383;
+}
+
+#create-thread-name {
+	border: none;
+	width: 50%;
+	border-bottom: 1px solid var(--navigation-link-hover);
+}
+
+.create-thread-content > .system-message.error,
+.create-thread-content-thread-image > .system-message.error,
+.create-thread-content-thread-cover-image > .system-message.error {
+	height: 1em;
+}
+.create-thread-content > .system-message.error > p{
+	color: red;
+}
+
+#create-thread-image-cover {
+	width: 100%;
+	border: 1px dashed #858383;
+}
+
+.create-thread-big-container {
+	height: 90vh;
+}
+
+.btn-create-thread {
+	background-color: var(--navigation-link-hover);
+	width: 100%;
+	border: none;
+	color: #fff;
+	font-weight: 500;
+}
+
+.create-thread-profile-pic {
+	border-radius: 50%;
+	width: 6em;
+	max-width: 100%;
+	height: 6em;
+}
+
+.create-thread-cover-pic {
+	width: 100%;
+	height: 15em;
+	background-size: cover;
+}
+
 .thread-hide, .thread-delete {
 	background-color: transparent;
 	font-size: small;
@@ -667,4 +728,13 @@ ul > li > a:hover{
 	background-color: var(--navigation-link-hover);
 	color: #fff;
 	padding: 0.475em 0.475em;
+}
+
+.topic-threads > .system-message.error-content > .no-content {
+	max-width: 100%;
+	width: 50%;
+}
+
+.topic-threads > .system-message.error-content > p {
+	font-size: 1.1em;
 }
