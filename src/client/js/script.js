@@ -154,7 +154,6 @@ $(document).ready(() => {
 			var src = URL.createObjectURL(event.target.files[0]);
 			var preview = $("#profile-thread-create-cover");
 			preview.attr('src', src);
-			//preview.addClass("");
 			preview.removeClass("d-none");
 		}
 	});

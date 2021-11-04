@@ -722,3 +722,13 @@ ul > li > a:hover{
 	color:  #858383;
 	border: none;
 }
+
+.topic-threads > .system-message.error-content > .no-content {
+	max-width: 100%;
+	width: 50%;
+}
+
+
+.topic-threads > .system-message.error-content > p {
+	font-size: 1.1em;
+}
