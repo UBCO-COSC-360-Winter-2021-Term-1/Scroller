@@ -652,3 +652,56 @@ ul > li > a:hover{
 	background-size: cover;
 	background-position: right;
 }
+
+.create-thread-title-container > .description > p {
+	color: #858383;
+}
+
+.create-thread-suggested-name {
+	color: #858383;
+}
+
+#create-thread-name {
+	border: none;
+	width: 50%;
+	border-bottom: 1px solid var(--navigation-link-hover);
+}
+
+.create-thread-content > .system-message.error,
+.create-thread-content-thread-image > .system-message.error,
+.create-thread-content-thread-cover-image > .system-message.error {
+	height: 1em;
+}
+.create-thread-content > .system-message.error > p{
+	color: red;
+}
+
+#create-thread-image-cover {
+	width: 100%;
+	border: 1px dashed #858383;
+}
+
+.create-thread-big-container {
+	height: 90vh;
+}
+
+.btn-create-thread {
+	background-color: var(--navigation-link-hover);
+	width: 100%;
+	border: none;
+	color: #fff;
+	font-weight: 500;
+}
+
+.create-thread-profile-pic {
+	border-radius: 50%;
+	width: 6em;
+	max-width: 100%;
+	height: 6em;
+}
+
+.create-thread-cover-pic {
+	width: 100%;
+	height: 15em;
+	background-size: cover;
+}
