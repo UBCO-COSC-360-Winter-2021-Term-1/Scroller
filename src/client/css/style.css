@@ -171,7 +171,7 @@ ul > li > a:hover{
 	max-width: 100%;
 }
 
-.thread-name{
+.thread-name {
 	color: #858383 !important;
 	font-size: 0.8em;
 }
@@ -668,7 +668,8 @@ ul > li > a:hover{
 	background-position: right;
 }
 
-.create-thread-title-container > .description > p {
+.create-thread-title-container > .description > p,
+.create-post-big-container > .description > p {
 	color: #858383;
 }
 
@@ -676,7 +677,7 @@ ul > li > a:hover{
 	color: #858383;
 }
 
-#create-thread-name {
+#create-thread-name, #create-post-name {
 	border: none;
 	width: 50%;
 	border-bottom: 1px solid var(--navigation-link-hover);
@@ -684,10 +685,14 @@ ul > li > a:hover{
 
 .create-thread-content > .system-message.error,
 .create-thread-content-thread-image > .system-message.error,
-.create-thread-content-thread-cover-image > .system-message.error {
+.create-thread-content-thread-cover-image > .system-message.error,
+.create-post-content > .system-message.error,
+.create-post-content-post-image > .system-message.error {
 	height: 1em;
 }
-.create-thread-content > .system-message.error > p{
+
+.create-thread-content > .system-message.error > p, 
+.create-post-content > .system-message.error > p  {
 	color: red;
 }
 
@@ -696,11 +701,11 @@ ul > li > a:hover{
 	border: 1px dashed #858383;
 }
 
-.create-thread-big-container {
+.create-thread-big-container, .create-post-big-container  {
 	height: 90vh;
 }
 
-.btn-create-thread {
+.btn-create-thread, .btn-create-post {
 	background-color: var(--navigation-link-hover);
 	width: 100%;
 	border: none;
@@ -708,14 +713,14 @@ ul > li > a:hover{
 	font-weight: 500;
 }
 
-.create-thread-profile-pic {
+.create-thread-profile-pic, .create-post-profile-pic {
 	border-radius: 50%;
 	width: 6em;
 	max-width: 100%;
 	height: 6em;
 }
 
-.create-thread-cover-pic {
+.create-thread-cover-pic, .create-post-cover-pic  {
 	width: 100%;
 	height: 15em;
 	background-size: cover;
@@ -742,4 +747,19 @@ ul > li > a:hover{
 
 .topic-threads > .system-message.error-content > p {
 	font-size: 1.1em;
+}
+
+#create-post-text {
+	outline: none; 
+	user-select: text; 
+	white-space: pre-wrap; 
+	overflow-wrap: break-word; 
+	width: 100%;
+	border-radius: 4px;
+	box-sizing: border-box;
+	display: block;
+}
+
+#create-post-text-url {
+	width: 100%;
 }
