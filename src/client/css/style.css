@@ -687,12 +687,14 @@ ul > li > a:hover{
 .create-thread-content-thread-image > .system-message.error,
 .create-thread-content-thread-cover-image > .system-message.error,
 .create-post-content > .system-message.error,
-.create-post-content-post-image > .system-message.error {
+.create-post-content-post-image > .system-message.error,
+.create-post-content-post-url > .system-message.error {
 	height: 1em;
 }
 
 .create-thread-content > .system-message.error > p, 
-.create-post-content > .system-message.error > p  {
+.create-post-content > .system-message.error > p,
+.create-post-content-post-url > .system-message.error > p  {
 	color: red;
 }
 

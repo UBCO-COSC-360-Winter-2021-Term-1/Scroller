@@ -139,11 +139,10 @@ $(document).ready(() => {
 		$("#create-thread-suggest-url").text(formattedURL);
 	});
 
-	/* Create Post Name */
+	/* Create Post Title */
 	$("#create-post-name").on("keyup, keydown", (e) => {
 		var postTitle = e.target.value;
 		var regex = /^[a-zA-Z0-9\s]+$/;
-
 		if (!regex.test(postTitle) && postTitle != '') {
 			$(".create-post-content .system-message.error p").text("* Title shouldn't contain numbers or special characters.");
 			$(".create-post-content .system-message.error p").removeClass("d-none");
@@ -154,7 +153,7 @@ $(document).ready(() => {
 		}
 
 		if (postTitle.length > 15) {
-			$(".create-post-content .system-message.error p").text("* Title should contain less than 12 characters.");
+			$(".create-post-content .system-message.error p").text("* Title should contain less than 15 characters.");
 			$(".create-post-content .system-message.error p").removeClass("d-none");
 				
 			if (e.key != "Backspace") {
@@ -194,4 +193,18 @@ $(document).ready(() => {
 			preview.removeClass("d-none");
 		}
 	});
+
+	/* Check if the URL is a Valid YouTube URL */
+	// $("#create-post-text-url").on("change", (e) => {
+    //     var youtubeURL = e.target.value;
+    //     var regex = /^(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?(?=.*v=((\w|-){11}))(?:\S+)?$/;
+    //     if (!regex.test(youtubeURL) && youtubeURL != '') {
+    //         $(".create-post-content-post-url .system-message.error p").text("* Please enter a valid YouTube URL.");
+    //         $(".create-post-content-post-url .system-message.error p").removeClass("d-none");
+
+    //         if (e.key != "Backspace") {
+    //             return e.preventDefault();
+    //         }
+    //     }
+    // });
 });
