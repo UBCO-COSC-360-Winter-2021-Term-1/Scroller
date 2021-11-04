@@ -105,4 +105,57 @@ $(document).ready(() => {
 			case "step-final": goNextFunction("step-final"); break;
 		}
 	});
+
+	/* Create Thread Title */
+	$("#create-thread-name").on('keyup keydown', (e) => {
+		var formattedURL = e.target.value;
+
+		var regex = /^[a-zA-Z0-9\s]+$/;
+		
+		if (!regex.test(formattedURL) && formattedURL != '') {
+			$(".create-thread-content .system-message.error p").text("* Title shouldn't contain numbers or special characters.");
+			$(".create-thread-content .system-message.error p").removeClass("d-none");
+			
+			if (e.key != "Backspace") {
+				return e.preventDefault();
+			}
+		}
+
+		if (formattedURL.length > 12) {
+			$(".create-thread-content .system-message.error p").text("* Title should contain less than 12 characters.");
+			$(".create-thread-content .system-message.error p").removeClass("d-none");
+				
+			if (e.key != "Backspace") {
+				return e.preventDefault();
+			}
+		}
+		
+		if (formattedURL.length <= 12)
+			$(".create-thread-content .system-message.error p").addClass("d-none");
+			
+		formattedURL = formattedURL.split("-").join(" ");
+		formattedURL = formattedURL.split(" ").join("-").toLowerCase();
+		
+		$("#create-thread-suggest-url").text(formattedURL);
+	});
+
+	$("#create-thread-upload-photo").change((event) => {
+		if(event.target.files.length > 0) {
+			var src = URL.createObjectURL(event.target.files[0]);
+			var preview = $("#profile-thread-create-preview");
+			preview.attr('src', src);
+			preview.addClass("create-thread-profile-pic");
+			preview.removeClass("d-none");
+		}
+	});
+
+	$("#create-thread-upload-cover").change((event) => {
+		if(event.target.files.length > 0) {
+			var src = URL.createObjectURL(event.target.files[0]);
+			var preview = $("#profile-thread-create-cover");
+			preview.attr('src', src);
+			//preview.addClass("");
+			preview.removeClass("d-none");
+		}
+	});
 });
