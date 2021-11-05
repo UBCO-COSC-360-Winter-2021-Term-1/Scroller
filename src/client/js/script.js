@@ -180,7 +180,7 @@ $(document).ready(() => {
 			var src = URL.createObjectURL(event.target.files[0]);
 			var preview = $("#profile-post-create-preview");
 			preview.attr('src', src);
-			preview.addClass("create-post-profile-pic");
+			preview.addClass("create-post-cover-pic");
 			preview.removeClass("d-none");
 		}
 	});
