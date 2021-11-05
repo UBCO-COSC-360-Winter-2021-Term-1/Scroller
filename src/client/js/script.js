@@ -194,6 +194,31 @@ $(document).ready(() => {
 		}
 	});
 
+	$(".search-input-box").on("keyup", (e) => {
+		return (e.target.value.length === 0) ? $(".search-result-query").text("All") : $(".search-result-query").text(e.target.value);
+	});
+
+	$("#posts-option, #threads-option, #comments-option").change((e) => {
+		if ($("#posts-option").prop("checked") && $("#threads-option").prop("checked") && $("#comments-option").prop("checked")) {
+			$(".search-result-options").text("Posts, Threads, Comments");
+		} else if ($("#posts-option").prop("checked") && !$("#threads-option").prop("checked") && !$("#comments-option").prop("checked")) {
+			$(".search-result-options").text("Posts");
+		} else if (!$("#posts-option").prop("checked") && $("#threads-option").prop("checked") && !$("#comments-option").prop("checked")) {
+			$(".search-result-options").text("Threads");
+		} else if (!$("#posts-option").prop("checked") && !$("#threads-option").prop("checked") && $("#comments-option").prop("checked")) {
+			$(".search-result-options").text("Comments");
+		} else if ($("#posts-option").prop("checked") && $("#threads-option").prop("checked") && !$("#comments-option").prop("checked")) {
+			$(".search-result-options").text("Posts, Threads");
+		} else if ($("#posts-option").prop("checked") && !$("#threads-option").prop("checked") && $("#comments-option").prop("checked")) {
+			$(".search-result-options").text("Posts, Comments");
+		} else if (!$("#posts-option").prop("checked") && $("#threads-option").prop("checked") && $("#comments-option").prop("checked")) {
+			$(".search-result-options").text("Threads, Comments");
+		} else if ($("#posts-option").prop("checked") && !$("#threads-option").prop("checked") && $("#comments-option").prop("checked")) {
+			$(".search-result-options").text("Posts, Comments");
+		} else {
+			$(".search-result-options").text("Posts, Threads, Comments");
+		}
+	});
 	/* Check if the URL is a Valid YouTube URL */
 	// $("#create-post-text-url").on("change", (e) => {
     //     var youtubeURL = e.target.value;
