@@ -917,3 +917,64 @@ article > .row > .col-sm-10 > h4 > a {
 .admin-search-threads-table, .admin-search-users-table {
 	height: 70vh;
 }
+
+.account-profile-picture {
+	width: 6em;
+	height: 6em;
+	object-fit: cover;
+	border-radius: 50%;
+}
+
+.account-profile {
+	background-color: rgba(103, 58, 183, 0.65);
+}
+
+.account-profile > h4 {
+	font-size: 1em;
+	color: #fff;
+}
+
+.account-profile > img {
+	border: 0.26em solid var(--navigation-link-hover);
+}
+
+.account-profile > a {
+	border: none;
+	background-color: var(--navigation-link-hover);
+	color: #fff;
+	padding: 0.475em;
+	border-radius: 5px;
+	width: 100%;
+}
+
+.profile-activity {
+	height: 80vh;
+}
+
+.profile-activity-content > .activity-icon > i {
+	font-size: 2em;
+}
+
+.profile-activity-content {
+	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
+	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
+}
+.profile-activity-content > .desc > span {
+	font-size: 0.8em;
+	color: #858383;
+	font-weight: bold;
+}
+
+.profile-activity-content > .desc > p {
+	line-height: 1;
+	font-weight: bold;
+	font-size: 1.2em;
+}
+
+.profile-activity-content > .desc > .desc-link {
+	font-size: 0.8em;
+}
+
+.profile-activity-content > .desc > .desc-link > a {
+	color: var(--navigation-link-hover);
+}
