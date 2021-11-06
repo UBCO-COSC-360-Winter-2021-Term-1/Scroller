@@ -772,9 +772,61 @@ ul > li > a:hover{
 	width: 100%;
 }
 
+.admin-d-users {
+	background-color: #0083B0;
+}
 .search-container, .search-result-thread, .search-result {
 	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
 	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
+}
+
+.admin-d-threads {
+	background-color: #BD3F32;
+	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
+	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
+}
+
+.admin-d-posts {
+	background-color: #159957;
+	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
+	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
+}
+
+.admin-d-comments {
+	background-color: #cbb4d4;
+	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
+	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
+}
+
+.admin-d-users > .icon > i, .admin-d-threads > .icon > i,
+.admin-d-posts > .icon > i, .admin-d-comments > .icon > i {
+	font-size: 2em;
+	color: #fff;
+}
+
+.admin-d-users > .desc > h5, .admin-d-threads > .desc > h5,
+.admin-d-posts > .desc > h5, .admin-d-comments > .desc > h5 {
+	color: #fff;
+	text-align: right;
+	font-size: 1em;
+}
+
+.admin-d-users > .desc > span, .admin-d-threads > .desc > span,
+.admin-d-posts > .desc > span, .admin-d-comments > .desc > span {
+	display: block;
+	float: right;
+	font-weight: 700;
+	font-size: 2em;
+	line-height: 1;
+	color: #fff;
+}
+
+.admin-d-trending {
+	height: 80vh;
+}
+
+article > .row > .col-sm-10 > h4 > a {
+	color: var(--navigation-link-hover);
 }
 
 .search-container > div > input {
