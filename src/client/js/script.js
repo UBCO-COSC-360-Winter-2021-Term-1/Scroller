@@ -219,6 +219,15 @@ $(document).ready(() => {
 			$(".search-result-options").text("Posts, Threads, Comments");
 		}
 	});
+
+
+	$("#profile-settings-picture").change((event) => {
+		if(event.target.files.length > 0) {
+			var src = URL.createObjectURL(event.target.files[0]);
+			var preview = $(".account-updated-profile-picture");
+			preview.attr('src', src);
+		}
+	});
 	/* Check if the URL is a Valid YouTube URL */
 	// $("#create-post-text-url").on("change", (e) => {
     //     var youtubeURL = e.target.value;

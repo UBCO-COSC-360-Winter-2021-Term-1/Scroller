@@ -918,7 +918,7 @@ article > .row > .col-sm-10 > h4 > a {
 	height: 70vh;
 }
 
-.account-profile-picture {
+.account-profile-picture, .account-updated-profile-picture {
 	width: 6em;
 	height: 6em;
 	object-fit: cover;
@@ -955,7 +955,7 @@ article > .row > .col-sm-10 > h4 > a {
 	font-size: 2em;
 }
 
-.profile-activity-content {
+.profile-activity-content, .delete-block-content, .general-account-block-content {
 	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
 	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
 }
@@ -977,4 +977,28 @@ article > .row > .col-sm-10 > h4 > a {
 
 .profile-activity-content > .desc > .desc-link > a {
 	color: var(--navigation-link-hover);
+}
+
+.delete-block-content > button {
+	border: 1px solid #BD3F32;
+	transition: .5s;
+}
+
+.delete-block-content > button:hover {
+	background-color: #BD3F32;
+	transition: .5s;
+	color: #fff;
+}
+
+.account-settings-change-username > input, .account-settings-change-password > .old-password-block > input,
+.account-settings-change-password > .new-password-block > input {
+	border: none;
+	border-bottom: 1px solid var(--navigation-link-hover);
+}
+
+.btn-account-update {
+	width: 100%;
+	border: none;
+	background-color: var(--navigation-link-hover);
+	color: #fff;
 }
