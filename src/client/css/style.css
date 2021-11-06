@@ -829,7 +829,8 @@ article > .row > .col-sm-10 > h4 > a {
 	color: var(--navigation-link-hover);
 }
 
-.search-container > div > input {
+.search-container > div > input, .admin-search-users-container > div > input,
+.admin-search-threads-container > div > input {
 	border: none;
 	border-bottom: 1px solid var(--navigation-link-hover);
 }
@@ -849,4 +850,70 @@ article > .row > .col-sm-10 > h4 > a {
 
 .search-result > .row > .col-sm-10 > h4 > a {
 	color: var(--navigation-link-hover) !important;
+}
+
+.admin-dashboard-users > thead > tr > th,
+.admin-dashboard-threads > thead > tr > th {
+	width: auto;
+	border-bottom: 1px solid #000;
+	font-weight: 500;
+}
+
+.admin-dashboard-users > tbody > tr > td:first-child, .admin-dashboard-users > tbody > tr > td:last-child,
+.admin-dashboard-threads > tbody > tr > td:first-child, .admin-dashboard-threads > tbody > tr > td:last-child {
+	padding: 1em;
+}
+
+.admin-dashboard-users > tbody > tr > td,
+.admin-dashboard-threads > tbody > tr > td {
+	padding-top: 1em;
+}
+
+.admin-dashboard-users > tbody > tr > td > span,
+.admin-dashboard-threads > tbody > tr > td > span {
+	display: block;
+	width: fit-content;
+}
+
+.admin-dashboard-users > tbody > tr:nth-child(even),
+.admin-dashboard-threads > tbody > tr:nth-child(even) {
+	background-color: #fff;
+}
+
+.admin-user-status {
+	background-color: var(--navigation-link-hover);
+}
+
+.admin-dashboard-users > tbody > tr > td > a,
+.admin-dashboard-threads > tbody > tr > td > a {
+	color: var(--navigation-link-hover);
+}
+
+.admin-dashboard-users > tbody > tr > td > button,
+.admin-dashboard-threads > tbody > tr > td > button {
+	border: none;
+	margin-bottom: 1em;
+	background: none;
+	border-radius: 5px;
+	color: #fff;
+	padding: 0.375em;
+	width: 100%;
+}
+
+.admin-dashboard-users > tbody > tr > td > button:first-child,
+.admin-dashboard-threads > tbody > tr > td > button:first-child {
+	background-color: #BD3F32;
+}
+
+.admin-dashboard-threads > tbody > tr > td > button.hide {
+	background-color: #ffc107;
+}
+
+.admin-dashboard-users > tbody > tr > td > button:last-child,
+.admin-dashboard-threads > tbody > tr > td > button:last-child {
+	background-color: #198754;
+}
+
+.admin-search-threads-table, .admin-search-users-table {
+	height: 70vh;
 }
