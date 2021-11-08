@@ -394,13 +394,14 @@ ul > li > a:hover{
 	font-weight: 600;
 }
 
-.btn-container button {
+.btn-container button, .btn-container a  {
 	display: block;
 	width: 100%;
 	background-color: transparent;
 	border: none;
 	border-radius: 20px;
 	padding: 0.675em 0.675em;
+	text-align: center;
 }
 
 .btn-container button:first-child {
@@ -409,13 +410,13 @@ ul > li > a:hover{
 	color: #fff;
 }
 
-.btn-container button:last-child {
+.btn-container a {
 	border: 1px solid var(--navigation-link-hover);
 	color: #000;
 	transition: .5s ease-in-out;
 }
 
-.btn-container button:last-child:hover {
+.btn-container a:hover {
 	transition: .5s ease-in;
 	background-color: var(--navigation-link-hover);
 	color: #fff;

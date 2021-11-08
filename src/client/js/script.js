@@ -1,4 +1,6 @@
 $(document).ready(() => {
+	var username = "";
+	var email = "";
 	var blockList = {
 		"step-one": {
 			fields: {
@@ -56,7 +58,7 @@ $(document).ready(() => {
 						$(".go-next").addClass("step-final");
 						for (var i = 0; i < blockList[step].fields.fieldNames.length / 2; i++) {
 							content += `<div class="inputs mb-4"><label for="${blockList["step-three"].fields.fieldNames[i]}Input" class="form-label text-uppercase">${blockList["step-three"].fields.fieldNames[i]}</label><input type="${blockList["step-three"].fields.fieldNames[i]}" id="${blockList["step-three"].fields.fieldNames[i]}RegisterInput" placeholder="${blockList["step-three"].fields.inputFieldPlaceHolders[i]}"></div>
-							<div class="inputs mb-4"><label for="${blockList["step-three"].fields.fieldNames[i]}Input" class="form-label text-uppercase">${blockList["step-three"].fields.fieldNames[i]}</label><input type="${blockList["step-three"].fields.fieldNames[i]}" id="${blockList["step-three"].fields.fieldNames[i]}RepeatRegisterInput" placeholder="${blockList["step-three"].fields.inputFieldPlaceHolders[i]}">
+							<div class="inputs mb-4"><label for="${blockList["step-three"].fields.fieldNames[i]}Input" class="form-label text-uppercase">${blockList["step-three"].fields.inputFieldPlaceHolders[i + 1]}</label><input type="${blockList["step-three"].fields.fieldNames[i]}" id="${blockList["step-three"].fields.fieldNames[i]}RepeatRegisterInput" placeholder="${blockList["step-three"].fields.inputFieldPlaceHolders[i + 1]}">
 							</div>`;
 						}
 						$("form").css('opacity', 1);
@@ -84,7 +86,16 @@ $(document).ready(() => {
 								<h5>${blockList[step].systemMessageTitle}</h5>
 								<p>${blockList[step].systemMessageDescription}</p>
 							</div>
-						</div>`);
+						</div><div class="system-message bg-danger d-inline-flex px-3 py-2 fade-in-text w-100 d-none">
+						
+						<div class="align-self-center">
+							<i class="fas fa-exclamation-triangle"></i>
+						</div>
+						<div class="ms-3 mt-1 align-self-center">
+							<h5>Oops...</h5>
+							<p></p>
+						</div>
+					</div>`);
 				}
 			}
 		});
@@ -98,11 +109,108 @@ $(document).ready(() => {
 	/* Register Button */
 	$(".go-next").click((e) => {
 		e.preventDefault();
-		
 		switch(e.target.classList[1]) {
-			case "step-one": goNextFunction("step-two"); break;
-			case "step-two": goNextFunction("step-three"); break;
-			case "step-final": goNextFunction("step-final"); break;
+			case "step-one": {
+				if ($("#userNameRegisterInput").val().length < 3 || $("#userNameRegisterInput").val().length > 8) {
+					$(".system-message.bg-danger div:last-child p").text("Username should be between 3 to 8 characters.");
+			
+					$(".system-message.bg-danger").removeClass("d-none");
+					break;	
+				}
+
+				var regex = /^[a-z0-9\s]+$/;
+				if (!regex.test($("#userNameRegisterInput").val())) {
+					$(".system-message.bg-danger div:last-child p").text("Only small letters and numbers are allowed.");
+			
+					$(".system-message.bg-danger").removeClass("d-none");
+					break;
+				}
+				
+				$.post(`http://${$(location).attr('host')}/server/middlewares/UserMiddleware.class.php`, {
+					username: $("#userNameRegisterInput").val()
+				}).done(function (result) {
+					if (parseInt(result["response"]) === 200) {
+						$(".system-message.bg-danger").addClass("d-none");
+						username = $("#userNameRegisterInput").val();
+						goNextFunction("step-two");
+						
+					} else if (parseInt(result["response"]) === 403) {
+						$(location).prop('href', '/');
+					} else {
+					
+						$(".system-message.bg-danger div:last-child p").text(result["data"]["message"]);
+		
+						$(".system-message.bg-danger").removeClass("d-none");
+					}
+				});
+				break;
+			};
+			case "step-two": {
+				var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+				
+				if (!filter.test($("#emailRegisterInput").val())) {
+					$(".system-message.bg-danger div:last-child p").text("Email format is not valid.");
+					$(".system-message.bg-danger").removeClass("d-none");
+					return;
+				}
+
+				$.post(`http://${$(location).attr('host')}/server/middlewares/UserMiddleware.class.php`, {
+					email: $("#emailRegisterInput").val()
+				}).done(function (result) {
+					if (parseInt(result["response"]) === 200) {
+						$(".system-message.bg-danger").addClass("d-none");
+						email = $("#emailRegisterInput").val();
+						goNextFunction("step-three");
+						
+					} else if (parseInt(result["response"]) === 403) {
+						$(location).prop('href', '/');
+					} else {
+					
+						$(".system-message.bg-danger div:last-child p").text(result["data"]["message"]);
+		
+						$(".system-message.bg-danger").removeClass("d-none");
+					}
+				});
+				break;
+			};
+			case "step-final": {
+
+				var filter = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-]).{8,}$/;
+				if (!filter.test($("#passwordRegisterInput").val())) {
+					$(".system-message.bg-danger div:last-child p").text("Password must be minimum 8 characters, one uppercase letter, and one special symbol.");
+					$(".system-message.bg-danger").removeClass("d-none");
+					return;
+				}
+
+				if ($("#passwordRegisterInput").val() != $("#passwordRepeatRegisterInput").val()) {
+					$(".system-message.bg-danger div:last-child p").text("Passwords don't match.");
+					$(".system-message.bg-danger").removeClass("d-none");
+					return;
+				}
+				
+				$.post(`http://${$(location).attr('host')}/server/middlewares/UserMiddleware.class.php`, {
+					username: username,
+					email: email,
+					password: $("#passwordRegisterInput").val(),
+					repeatpassword: $("#passwordRepeatRegisterInput").val()
+				}).done(function (result) {
+					if (parseInt(result["response"]) === 200) {
+						$(".system-message.bg-danger").addClass("d-none");
+						
+						goNextFunction("step-final");
+						
+					} else if (parseInt(result["response"]) === 403) {
+						$(location).prop('href', '/');
+					} else {
+					
+						$(".system-message.bg-danger div:last-child p").text(result["data"]["message"]);
+		
+						$(".system-message.bg-danger").removeClass("d-none");
+					}
+				});
+
+				break;
+			}
 		}
 	});
 
@@ -228,6 +336,54 @@ $(document).ready(() => {
 			preview.attr('src', src);
 		}
 	});
+
+	$(".login-btn-login").click((event) => {
+		event.preventDefault();
+
+		if ($("#emailLoginInput").val().length === 0 || $("#passwordLoginInput").val().length === 0) {
+			$(".form-login .system-message div:last-child p").text("Fields \"Email\" and \"Password\" shouldn't be empty");
+			$(".form-login .system-message").removeClass("d-none");
+			return;
+		}
+
+		var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+		
+		if (!filter.test($("#emailLoginInput").val())) {
+			$(".form-login .system-message div:last-child p").text("Email format is not valid.");
+			$(".form-login .system-message").removeClass("d-none");
+			return;
+		}
+
+		if ($("#passwordLoginInput").val().length < 6) {
+			$(".form-login .system-message div:last-child p").text("Password should be longer than 5 letters.");
+			$(".form-login .system-message").removeClass("d-none");
+			return;
+		}
+
+		$.ajax({
+			url: `http://${$(location).attr('host')}/server/middlewares/UserMiddleware.class.php`,
+			dataType: "json",
+			contentType: "application/json;charset=utf-8",
+			type: "GET",
+			data: {
+				email: $("#emailLoginInput").val(), 
+				password: $("#passwordLoginInput").val()
+			},
+			success: function (result) {
+				if (parseInt(result["response"]) === 200 || parseInt(result["response"]) === 403) {
+					$(location).prop('href', '/');
+					return;
+				}
+			
+				$(".form-login .system-message div:last-child p").text(result["data"]["message"]);
+				$(".form-login .system-message").removeClass("d-none");
+				return;
+			}
+		});
+
+	});
+
+
 	/* Check if the URL is a Valid YouTube URL */
 	// $("#create-post-text-url").on("change", (e) => {
     //     var youtubeURL = e.target.value;

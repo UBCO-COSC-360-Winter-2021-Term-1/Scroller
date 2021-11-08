@@ -21,7 +21,7 @@ services:
       MYSQL_USER: MYSQL_USER
       MYSQL_PASSWORD: MYSQL_PASSWORD
     ports:
-      - "9906:3306"
+      - "3306:3306"
   phpmyadmin:
     container_name: phpmyadmin
     image: phpmyadmin/phpmyadmin

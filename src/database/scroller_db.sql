@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Oct 31, 2021 at 09:22 PM
+-- Generation Time: Nov 08, 2021 at 06:51 AM
 -- Server version: 8.0.27
 -- PHP Version: 7.4.20
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `scroller_db`
+-- Database: `db_scroller`
 --
 
 -- --------------------------------------------------------
@@ -148,12 +148,12 @@ CREATE TABLE `users` (
   `id` int NOT NULL,
   `username` varchar(10) NOT NULL,
   `email` varchar(25) NOT NULL,
-  `is_email_confirmed` tinyint(1) NOT NULL DEFAULT '0',
+  `is_email_confirmed` tinyint(1) DEFAULT '0',
   `password` varchar(512) NOT NULL,
-  `avatar_url` varchar(256) NOT NULL DEFAULT 'to change later',
+  `avatar_url` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'default.png',
   `salt` varchar(10) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `is_account_disabled` tinyint(1) NOT NULL DEFAULT '0'
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_account_disabled` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -292,7 +292,7 @@ ALTER TABLE `tokens`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables

@@ -1,56 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!-- Bootstrap CDN -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-	<!-- Fonts -->
-	<link rel="stylesheet" href="css/fonts.css">
-	<!-- Custom CSS -->
-	<link rel="stylesheet" href="css/style.css">
+<?php 
+	$url = $_SERVER['REQUEST_URI'];
+	$url = substr($url, strpos($url, ".") + 1);
+	if ($url === "php")
+		header("Location: /");
+?>
 
-	<script src="https://kit.fontawesome.com/104f28ad82.js" crossorigin="anonymous"></script>
-	<title>Scroller</title>
-</head>
-<body>
-	<header>
-		<nav class="d-flex justify-content-center justify-content-md-between w-75 mx-auto py-3">
-			<a href="/" class="d-flex align-items-center brand me-3">
-				<i class="fas fa-mouse"></i><span class="ms-2">Scroller</span>
-			</a>
-	
-			<div class="text-end ms-3">
-				<ul>
-					<li class="me-3">
-						<a href="/notifications" class="header-icon"><i class="far fa-bell"></i></a>
-					</li>
-					<li>
-						<a href="/account" class="header-icon d-inline-flex">
-							<img id="img-header-profile" class="img-fluid" src="https://thumbor.forbes.com/thumbor/fit-in/416x416/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F5f47d4de7637290765bce495%2F0x0.jpg%3Fbackground%3D000000%26cropX1%3D1699%26cropX2%3D3845%26cropY1%3D559%26cropY2%3D2704" alt="d3li0n-profile-picture" />
-							<span class="ms-2">d3li0n</span>
-						</a>
-					</li>
-					<li class="ms-3">
-						<a href="/logout" class="header-icon">
-							<i class="fas fa-sign-out-alt"></i>
-						</a>
-					</li>
-					<!--
-					<li>
-						<a href="/account" class="header-icon active-sign-in-header">
-							Sign in
-						</a>
-					</li>
-					-->
-				</ul>
-			</div>
-		</nav>
-	</header>
-
-	<main class="mt-5 w-75 mx-auto">
+<main class="mt-5 w-75 mx-auto">
 		<div class="row">
 			<div class="col-md-2 menu">
 				<h6 class="text-uppercase">Menu</h6>
@@ -65,12 +20,20 @@
 				</nav>
 			</div>
 			<div class="col-md-6 topic-threads overflow-auto mx-auto mb-4">
-				<div class="system-message error-content text-center bg-none p-3">
-					<img src="img/error-empty-content.svg" alt="no content available" class="d-block no-content mx-auto">
-					<p class="pt-5">It's a little bit lonely here. We couldn't find anything...</p>
-				</div>
+				<?php 
+					require_once SERVER_DIR.'/controllers/PostController.class.php';
+
+					$result = (new PostController())->findAll(array());
+					if ($result["response"] === 200) {
+				?>
 				
-				<article class="rounded p-4 mb-5">
+				<?php } else { ?>
+					<div class="system-message error-content text-center bg-none p-3">
+						<img src="<?php echo "http://".$_SERVER['HTTP_HOST']; ?>/client/img/error-empty-content.svg" alt="no content available" class="d-block no-content mx-auto">
+						<p class="pt-5">It's a little bit lonely here. We couldn't find anything...</p>
+					</div>
+				<?php } ?>
+				<!--<article class="rounded p-4 mb-5">
 					<div class="row">
 						<div class="col-sm-2">
 							<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">
@@ -237,12 +200,12 @@
 							</div>
 						</div>
 					</div>
-				</article>
+				</article>-->
 				
 			</div>
 			<div class="col-md-3">
 				<div class="post-create-block text-center rounded">
-					<a href="/t/create"><i class="fas fa-plus"></i><span class="ms-3">Start a New Thread</span></a>
+					<a href="<?php if (isset($_SESSION['IS_AUTHORIZED'])) { ?>/t/create<?php } else { ?>/login<?php }?>"><i class="fas fa-plus"></i><span class="ms-3">Start a New Thread</span></a>
 				</div>
 
 				<div class="top-threads-container mt-4 mb-4 rounded px-3 py-3">
@@ -323,6 +286,5 @@
 				</div>
 			</div>
 		</div>
+
 	</main>
-</body>
-</html>
