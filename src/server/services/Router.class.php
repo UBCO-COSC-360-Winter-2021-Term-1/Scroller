@@ -4,7 +4,7 @@ class Router {
 	protected $titles = array(
 		"" => array("Main"),
 		"login" => array("Login"),
-		"register" => array("Register"),
+		"register" => array("Register", "Register Confirm"),
 		"logout" => array("Logout")
 	);
 	protected $url = array();
@@ -21,8 +21,13 @@ class Router {
 
 	public function getTitle() : string {
 		
-		if (isset($this->titles[$this->url[0]][0]))
-			return $this->titles[$this->url[0]][0];
+		if (count($this->url) == 1) {
+			if (isset($this->titles[$this->url[0]][0]))
+				return $this->titles[$this->url[0]][0];
+		} else if (count($this->url) == 2) {
+			if (isset($this->titles[$this->url[0]][0]))
+				return $this->titles[$this->url[0]][1];
+		}
 		
 		return 'Page Not Found';
 	}
@@ -54,6 +59,15 @@ class Router {
 					return PUBLIC_DIR.'/layout/main.php';
 				}
 				default: return PUBLIC_DIR.'/error.php';
+			}
+		} else if (count($this->url) == 2) {
+
+			switch ($this->url[0]) {
+				case "register": {
+					if (!$auth)
+						return PUBLIC_DIR.'/register-confirm.php';
+					return PUBLIC_DIR.'/layout/main.php';
+				}
 			}
 		}
 		return PUBLIC_DIR.'/error.php';

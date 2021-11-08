@@ -7,10 +7,16 @@
 	
 	$action = substr($action, 1);
 	$url = explode("/", $action);
-	if (($router->getTitle() == "Login" || $router->getTitle() == "Register") && isset($_SESSION['IS_AUTHORIZED'])) header("Location: /");
-	
-	if ($router->getTitle() == "Logout") header("Location: /");
+
 	if ($url[0] === "client") header("Location: /");
+	
+	if (($router->getTitle() == "Login" || $router->getTitle() == "Register" || $router->getTitle() == "Register Confirm") && isset($_SESSION['IS_AUTHORIZED'])) header("Location: /");
+	
+	if (empty($_GET['token']) && $router->getTitle() == "Register Confirm")
+		header("Location: /");
+
+	if ($router->getTitle() == "Logout") header("Location: /");
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -19,7 +25,7 @@
 	<title>Scroller | <?php echo $router->getTitle(); ?></title>
 </head>
 <body>
-	<?php if ($router->getTitle() != "Login" && $router->getTitle() != "Register") { ?>
+	<?php if ($router->getTitle() != "Login" && $router->getTitle() != "Register" && $router->getTitle() != "Register Confirm") { ?>
 	<header>
 		<nav class="d-flex justify-content-center justify-content-md-between w-75 mx-auto py-3">
 			<a href="/" class="d-flex align-items-center brand me-3">

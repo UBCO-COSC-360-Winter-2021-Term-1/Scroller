@@ -12,4 +12,6 @@
 	RewriteCond %{REQUEST_FILENAME}  -f [OR]
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteRule ^(.*)$ index.php?action=$1 [L,QSA]
+
+	ErrorDocument 403 /
 </IfModule>
