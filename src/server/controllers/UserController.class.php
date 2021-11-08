@@ -38,7 +38,7 @@ class UserController extends Controller {
 		$result = array("response" => 400, "data" => array("message" => "User doesn't exist."));
 		$conn = (new DatabaseConnector())->getConnection();
 
-		$sql = "SELECT username, email, password, is_email_confirmed, salt, is_account_disabled, avatar_url FROM users WHERE email='$params[0]'";
+		$sql = "SELECT username, email, password, is_email_confirmed, salt, is_account_disabled, avatar_url, is_admin FROM users WHERE email='$params[0]'";
 		$response = mysqli_query($conn, $sql);
 		
 		while($row = mysqli_fetch_assoc($response)) {
@@ -58,7 +58,8 @@ class UserController extends Controller {
 				$result =array("response" => 200);
 				$_SESSION['IS_AUTHORIZED'] = true;
 				$_SESSION['USERNAME'] = $row['username'];
-				$_SESSION['USER_IMAGE']= 'http://'.$_SERVER['HTTP_HOST'].'/client/img/'.$row['avatar_url'];
+				$_SESSION['USER_IMAGE'] = 'http://'.$_SERVER['HTTP_HOST'].'/client/img/'.$row['avatar_url'];
+				$_SESSION['IS_ADMIN'] = $row['is_admin'];
 				break;
 			} else {
 				$result["response"] = 400;

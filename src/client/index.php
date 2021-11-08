@@ -9,6 +9,7 @@
 	$url = explode("/", $action);
 	if (($router->getTitle() == "Login" || $router->getTitle() == "Register") && isset($_SESSION['IS_AUTHORIZED'])) header("Location: /");
 	
+	if ($router->getTitle() == "Logout") header("Location: /");
 	if ($url[0] === "client") header("Location: /");
 ?>
 <!DOCTYPE html>

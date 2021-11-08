@@ -4,7 +4,8 @@ class Router {
 	protected $titles = array(
 		"" => array("Main"),
 		"login" => array("Login"),
-		"register" => array("Register")
+		"register" => array("Register"),
+		"logout" => array("Logout")
 	);
 	protected $url = array();
 
@@ -44,6 +45,12 @@ class Router {
 					return PUBLIC_DIR.'/layout/main.php';
 				};
 				case "": {
+					return PUBLIC_DIR.'/layout/main.php';
+				}
+				case "logout": {
+					if (!$auth)
+						return PUBLIC_DIR.'/login.php';
+					session_destroy();
 					return PUBLIC_DIR.'/layout/main.php';
 				}
 				default: return PUBLIC_DIR.'/error.php';

@@ -153,7 +153,8 @@ CREATE TABLE `users` (
   `avatar_url` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'default.png',
   `salt` varchar(10) NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `is_account_disabled` tinyint(1) DEFAULT '0'
+  `is_account_disabled` tinyint(1) DEFAULT '0',
+	`is_admin` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
