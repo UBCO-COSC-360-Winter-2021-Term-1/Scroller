@@ -17,14 +17,10 @@
 	}
 	
 	require_once SERVER_DIR.'/services/Router.class.php';
-	require_once SERVER_DIR.'/services/DatabaseConnector.class.php';
+	
 	
 	$router = (new Router());
-	$conn = (new DatabaseConnector());
 	
-	if (!$conn->testConnection())	{
-		die("Sorry for this issue, but our servers are down at this mome");
-	}				
 	// Load Main Page
 	require_once PUBLIC_DIR.'/index.php';
 ?>

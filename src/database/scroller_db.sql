@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Nov 08, 2021 at 06:51 AM
+-- Generation Time: Nov 10, 2021 at 12:37 AM
 -- Server version: 8.0.27
 -- PHP Version: 7.4.20
 
@@ -132,7 +132,7 @@ CREATE TABLE `tokens` (
   `id` int NOT NULL,
   `token` varchar(256) NOT NULL,
   `key_code` int DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `expires_at` datetime NOT NULL,
   `user_id` int NOT NULL,
   `is_email_confirmation` tinyint(1) DEFAULT '1' COMMENT 'FALSE = restore'
@@ -154,7 +154,7 @@ CREATE TABLE `users` (
   `salt` varchar(10) NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `is_account_disabled` tinyint(1) DEFAULT '0',
-	`is_admin` tinyint(1) DEFAULT '0'
+  `is_admin` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------

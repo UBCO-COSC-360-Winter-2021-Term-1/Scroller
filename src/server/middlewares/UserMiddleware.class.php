@@ -10,7 +10,10 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
 		$response = (new UserMiddleware())->login([$_GET['email'], $_GET['password']]);
 	}
 } else if ($_SERVER['REQUEST_METHOD'] === "POST") {
-	if (!empty($_POST['username']) || !empty($_POST['email']) || (!empty($_POST['password']) && !empty($_POST['repeatpassword']))) {
+	if (!empty($_POST['email']) && !empty($_POST['state'])) {
+		$response = (new UserMiddleware())->restore([$_POST['email'], 0]);
+	}
+	else if (!empty($_POST['username']) || !empty($_POST['email']) || (!empty($_POST['password']) && !empty($_POST['repeatpassword']))) {
 		if (!empty($_POST['username']) && empty($_POST['email']) && empty($_POST['password']) && empty($_POST['repeatpassword'])) {
 			$response = (new UserMiddleware())->register(["username" => $_POST['username']]);
 		} else if (empty($_POST['username']) && !empty($_POST['email']) && empty($_POST['password']) && empty($_POST['repeatpassword'])) {
@@ -28,6 +31,22 @@ class UserMiddleware {
 	public function isLogged() : bool {
 		if (isset($_SESSION['IS_AUTHORIZED'])) return true;
 		return false;
+	}
+
+	public function restore(array $params) : array {
+		if ($this->isLogged()) return array("response" => 403);
+
+		if (!filter_var($params[0], FILTER_VALIDATE_EMAIL)) return array( "response" => 400, "data" => array("message" => "Field \"Email\" is not valid."));
+
+		if (!(new UserController())->findByEmail($params[0])) return array( "response" => 400, "data" => array("message" => "Email doesn't exist"));
+		
+		if (!(new UserController())->isEmailConfirmed($params[0])) return array( "response" => 400, "data" => array("message" => "Email is not confirmed."));
+		
+		if (!$params[1]) {
+			return (new TokenController())->post([$params[0], "", "", 0]);
+		}
+
+		return array("response" => 400, "data" => array("message" => "Invalid information was passed."));
 	}
 
 	public function register(array $params) : array {

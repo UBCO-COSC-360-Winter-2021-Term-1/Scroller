@@ -383,7 +383,115 @@ $(document).ready(() => {
 
 	});
 
+	$(".register-confirm-final").click((e) => {
+		e.preventDefault();
+		var code = $("#codeRegisterConfirmInput").val();
 
+		if (!$.isNumeric(code)) {
+			
+			$(".system-message div:last-child p").text("Confirmation code must be numeric.");
+			$(".system-message").removeClass("d-none");
+			return;
+		}
+
+		if (parseInt(code) < 1000 || parseInt(code) > 99999) {
+			$(".system-message div:last-child p").text("Invalid code.");
+			$(".system-message").removeClass("d-none");
+			return;
+		}
+
+		$(".system-message.bg-danger").addClass("d-none");
+		var token = new URLSearchParams(window.location.search).get('token');
+
+		$.post(`http://${$(location).attr('host')}/server/middlewares/TokenMiddleware.class.php`, {
+			code: code,
+			token: token
+		}).done(function (result) {
+			if (parseInt(result["response"]) === 200 || parseInt(result["response"]) === 403) {
+				$(location).prop('href', '/');
+				return;
+			}
+		
+			$(".system-message div:last-child p").text(result["data"]["message"]);
+			$(".system-message").removeClass("d-none");
+			return;
+		});
+	});
+
+	$(".recover-confirm-final").click((e) => {
+		e.preventDefault();
+		var filter = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-]).{8,}$/;
+		if (!filter.test($("#passwordNewInput").val())) {
+			$(".system-message.bg-danger div:last-child p").text("Password must be minimum 8 characters, one uppercase letter, and one special symbol.");
+			$(".system-message.bg-danger").removeClass("d-none");
+			return;
+		}
+
+		if ($("#passwordNewInput").val() != $("#passwordNewConfirmInput").val()) {
+			$(".system-message.bg-danger div:last-child p").text("Passwords don't match.");
+			$(".system-message.bg-danger").removeClass("d-none");
+			return;
+		}
+
+		$(".system-message.bg-danger").addClass("d-none");
+
+		var token = new URLSearchParams(window.location.search).get('token');
+
+		$.post(`http://${$(location).attr('host')}/server/middlewares/TokenMiddleware.class.php`, {
+			password: $("#passwordNewInput").val(),
+			repeatpassword: $("#passwordNewConfirmInput").val(),
+			token: token
+		}).done(function (result) {
+			if (parseInt(result["response"]) === 200 || parseInt(result["response"]) === 403) {
+				$("#passwordNewInput").val("");
+				$("#passwordNewConfirmInput").val("");
+				$(".system-message div h5").text("Success");
+				$(".system-message div:last-child p").text("Password has been recovered.");
+				$(".system-message").removeClass("d-none");
+				$(".system-message").removeClass("bg-danger");
+				$(".system-message").addClass("bg-success");
+				setTimeout(function(){ window.location = "/"; }, 3000);
+				return;
+			}
+		
+			$(".system-message div:last-child p").text(result["data"]["message"]);
+			$(".system-message").removeClass("d-none");
+			return;
+		});
+		
+	});
+
+	$(".recover-confirm").click((e) => {
+		e.preventDefault();
+
+		var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+		if (!filter.test($("#emailConfirmRecoverInput").val())) {
+			$(".system-message.bg-danger div:last-child p").text("Email format is not valid.");
+			$(".system-message.bg-danger").removeClass("d-none");
+			return;
+		}
+
+		$(".system-message.bg-danger").addClass("d-none");
+
+		$.post(`http://${$(location).attr('host')}/server/middlewares/UserMiddleware.class.php`, {
+			email: $("#emailConfirmRecoverInput").val(),
+			state: false
+		}).done(function (result) {
+			if (parseInt(result["response"]) === 200 || parseInt(result["response"]) === 403) {
+				
+				$(".system-message div h5").text("Success");
+				$(".system-message div:last-child p").text("Recovery email has been sent to your email address.");
+				$(".system-message").removeClass("d-none");
+				$(".system-message").removeClass("bg-danger");
+				$(".system-message").addClass("bg-success");
+				return;
+			}
+		
+			$(".system-message div:last-child p").text(result["data"]["message"]);
+			$(".system-message").removeClass("d-none");
+			return;
+		});
+	});
 	/* Check if the URL is a Valid YouTube URL */
 	// $("#create-post-text-url").on("change", (e) => {
     //     var youtubeURL = e.target.value;

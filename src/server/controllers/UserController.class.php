@@ -1,7 +1,7 @@
 <?php 
 session_start();
 include $_SERVER["DOCUMENT_ROOT"].'/server/helpers/Controller.class.php';
-include $_SERVER["DOCUMENT_ROOT"].'/server/services/DatabaseConnector.class.php';
+include $_SERVER["DOCUMENT_ROOT"].'/server/controllers/TokenController.class.php';
 
 class UserController extends Controller {
 		
@@ -24,6 +24,20 @@ class UserController extends Controller {
 		
 		$sql = "INSERT INTO users(username, email, password, salt) VALUES ('$params[0]', '$params[1]', '$password', '$hash')";
 		mysqli_query($conn, $sql);
+
+		$sql = "SELECT id FROM users WHERE username='$params[0]' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		
+		$row = mysqli_fetch_row($result);
+		
+		$end_token = time() + 86400;
+		$token = '';
+
+		for ($i = 0; $i < 60; $i++)
+			$token .= $characters[mt_rand(0, 61)];
+
+		$token = (new TokenController())->post([$token, $end_token, $row[0], 1]);
+
 		mysqli_close($conn);
 		return array("response" => 200);
 	}
@@ -103,6 +117,18 @@ class UserController extends Controller {
 		}
 		mysqli_close($conn);
 		return false;
+	}
+
+	public function isEmailConfirmed(string $email) : bool {
+		$conn = (new DatabaseConnector())->getConnection();
+
+		$sql = "SELECT is_email_confirmed FROM users WHERE email='$email' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		
+		$row = mysqli_fetch_row($result);
+
+		mysqli_close($conn);
+		return $row[0];
 	}
 
 	public function findByUsername(string $username) : bool {

@@ -9,11 +9,24 @@
 	$url = explode("/", $action);
 
 	if ($url[0] === "client") header("Location: /");
+
+	if (($router->getTitle() == "Login" || $router->getTitle() == "Register" || $router->getTitle() == "Register Confirm" || $router->getTitle() == "Restore" || $router->getTitle() == "Restore Confirm") && isset($_SESSION['IS_AUTHORIZED'])) header("Location: /");
 	
-	if (($router->getTitle() == "Login" || $router->getTitle() == "Register" || $router->getTitle() == "Register Confirm") && isset($_SESSION['IS_AUTHORIZED'])) header("Location: /");
-	
-	if (empty($_GET['token']) && $router->getTitle() == "Register Confirm")
+	if (empty($_GET['token']) && ($router->getTitle() == "Register Confirm" || $router->getTitle() == "Restore Confirm")) {
 		header("Location: /");
+	}
+	
+	if (!empty($_GET['token']) && $router->getTitle() == "Register Confirm") {
+		include $_SERVER["DOCUMENT_ROOT"].'/server/middlewares/TokenMiddleware.class.php';
+
+		$token = (new TokenMiddleware())->validateToken([$_GET['token'], 1]);
+		if ($token["response"] == 400) header("Location: /");
+	} else if (!empty($_GET['token']) && $router->getTitle() == "Restore Confirm") {
+		include $_SERVER["DOCUMENT_ROOT"].'/server/middlewares/TokenMiddleware.class.php';
+		
+		$token = (new TokenMiddleware())->validateToken([$_GET['token'], 0]);
+		if ($token["response"] == 400) header("Location: /");
+	}
 
 	if ($router->getTitle() == "Logout") header("Location: /");
 
@@ -25,7 +38,7 @@
 	<title>Scroller | <?php echo $router->getTitle(); ?></title>
 </head>
 <body>
-	<?php if ($router->getTitle() != "Login" && $router->getTitle() != "Register" && $router->getTitle() != "Register Confirm") { ?>
+	<?php if ($router->getTitle() != "Login" && $router->getTitle() != "Register" && $router->getTitle() != "Register Confirm" && $router->getTitle() != "Restore" && $router->getTitle() != "Restore Confirm") { ?>
 	<header>
 		<nav class="d-flex justify-content-center justify-content-md-between w-75 mx-auto py-3">
 			<a href="/" class="d-flex align-items-center brand me-3">
