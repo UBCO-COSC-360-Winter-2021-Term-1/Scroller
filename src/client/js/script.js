@@ -125,7 +125,7 @@ $(document).ready(() => {
 					$(".system-message.bg-danger").removeClass("d-none");
 					break;
 				}
-				
+
 				$.post(`http://${$(location).attr('host')}/server/middlewares/UserMiddleware.class.php`, {
 					username: $("#userNameRegisterInput").val()
 				}).done(function (result) {
@@ -246,6 +246,61 @@ $(document).ready(() => {
 		
 		$("#create-thread-suggest-url").text(formattedURL);
 	});
+
+	// Create Thread
+	/*
+	* 1. Validate title with url, if not valid, show error message
+	* 
+	*/
+	$(".btn-create-thread").click((e) =>{
+		e.preventDefault();
+		var formattedURL = $("#create-thread-name").val();
+		var regex = /^[a-zA-Z0-9\s]+$/;
+		
+		if (!regex.test(formattedURL)) {
+			$("span.error-message").text("Title shouldn't contain numbers or special characters.");
+			$(".system-message").removeClass("d-none");
+			return;
+		}
+
+		if (formattedURL.length > 12) {
+			$("span.error-message").text("Title should contain less than 12 characters.");
+			$(".system-message").removeClass("d-none");
+			return;
+		}
+		
+		if (formattedURL.length <= 12)
+			$(".system-message").addClass("d-none");
+			
+		var URL = formattedURL.split("-").join(" ");
+		URL = formattedURL.split(" ").join("-").toLowerCase();
+
+		var form_data = new FormData();
+		form_data.append("threadBackground", $("#create-thread-upload-cover").get(0).files[0]);
+		form_data.append("threadProfile", $("#create-thread-upload-photo").get(0).files[0]);
+		form_data.append("title", formattedURL);
+		form_data.append("url", URL);
+
+		$.ajax({
+			url: `http://${$(location).attr('host')}/server/middlewares/ThreadMiddleware.class.php`,
+			type: 'POST',
+			data: form_data,
+			contentType: false,
+			cache: false,
+			processData: false,
+			success: (result) => {
+				if (parseInt(result["response"]) === 200) {
+					$(".system-message").addClass("d-none");
+					$(location).prop('href', `/thread/${URL}`);
+				} else if (parseInt(result["response"]) === 403) {
+					$(location).prop('href', '/');
+				} else {
+					$(".system-message").removeClass("d-none");
+					$(".system-message div:last-child p").text(result["data"]["message"]);
+				}
+			},
+		});
+	});																						
 
 	/* Create Post Title */
 	$("#create-post-name").on("keyup, keydown", (e) => {
