@@ -1,5 +1,5 @@
 <?php
-include $_SERVER["DOCUMENT_ROOT"].'/server/controllers/UserController.class.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/UserController.class.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -23,7 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
 		} else {
 			$response = array("response" => 400, "data" => array("message" => "Invalid information was passed."));
 		}
-	} 
+	} else if (!empty($_FILES["img_profile"])) {
+		$response = (new UserMiddleware())->validateProfileImage($_FILES["img_profile"]);
+	} else if (empty($_FILES["img_profile"])) {
+		$response = array("response" => 400, "data" => array("message" => "Invalid Server Request."));
+	}
 }
 
 class UserMiddleware {
@@ -31,6 +35,32 @@ class UserMiddleware {
 	public function isLogged() : bool {
 		if (isset($_SESSION['IS_AUTHORIZED'])) return true;
 		return false;
+	}
+
+	public function validateProfileImage(array $params) : array {
+		if (!$this->isLogged()) return array("response" => 403);
+	
+		if ($params['size'] == 0 || $params['size'] > (5 * 1024 * 1024)) return array("response" => 400, "data" => array("message" => "Image cannot be larger than 5 MB."));
+
+		$target_dir  =  $_SERVER["DOCUMENT_ROOT"].'/server/uploads/user_images/';
+		
+		$imageFileType = strtolower(pathinfo($params["name"], PATHINFO_EXTENSION));
+
+		$imgFile = "";
+		$characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+		for($i = 0; $i < 16; $i++)
+			$imgFile .= $characters[mt_rand(0, 61)];
+
+		$target_file = $target_dir . basename($imgFile.'.'.strtolower(pathinfo($params["name"], PATHINFO_EXTENSION)));
+
+		if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "gif") return array("response" => 400, "data" => array("message" => "Only .jpg, .png, and .gif format accepted."));
+		
+		if (move_uploaded_file($params["tmp_name"], $target_file)) {
+			return (new UserController())->updateProfileImage($imgFile.'.'.strtolower(pathinfo($params["name"], PATHINFO_EXTENSION)));
+		} 
+
+		return array("response" => 400, "data" => array("message" => "Invalid information was passed or server error has occured."));
 	}
 
 	public function restore(array $params) : array {

@@ -1,5 +1,4 @@
 <?php
-
 	global $router;
 
 	$action = @htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES, 'UTF-8');
@@ -14,6 +13,17 @@
 	
 	if ($router->getTitle() == "Account" && !isset($_SESSION['IS_AUTHORIZED']))
 		header("Location: /login");
+
+	if ($router->getTitle() == "Account Edit" && !isset($_SESSION['IS_AUTHORIZED']))
+		header("Location: /login");
+	
+		if (count($url) == 2 && $router->getTitle() == "Account Edit" && !is_numeric($url[1]) && $url[1] != "edit") {
+		header("Location: /account");
+	} else if (count($url) == 2 && $router->getTitle() == "Account" && is_numeric($url[1])) {
+		include $_SERVER["DOCUMENT_ROOT"].'/server/controllers/UserController.class.php';
+		if (!(new UserController())->findUserById($url[1]))
+			header("Location: /account");
+	}
 
 	if (empty($_GET['token']) && ($router->getTitle() == "Register Confirm" || $router->getTitle() == "Restore Confirm")) {
 		header("Location: /");

@@ -1,5 +1,5 @@
 <?php 
-include SERVER_DIR.'/helpers/Controller.class.php';
+require_once SERVER_DIR.'/helpers/Controller.class.php';
 
 class PostController extends Controller {
 

@@ -1,7 +1,8 @@
 <?php 
 @session_start();
-include $_SERVER["DOCUMENT_ROOT"].'/server/helpers/Controller.class.php';
-include $_SERVER["DOCUMENT_ROOT"].'/server/controllers/TokenController.class.php';
+
+require_once $_SERVER["DOCUMENT_ROOT"].'/server/helpers/Controller.class.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/TokenController.class.php';
 
 class UserController extends Controller {
 		
@@ -72,7 +73,7 @@ class UserController extends Controller {
 				$result =array("response" => 200);
 				$_SESSION['IS_AUTHORIZED'] = true;
 				$_SESSION['USERNAME'] = $row['username'];
-				$_SESSION['USER_IMAGE'] = 'http://'.$_SERVER['HTTP_HOST'].'/client/img/'.$row['avatar_url'];
+				$_SESSION['USER_IMAGE'] = 'http://'.$_SERVER['HTTP_HOST'].'/server/uploads/user_images/'.$row['avatar_url'];
 				$_SESSION['IS_ADMIN'] = $row['is_admin'];
 				break;
 			} else {
@@ -83,6 +84,16 @@ class UserController extends Controller {
 		}
 		mysqli_close($conn);
 		return $result;
+	}
+
+	public function updateProfileImage($file) : array {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "UPDATE users SET avatar_url = '$file' WHERE username='".$_SESSION['USERNAME']."'";
+
+		$result = mysqli_query($conn, $sql);
+		$_SESSION['USER_IMAGE'] = 'http://'.$_SERVER['HTTP_HOST'].'/server/uploads/user_images/'.$file;
+		mysqli_close($conn);
+		return array("response" => 200);
 	}
 
 	public function get(array $params) : array {
@@ -103,6 +114,20 @@ class UserController extends Controller {
 
 	public function findById(int $id) : array {
 		return array();
+	}
+
+	public function findUserById(int $id) : bool {
+		$conn = (new DatabaseConnector())->getConnection();
+
+		$sql = "SELECT id FROM users WHERE id='$id'";
+		$response = mysqli_query($conn, $sql);
+
+		while($row = mysqli_fetch_assoc($response)) {
+			mysqli_close($conn);
+			return true;
+		}
+		mysqli_close($conn);
+		return false;
 	}
 
 	public function findByEmail(string $email) : bool {
@@ -149,11 +174,15 @@ class UserController extends Controller {
 		return array();
 	}
 
-	public function findPostsAndComments(/*array $params*/) : array {
+	public function findPostsAndComments(array $params) : array {
 		
 		$conn = (new DatabaseConnector())->getConnection();
 		
-		$sql = "(SELECT body, threads.thread_url, 'comments' as body_comments FROM comments JOIN threads ON comments.thread_id = threads.thread_id WHERE user_id = 17 ORDER BY comments.created_at) UNION (SELECT body, threads.thread_url, 'posts' as body_posts FROM posts JOIN threads ON posts.thread_id = threads.thread_id WHERE user_id = 17 ORDER BY posts.created_at)";
+		if ($params[1] == 0) {
+			$sql = "(SELECT body, threads.thread_url, 'comments' as body_comments FROM comments JOIN users ON users.id = comments.user_id JOIN threads ON threads.thread_id = comments.thread_id WHERE users.username = '$params[0]' ORDER BY comments.created_at) UNION (SELECT body, threads.thread_url, 'posts' as body_posts FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id WHERE users.username = '$params[0]' ORDER BY posts.created_at)";
+		} else if ($params[1] == 1) {
+			$sql = "(SELECT body, threads.thread_url, 'comments' as body_comments FROM comments JOIN users ON users.id = comments.user_id JOIN threads ON threads.thread_id = comments.thread_id WHERE users.id = '$params[0]' ORDER BY comments.created_at) UNION (SELECT body, threads.thread_url, 'posts' as body_posts FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id WHERE users.id = '$params[0]' ORDER BY posts.created_at)";
+		}
 		$response = mysqli_query($conn, $sql);
 
 		$result = array();

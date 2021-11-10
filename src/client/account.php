@@ -27,8 +27,13 @@
 
 			<div class="profile-activity overflow-auto">
 					<?php 
-						include $_SERVER["DOCUMENT_ROOT"].'/server/controllers/UserController.class.php';
-						$content = (new UserController())->findPostsAndComments();
+						require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/UserController.class.php';
+
+						if (count($url) == 2 && $router->getTitle() == "Account" && is_numeric($url[1])) {
+							$content = (new UserController())->findPostsAndComments([$url[1], 1]);
+						} else if (count($url) == 1 && $router->getTitle() == "Account") {
+							$content = (new UserController())->findPostsAndComments([$_SESSION['USERNAME'], 0]);
+						}
 						$result = "";
 
 						if (count($content) != 0) {

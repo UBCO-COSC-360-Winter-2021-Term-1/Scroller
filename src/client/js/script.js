@@ -450,7 +450,7 @@ $(document).ready(() => {
 				$(".system-message").removeClass("d-none");
 				$(".system-message").removeClass("bg-danger");
 				$(".system-message").addClass("bg-success");
-				setTimeout(function(){ window.location = "/"; }, 3000);
+				setTimeout(() => { window.location = "/"; }, 3000);
 				return;
 			}
 		
@@ -490,6 +490,36 @@ $(document).ready(() => {
 			$(".system-message div:last-child p").text(result["data"]["message"]);
 			$(".system-message").removeClass("d-none");
 			return;
+		});
+	});
+
+	$("#profile-settings-picture").change( (e) => {
+		e.preventDefault();
+		var form_data = new FormData();
+		form_data.append("img_profile", $("#profile-settings-picture").get(0).files[0]);
+		$.ajax({
+			url: `http://${$(location).attr('host')}/server/middlewares/UserMiddleware.class.php`,
+			type: 'POST',
+			data: form_data,
+			contentType: false,
+			cache: false,
+			processData: false,
+			success: function (result) {
+				if (parseInt(result["response"]) === 200 || parseInt(result["response"]) === 403) {
+				
+					$(".system-message div h5").text("Success");
+					$(".system-message div:last-child p").text("Image has been updated");
+					$(".system-message").removeClass("d-none");
+					$(".system-message").removeClass("bg-danger");
+					$(".system-message").addClass("bg-success");
+					setTimeout(() => { window.location = "/account/edit"; }, 3000);
+					return;
+				}
+			
+				$(".reason").text(result["data"]["message"]);
+				$(".system-message").removeClass("d-none");
+				return;
+			},
 		});
 	});
 	/* Check if the URL is a Valid YouTube URL */

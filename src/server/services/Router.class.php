@@ -28,7 +28,11 @@ class Router {
 				return $this->titles[$this->url[0]][0];
 		} else if (count($this->url) == 2) {
 			if (isset($this->titles[$this->url[0]][0]))
-				return $this->titles[$this->url[0]][1];
+				if (is_numeric($this->url[1]) && $this->url[0] == "account")
+					return $this->titles[$this->url[0]][0];
+				else if (isset( $this->titles[$this->url[0]][1]))
+					return $this->titles[$this->url[0]][1];
+				else "Page Not Found";
 		}
 		
 		return 'Page Not Found';
@@ -88,9 +92,11 @@ class Router {
 				case "account": {
 					if (!$auth)
 						return PUBLIC_DIR.'/login.php';
+					if (!is_numeric($this->url[1]))
+						return PUBLIC_DIR.'/account-settings.php';
 					return PUBLIC_DIR.'/account.php';
 				}
-				
+				default: return PUBLIC_DIR.'/error.php';
 			}
 		}
 		return PUBLIC_DIR.'/error.php';
