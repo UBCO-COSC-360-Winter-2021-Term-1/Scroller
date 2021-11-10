@@ -1,5 +1,5 @@
 <?php 
-session_start();
+@session_start();
 include $_SERVER["DOCUMENT_ROOT"].'/server/helpers/Controller.class.php';
 include $_SERVER["DOCUMENT_ROOT"].'/server/controllers/TokenController.class.php';
 
@@ -147,6 +147,26 @@ class UserController extends Controller {
 
 	public function findAll(array $params) : array {
 		return array();
+	}
+
+	public function findPostsAndComments(/*array $params*/) : array {
+		
+		$conn = (new DatabaseConnector())->getConnection();
+		
+		$sql = "(SELECT body, threads.thread_url, 'comments' as body_comments FROM comments JOIN threads ON comments.thread_id = threads.thread_id WHERE user_id = 17 ORDER BY comments.created_at) UNION (SELECT body, threads.thread_url, 'posts' as body_posts FROM posts JOIN threads ON posts.thread_id = threads.thread_id WHERE user_id = 17 ORDER BY posts.created_at)";
+		$response = mysqli_query($conn, $sql);
+
+		$result = array();
+
+		while($row = mysqli_fetch_assoc($response)) {
+			array_push($result, array(
+				"content" => $row['body'], 
+				"url" =>  $row['thread_url'], 
+				"type" => $row['body_comments'])
+			);
+		}
+		mysqli_close($conn);
+		return $result;
 	}
 }
 ?>

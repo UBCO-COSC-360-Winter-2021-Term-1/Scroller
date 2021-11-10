@@ -6,7 +6,8 @@ class Router {
 		"login" => array("Login"),
 		"register" => array("Register", "Register Confirm"),
 		"logout" => array("Logout"),
-		"restore" => array("Restore", "Restore Confirm")
+		"restore" => array("Restore", "Restore Confirm"),
+		"account" => array("Account", "Account Edit")
 	);
 	protected $url = array();
 
@@ -55,6 +56,11 @@ class Router {
 						return PUBLIC_DIR.'/restore.php';
 					return PUBLIC_DIR.'/layout/main.php';
 				};
+				case "account": {
+					if (!$auth)
+						return PUBLIC_DIR.'/login.php';
+					return PUBLIC_DIR.'/account.php';
+				};
 				case "": {
 					return PUBLIC_DIR.'/layout/main.php';
 				}
@@ -78,6 +84,11 @@ class Router {
 					if (!$auth)
 						return PUBLIC_DIR.'/restore-confirm.php';
 					return PUBLIC_DIR.'/layout/main.php';
+				}
+				case "account": {
+					if (!$auth)
+						return PUBLIC_DIR.'/login.php';
+					return PUBLIC_DIR.'/account.php';
 				}
 				
 			}

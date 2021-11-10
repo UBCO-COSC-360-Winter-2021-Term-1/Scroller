@@ -1015,3 +1015,8 @@ article > .row > .col-sm-10 > h4 > a {
 	background-color: var(--navigation-link-hover);
 	color: #fff;
 }
+
+.account-no-content img {
+	width: 15em;
+	height: 15em;
+}
