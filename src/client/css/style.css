@@ -664,7 +664,7 @@ ul > li > a:hover{
 	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
 }
 
-.system-message-content > .fa-ban {
+.system-message-content > .fa-ban, .system-message-content > .fa-check {
 	font-size: 2em;
 }
 
@@ -1014,4 +1014,9 @@ article > .row > .col-sm-10 > h4 > a {
 	border: none;
 	background-color: var(--navigation-link-hover);
 	color: #fff;
+}
+
+.account-no-content img {
+	width: 15em;
+	height: 15em;
 }

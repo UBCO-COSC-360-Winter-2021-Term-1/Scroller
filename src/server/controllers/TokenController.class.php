@@ -1,5 +1,5 @@
 <?php 
-include $_SERVER["DOCUMENT_ROOT"].'/server/services/DatabaseConnector.class.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/server/services/DatabaseConnector.class.php';
 
 class TokenController extends Controller {
 		

@@ -118,7 +118,7 @@ $(document).ready(() => {
 					break;	
 				}
 
-				var regex = /^[a-z0-9\s]+$/;
+				var regex = /^[a-z0-9]+$/;
 				if (!regex.test($("#userNameRegisterInput").val())) {
 					$(".system-message.bg-danger div:last-child p").text("Only small letters and numbers are allowed.");
 			
@@ -450,7 +450,7 @@ $(document).ready(() => {
 				$(".system-message").removeClass("d-none");
 				$(".system-message").removeClass("bg-danger");
 				$(".system-message").addClass("bg-success");
-				setTimeout(function(){ window.location = "/"; }, 3000);
+				setTimeout(() => { window.location = "/"; }, 3000);
 				return;
 			}
 		
@@ -492,6 +492,220 @@ $(document).ready(() => {
 			return;
 		});
 	});
+
+	$("#profile-settings-picture").change( (e) => {
+		e.preventDefault();
+		var form_data = new FormData();
+		form_data.append("img_profile", $("#profile-settings-picture").get(0).files[0]);
+		$.ajax({
+			url: `http://${$(location).attr('host')}/server/middlewares/UserMiddleware.class.php`,
+			type: 'POST',
+			data: form_data,
+			contentType: false,
+			cache: false,
+			processData: false,
+			success: function (result) {
+				if (parseInt(result["response"]) === 200 || parseInt(result["response"]) === 403) {
+				
+					$(".system-message-content i").removeClass("fa-ban");
+					$(".system-message-content i").addClass("fa-check");
+					$(".system-message div h5").text("Success");
+					$(".system-message div:last-child p").text("Image has been updated");
+					$(".system-message").removeClass("d-none");
+					$(".system-message").removeClass("bg-danger");
+					$(".system-message").addClass("bg-success");
+					setTimeout(() => { window.location = "/account/edit"; }, 3000);
+					return;
+				}
+			
+				$(".reason").text(result["data"]["message"]);
+				$(".system-message").removeClass("d-none");
+				return;
+			},
+		});
+	});
+
+	$(".btn-account-update").click((e) => {
+
+		e.preventDefault();
+
+		if ($("#profile-settings-username").val().length == 0 && $("#profile-settings-oldpassword").val().length == 0 &&  $("#profile-settings-newpassword").val().length == 0) {
+			$(".system-message.bg-danger div:last-child p").text("Fields are empty. Nothing to update.");
+	
+			$(".system-message.bg-danger").removeClass("d-none");
+			
+			return;
+		}
+
+		if (($("#profile-settings-username").val().length < 3 || $("#profile-settings-username").val().length > 8) && $("#profile-settings-oldpassword").val().length == 0 &&  $("#profile-settings-newpassword").val().length == 0) {
+			$(".system-message.bg-danger div:last-child p").text("Username should be between 3 to 8 characters.");
+	
+			$(".system-message.bg-danger").removeClass("d-none");
+			
+			return;	
+		}
+		
+		var regex = /^[a-z0-9]+$/;
+
+		if (!regex.test($("#profile-settings-username").val()) && $("#profile-settings-oldpassword").val().length == 0 &&  $("#profile-settings-newpassword").val().length == 0) {
+			$(".system-message.bg-danger div:last-child p").text("Only small letters and numbers are allowed.");
+	
+			$(".system-message.bg-danger").removeClass("d-none");
+			
+			return;
+		}
+		
+		if (regex.test($("#profile-settings-username").val()) && 
+				($("#profile-settings-username").val().length >= 3 || $("#profile-settings-username").val().length <= 8) &&
+				$("#profile-settings-oldpassword").val().length == 0 &&  $("#profile-settings-newpassword").val().length == 0) {
+			
+			$.post(`http://${$(location).attr('host')}/server/middlewares/UserMiddleware.class.php`, {
+				aUsername: $("#profile-settings-username").val()
+			}).done(function (result) {
+				if (parseInt(result["response"]) === 200) {
+					$(".system-message-content i").removeClass("fa-ban");
+					$(".system-message-content i").addClass("fa-check");
+					$(".system-message div h5").text("Success");
+					$(".system-message div:last-child p").text("Account details has been updated.");
+					$(".system-message").removeClass("d-none");
+					$(".system-message").removeClass("bg-danger");
+					$(".system-message").addClass("bg-success");
+					$("#profile-settings-username").val("");
+					setTimeout(() => { window.location = "/account/edit"; }, 3000);
+					return;
+				} else if (parseInt(result["response"]) === 403) {
+					$(".system-message div:last-child p").text("Invalid action.");
+					$(".system-message").removeClass("d-none");
+					return;
+				}
+			
+				$(".system-message div:last-child p").text(result["data"]["message"]);
+				$(".system-message").removeClass("d-none");
+				return;
+			});
+		} 
+		
+		if ($("#profile-settings-username").val().length === 0) {
+			var filter = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-]).{8,}$/;
+			if (!filter.test($("#profile-settings-oldpassword").val())) {
+				$(".system-message.bg-danger div:last-child p").text("Password must be minimum 8 characters, one uppercase letter, and one special symbol.");
+				$(".system-message.bg-danger").removeClass("d-none");
+				return;
+			}
+
+			if (!filter.test($("#profile-settings-newpassword").val())) {
+				$(".system-message.bg-danger div:last-child p").text("Password must be minimum 8 characters, one uppercase letter, and one special symbol.");
+				$(".system-message.bg-danger").removeClass("d-none");
+				return;
+			}
+
+			$.post(`http://${$(location).attr('host')}/server/middlewares/UserMiddleware.class.php`, {
+				aOldPassword: $("#profile-settings-oldpassword").val(),
+				aNewPassword: $("#profile-settings-newpassword").val()
+			}).done(function (result) {
+				if (parseInt(result["response"]) === 200) {
+					$(".system-message-content i").removeClass("fa-ban");
+					$(".system-message-content i").addClass("fa-check");
+					$(".system-message div h5").text("Success");
+					$(".system-message div:last-child p").text("Account details has been updated.");
+					$(".system-message").removeClass("d-none");
+					$(".system-message").removeClass("bg-danger");
+					$(".system-message").addClass("bg-success");
+					$("#profile-settings-oldpassword").val("");
+					$("#profile-settings-newpassword").val("");
+					setTimeout(() => { window.location = "/account/edit"; }, 3000);
+					return;
+				} else if (parseInt(result["response"]) === 403) {
+					$(".system-message div:last-child p").text("Invalid action.");
+					$(".system-message").removeClass("d-none");
+					return;
+				}
+			
+				$(".system-message div:last-child p").text(result["data"]["message"]);
+				$(".system-message").removeClass("d-none");
+				return;
+			});
+		}
+
+		if ($("#profile-settings-username").val().length != 0 && $("#profile-settings-oldpassword").val().length != 0 &&  $("#profile-settings-newpassword").val().length != 0) {
+
+			if (!regex.test($("#profile-settings-username").val()) || ($("#profile-settings-username").val().length < 3 || $("#profile-settings-username").val().length > 8)) {
+				$(".system-message.bg-danger div:last-child p").text("Username should be between 3 to 8 characters with small letters or numbers.");
+				$(".system-message.bg-danger").removeClass("d-none");
+				return;
+			}
+
+			var filter = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-]).{8,}$/;
+			if (!filter.test($("#profile-settings-oldpassword").val())) {
+				$(".system-message.bg-danger div:last-child p").text("Password must be minimum 8 characters, one uppercase letter, and one special symbol.");
+				$(".system-message.bg-danger").removeClass("d-none");
+				return;
+			}
+
+			if (!filter.test($("#profile-settings-newpassword").val())) {
+				$(".system-message.bg-danger div:last-child p").text("Password must be minimum 8 characters, one uppercase letter, and one special symbol.");
+				$(".system-message.bg-danger").removeClass("d-none");
+				return;
+			}
+
+			$.post(`http://${$(location).attr('host')}/server/middlewares/UserMiddleware.class.php`, {
+				aUsername: $("#profile-settings-username").val(),
+				aOldPassword: $("#profile-settings-oldpassword").val(),
+				aNewPassword: $("#profile-settings-newpassword").val()
+			}).done(function (result) {
+				if (parseInt(result["response"]) === 200) {
+					$(".system-message-content i").removeClass("fa-ban");
+					$(".system-message-content i").addClass("fa-check");
+					$(".system-message div h5").text("Success");
+					$(".system-message div:last-child p").text("Account details has been updated.");
+					$(".system-message").removeClass("d-none");
+					$(".system-message").removeClass("bg-danger");
+					$(".system-message").addClass("bg-success");
+					$("#profile-settings-username").val("");
+					$("#profile-settings-oldpassword").val("");
+					$("#profile-settings-newpassword").val("");
+					setTimeout(() => { window.location = "/account/edit"; }, 3000);
+					return;
+				} else if (parseInt(result["response"]) === 403) {
+					$(".system-message div:last-child p").text("Invalid action.");
+					$(".system-message").removeClass("d-none");
+					return;
+				}
+			
+				$(".system-message div:last-child p").text(result["data"]["message"]);
+				$(".system-message").removeClass("d-none");
+				return;
+			});
+		}
+	});
+
+	$(".btn-account-delete").click((e) => {
+		e.preventDefault();
+
+		$.post(`http://${$(location).attr('host')}/server/middlewares/UserMiddleware.class.php`, {
+				deleteAccount: true
+			}).done(function (result) {
+				if (parseInt(result["response"]) === 200) {
+					$(".system-message-content i").removeClass("fa-ban");
+					$(".system-message-content i").addClass("fa-check");
+					$(".system-message div h5").text("Success");
+					$(".system-message div:last-child p").text("Account has been disabled.");
+					$(".system-message").removeClass("d-none");
+					$(".system-message").removeClass("bg-danger");
+					$(".system-message").addClass("bg-success");
+					setTimeout(() => { window.location = "/logout"; }, 3000);
+					return;
+				} else if (parseInt(result["response"]) === 403) {
+					$(".system-message div:last-child p").text("Invalid action.");
+					$(".system-message").removeClass("d-none");
+					return;
+				}
+			
+				$(".system-message div:last-child p").text(result["data"]["message"]);
+				$(".system-message").removeClass("d-none");
+				return;
+			});
+	})
 	/* Check if the URL is a Valid YouTube URL */
 	// $("#create-post-text-url").on("change", (e) => {
     //     var youtubeURL = e.target.value;
