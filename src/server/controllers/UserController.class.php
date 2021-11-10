@@ -105,11 +105,83 @@ class UserController extends Controller {
 	}
 
 	public function update(array $params) : array {
+		if (count($params) === 1) {
+			$conn = (new DatabaseConnector())->getConnection();
+			$sql = "UPDATE users SET username = '$params[0]' WHERE username='".$_SESSION['USERNAME']."'";
+			$result = mysqli_query($conn, $sql);
+			
+			mysqli_close($conn);
+			$_SESSION['USERNAME'] = $params[0];
+			return array("response" => 200);
+		} else if (count($params) === 2) {
+			$conn = (new DatabaseConnector())->getConnection();
+
+			$sql = "SELECT password, salt FROM users WHERE username='".$_SESSION['USERNAME']."' LIMIT 1";
+			$result = mysqli_query($conn, $sql);
+			
+			$row = mysqli_fetch_row($result);
+
+			$auth_password = hash('sha256', $params[0] . $row[1]);
+
+			if ($auth_password != $row[0]) {
+				mysqli_close($conn);
+				return array("response" => 400, "data" => array("message" => "Old password is incorrect."));
+			}
+
+			$characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+			$hash = '';
+			
+			for($i = 0; $i < 10; $i++)
+				$hash .= $characters[mt_rand(0, 61)];
+					
+			$password = hash('sha256', $params[1] . $hash);
+
+			$sql = "UPDATE users SET password = '$password', salt = '$hash' WHERE username='".$_SESSION['USERNAME']."'";
+			mysqli_query($conn, $sql);
+
+			mysqli_close($conn);
+			return array("response" => 200);
+		} else if (count($params) === 3) {
+			$conn = (new DatabaseConnector())->getConnection();
+
+			$sql = "SELECT password, salt FROM users WHERE username='".$_SESSION['USERNAME']."' LIMIT 1";
+			$result = mysqli_query($conn, $sql);
+			
+			$row = mysqli_fetch_row($result);
+
+			$auth_password = hash('sha256', $params[1] . $row[1]);
+
+			if ($auth_password != $row[0]) {
+				mysqli_close($conn);
+				return array("response" => 400, "data" => array("message" => "Old password is incorrect."));
+			}
+
+			$characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+			$hash = '';
+			
+			for($i = 0; $i < 10; $i++)
+				$hash .= $characters[mt_rand(0, 61)];
+					
+			$password = hash('sha256', $params[2] . $hash);
+
+			$sql = "UPDATE users SET password = '$password', salt = '$hash', username='$params[0]' WHERE username='".$_SESSION['USERNAME']."'";
+			mysqli_query($conn, $sql);
+
+			mysqli_close($conn);
+			$_SESSION['USERNAME'] = $params[0];
+			return array("response" => 200);
+		}
 		return array();
 	}
 
 	public function delete(array $params) : array {
-		return array();
+		$conn = (new DatabaseConnector())->getConnection();
+
+		$sql = "UPDATE users SET is_account_disabled = 1 WHERE username='".$_SESSION['USERNAME']."'";
+		mysqli_query($conn, $sql);
+
+		mysqli_close($conn);
+		return array("response" => 200);
 	}
 
 	public function findById(int $id) : array {
@@ -130,6 +202,18 @@ class UserController extends Controller {
 		return false;
 	}
 
+	public function isAccountDisabled(string $username) : bool {
+		$conn = (new DatabaseConnector())->getConnection();
+
+		$sql = "SELECT is_account_disabled FROM users WHERE username='$username' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		
+		$row = mysqli_fetch_row($result);
+		
+		mysqli_close($conn);
+		return $row[0];
+	}
+
 	public function findByEmail(string $email) : bool {
 		$conn = (new DatabaseConnector())->getConnection();
 
@@ -142,6 +226,18 @@ class UserController extends Controller {
 		}
 		mysqli_close($conn);
 		return false;
+	}
+
+	public function isEmailConfirmedByUserName(string $username) : bool {
+		$conn = (new DatabaseConnector())->getConnection();
+
+		$sql = "SELECT is_email_confirmed FROM users WHERE username='$username' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		
+		$row = mysqli_fetch_row($result);
+
+		mysqli_close($conn);
+		return $row[0];
 	}
 
 	public function isEmailConfirmed(string $email) : bool {

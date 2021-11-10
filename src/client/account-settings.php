@@ -68,7 +68,7 @@
 			<h3 class="mb-3 mt-4">Other</h3>
 			<div class="delete-block-content bg-white p-3">
 				<p>Once you disable your account, there is no going back. Please be certain.</p>
-				<button class="btn">Deactivate Account</button>
+				<button class="btn btn-account-delete">Deactivate Account</button>
 			</div>
 		</div>
 
