@@ -5,7 +5,8 @@ class Router {
 		"" => array("Main"),
 		"login" => array("Login"),
 		"register" => array("Register", "Register Confirm"),
-		"logout" => array("Logout")
+		"logout" => array("Logout"),
+		"t" => array("Thread", "Create Thread"),
 	);
 	protected $url = array();
 
@@ -67,6 +68,14 @@ class Router {
 					if (!$auth)
 						return PUBLIC_DIR.'/register-confirm.php';
 					return PUBLIC_DIR.'/layout/main.php';
+				}
+
+				case "t": {
+					if ($this->url[1] == "create") {
+						if (!$auth)
+							return PUBLIC_DIR.'/login.php';
+						return PUBLIC_DIR.'/thread-create.php';
+					}
 				}
 			}
 		}
