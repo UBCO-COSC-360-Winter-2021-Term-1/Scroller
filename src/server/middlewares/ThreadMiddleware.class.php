@@ -80,7 +80,12 @@ class ThreadMiddleware {
 		move_uploaded_file($threadBackground["tmp_name"], $targetThreadBackgroundFile);
 		move_uploaded_file($threadProfile["tmp_name"], $targetThreadProfileFile);
 
-		return (new ThreadController())->post($params);
+		return (new ThreadController())->post(
+			[
+			$threadTitle, $threadUrl, 
+			$threadBackgroundFile.'.'.$threadBackgroundFileType, 
+			$threadProfileFile.'.'.$threadProfileFileType
+			]);
     }
 	
 }
