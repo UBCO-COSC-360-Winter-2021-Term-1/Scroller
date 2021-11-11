@@ -8,7 +8,8 @@ class Router {
 		"logout" => array("Logout"),
 		"restore" => array("Restore", "Restore Confirm"),
 		"account" => array("Account", "Account Edit"),
-		"notifications" => array("Notifications")
+		"notifications" => array("Notifications"),
+		"admin" => array("Admin Dashboard")
 	);
 	protected $url = array();
 
@@ -42,6 +43,7 @@ class Router {
 	public function show() : string {
 
 		$auth = isset($_SESSION['IS_AUTHORIZED']);
+		$admin = isset($_SESSION['IS_ADMIN']);
 
 		if (count($this->url) == 1) {
 
@@ -79,6 +81,14 @@ class Router {
 						return PUBLIC_DIR.'/login.php';
 					session_destroy();
 					return PUBLIC_DIR.'/layout/main.php';
+				}
+				case "admin": {
+					if (!$auth)
+						return PUBLIC_DIR.'/login.php';
+					else if ($admin && !$_SESSION['IS_ADMIN'])
+						return PUBLIC_DIR.'/login.php';
+					else 
+						return PUBLIC_DIR.'/admin.php';
 				}
 				default: return PUBLIC_DIR.'/error.php';
 			}
