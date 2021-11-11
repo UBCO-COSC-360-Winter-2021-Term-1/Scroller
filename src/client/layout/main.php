@@ -1,7 +1,7 @@
 <?php 
-	$url = $_SERVER['REQUEST_URI'];
-	$url = substr($url, strpos($url, ".") + 1);
-	if ($url === "php")
+	$urlSecurity = $_SERVER['REQUEST_URI'];
+	$urlSecurity = substr($urlSecurity, strpos($urlSecurity, ".") + 1);
+	if ($urlSecurity === "php")
 		header("Location: /");
 ?>
 

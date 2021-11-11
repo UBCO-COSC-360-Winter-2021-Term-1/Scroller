@@ -7,7 +7,8 @@ class Router {
 		"register" => array("Register", "Register Confirm"),
 		"logout" => array("Logout"),
 		"restore" => array("Restore", "Restore Confirm"),
-		"account" => array("Account", "Account Edit")
+		"account" => array("Account", "Account Edit"),
+		"notifications" => array("Notifications")
 	);
 	protected $url = array();
 
@@ -64,6 +65,11 @@ class Router {
 					if (!$auth)
 						return PUBLIC_DIR.'/login.php';
 					return PUBLIC_DIR.'/account.php';
+				};
+				case "notifications": {
+					if (!$auth)
+						return PUBLIC_DIR.'/login.php';
+					return PUBLIC_DIR.'/notifications.php';
 				};
 				case "": {
 					return PUBLIC_DIR.'/layout/main.php';

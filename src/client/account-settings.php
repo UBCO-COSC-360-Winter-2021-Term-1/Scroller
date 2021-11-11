@@ -1,4 +1,9 @@
-
+<?php 
+	$urlSecurity = $_SERVER['REQUEST_URI'];
+	$urlSecurity = substr($urlSecurity, strpos($urlSecurity, ".") + 1);
+	if ($urlSecurity === "php")
+		header("Location: /");
+?>
 <main class="mt-5 w-75 mx-auto">
 	<div class="row">
 		<div class="col-md-2 menu">
