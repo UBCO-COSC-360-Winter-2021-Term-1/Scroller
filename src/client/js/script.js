@@ -248,10 +248,6 @@ $(document).ready(() => {
 	});
 
 	// Create Thread
-	/*
-	* 1. Validate title with url, if not valid, show error message
-	* 
-	*/
 	$(".btn-create-thread").click((e) =>{
 		e.preventDefault();
 		var formattedURL = $("#create-thread-name").val();
