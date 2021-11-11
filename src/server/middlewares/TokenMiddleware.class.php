@@ -1,6 +1,6 @@
 <?php
-include $_SERVER["DOCUMENT_ROOT"].'/server/helpers/Controller.class.php';
-include $_SERVER["DOCUMENT_ROOT"].'/server/controllers/TokenController.class.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/server/helpers/Controller.class.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/TokenController.class.php';
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
 	header('Content-Type: application/json; charset=utf-8');

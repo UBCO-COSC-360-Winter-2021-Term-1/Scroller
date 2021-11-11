@@ -1,7 +1,7 @@
 <?php 
-session_start();
-include $_SERVER["DOCUMENT_ROOT"].'/server/helpers/Controller.class.php';
-include $_SERVER["DOCUMENT_ROOT"].'/server/services/DatabaseConnector.class.php';
+@session_start();
+require_once $_SERVER["DOCUMENT_ROOT"].'/server/helpers/Controller.class.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/server/services/DatabaseConnector.class.php';
 
 class ThreadController extends Controller {
     public function get(array $params) : array {

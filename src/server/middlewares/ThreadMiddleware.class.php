@@ -1,5 +1,5 @@
 <?php
-include $_SERVER["DOCUMENT_ROOT"].'/server/controllers/ThreadController.class.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/ThreadController.class.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -20,6 +20,11 @@ class ThreadMiddleware {
     	
 	public function createThread(array $params) : array {
 		if (!$this->isLogged()) return array("response" => 403);
+
+		if (!(new UserController())->isEmailConfirmedByUserName($_SESSION['USERNAME'])) return array( "response" => 400, "data" => array("message" => "Email is not verified."));
+		
+		if ((new UserController())->isAccountDisabled($_SESSION['USERNAME'])) return array( "response" => 400, "data" => array("message" => "Unathorized attempt. Account is disabled."));
+		
 		$threadTitle = $params[0];
 		$threadUrl = $params[1];
 		$threadBackground = $params[2];
