@@ -27,6 +27,19 @@ class ThreadController extends Controller {
 		return array("response" => 200);
 	}
 
+	public function findThreadByUrl(string $url) : bool {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "SELECT thread_url FROM threads where thread_url = '$url' AND is_deleted != 1";
+		
+		$result = mysqli_query($conn, $sql);
+		while ($row = mysqli_fetch_assoc($result)) {
+			mysqli_close($conn);
+			return true;
+		}
+		mysqli_close($conn);
+		return false;
+	}
+
 	public function update(array $params) : array {
 		return array();
 	}

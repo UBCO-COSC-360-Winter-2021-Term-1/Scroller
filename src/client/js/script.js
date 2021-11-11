@@ -247,7 +247,7 @@ $(document).ready(() => {
 		$("#create-thread-suggest-url").text(formattedURL);
 	});
 
-	// Create Thread
+	/* Create Thread */
 	$(".btn-create-thread").click((e) =>{
 		e.preventDefault();
 		var formattedURL = $("#create-thread-name").val();
@@ -296,7 +296,9 @@ $(document).ready(() => {
 				}
 			},
 		});
-	});																						
+	});	
+	
+	/* Create Post */
 
 	/* Create Post Title */
 	$("#create-post-name").on("keyup, keydown", (e) => {
