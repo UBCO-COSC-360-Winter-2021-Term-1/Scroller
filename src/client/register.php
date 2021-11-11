@@ -1,4 +1,9 @@
-
+<?php 
+	$urlSecurity = $_SERVER['REQUEST_URI'];
+	$urlSecurity = substr($urlSecurity, strpos($urlSecurity, ".") + 1);
+	if ($urlSecurity === "php")
+		header("Location: /");
+?>
 	<main class="register-page w-75">
 		<div class="row">
 			<div class="col-md-6 bg-white">
