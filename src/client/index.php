@@ -13,6 +13,9 @@
 	
 	if ($router->getTitle() == "Account" && !isset($_SESSION['IS_AUTHORIZED']))
 		header("Location: /login");
+	
+	if ($router->getTitle() == "Create Thread" && !isset($_SESSION['IS_AUTHORIZED']))
+		header("Location: /login");
 
 	if ($router->getTitle() == "Account Edit" && !isset($_SESSION['IS_AUTHORIZED']))
 		header("Location: /login");

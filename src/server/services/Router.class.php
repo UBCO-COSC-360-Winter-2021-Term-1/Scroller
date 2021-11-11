@@ -7,6 +7,7 @@ class Router {
 		"register" => array("Register", "Register Confirm"),
 		"logout" => array("Logout"),
 		"restore" => array("Restore", "Restore Confirm"),
+		"t" => array("Thread", "Create Thread"),
 		"account" => array("Account", "Account Edit"),
 		"notifications" => array("Notifications")
 	);
@@ -94,6 +95,13 @@ class Router {
 					if (!$auth)
 						return PUBLIC_DIR.'/restore-confirm.php';
 					return PUBLIC_DIR.'/layout/main.php';
+				};
+				case "t": {
+					if ($this->url[1] == "create") {
+						if (!$auth)
+							return PUBLIC_DIR.'/login.php';
+						return PUBLIC_DIR.'/thread-create.php';
+					}
 				}
 				case "account": {
 					if (!$auth)
