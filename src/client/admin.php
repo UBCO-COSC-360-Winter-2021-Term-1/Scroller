@@ -22,13 +22,23 @@
 		<div class="col-md-10 admin-dashboard overflow-auto mx-auto mb-4">
 			<div class="row">
 				<div class="col-sm-5">
+					<?php 
+						require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/AdminController.class.php';
+				
+						$stats = (new AdminController())->getStats([]);
+
+						function numsize($size, $round=2){
+							$unit=['', 'K', 'M', 'B', 'T'];
+							return round($size/pow(1000,($i=floor(log($size,1000)))),$round).$unit[$i];
+						}
+					?>
 					<div class="admin-d-users d-flex align-items-center p-3 rounded mb-4">
 						<div class="icon">
 							<i class="fas fa-users"></i>
 						</div>
 						<div class="ms-auto desc d-block align-right">
 							<h5>Registered Users</h5>
-							<span>8,000</span>
+							<span><?php echo numsize($stats[0]); ?></span>
 						</div>
 					</div>
 
@@ -38,7 +48,7 @@
 						</div>
 						<div class="ms-auto desc d-block align-right">
 							<h5>Threads</h5>
-							<span>100,000</span>
+							<span><?php echo numsize($stats[1]); ?></span>
 						</div>
 					</div>
 
@@ -48,7 +58,7 @@
 						</div>
 						<div class="ms-auto desc d-block align-right">
 							<h5>Posts</h5>
-							<span>1M+</span>
+							<span><?php echo numsize($stats[3]); ?></span>
 						</div>
 					</div>
 
@@ -58,15 +68,15 @@
 						</div>
 						<div class="ms-auto desc d-block align-right">
 							<h5>Comments</h5>
-							<span>30,000</span>
+							<span><?php echo numsize($stats[2]); ?></span>
 						</div>
 					</div>
 
 				</div>
 				<div class="col-sm-7">
-					<h3 class="fw-bold mb-3">Trending</h3>
+					<h3 class="fw-bold mb-3">🔥 Trending</h3>
 					<div class="overflow-auto admin-d-trending">
-						<article class="rounded p-4 mb-4 bg-white">
+						<!--<article class="rounded p-4 mb-4 bg-white">
 							<div class="row">
 								<div class="col-sm-2">
 									<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">
@@ -128,7 +138,7 @@
 									</div>			
 								</div>
 							</div>
-						</article>
+						</article>-->
 					</div>
 				</div>
 			</div>
