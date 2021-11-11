@@ -7,7 +7,7 @@ class Router {
 		"register" => array("Register", "Register Confirm"),
 		"logout" => array("Logout"),
 		"restore" => array("Restore", "Restore Confirm"),
-		"t" => array("Thread", "Create Thread"),
+		"t" => array("Thread", "Create Thread", "Create Post"),
 		"account" => array("Account", "Account Edit"),
 		"notifications" => array("Notifications")
 	);
@@ -35,6 +35,10 @@ class Router {
 				else if (isset( $this->titles[$this->url[0]][1]))
 					return $this->titles[$this->url[0]][1];
 				else "Page Not Found";
+		} else if (count($this->url) == 3) {
+			if (isset($this->titles[$this->url[0]][2]))
+				return $this->titles[$this->url[0]][2];
+			else "Page Not Found";
 		}
 		
 		return 'Page Not Found';
@@ -102,6 +106,7 @@ class Router {
 							return PUBLIC_DIR.'/login.php';
 						return PUBLIC_DIR.'/thread-create.php';
 					}
+					return PUBLIC_DIR.'/layout/main.php';
 				}
 				case "account": {
 					if (!$auth)
@@ -109,6 +114,18 @@ class Router {
 					if (!is_numeric($this->url[1]))
 						return PUBLIC_DIR.'/account-settings.php';
 					return PUBLIC_DIR.'/account.php';
+				}
+				default: return PUBLIC_DIR.'/error.php';
+			}
+		} else if (count($this->url) == 3) {
+			
+			switch ($this->url[0]) {
+				case "t": {
+					if ($this->url[2] == "create-post") {
+						if (!$auth)
+							return PUBLIC_DIR.'/login.php';
+						return PUBLIC_DIR.'/post-create.php';
+					}
 				}
 				default: return PUBLIC_DIR.'/error.php';
 			}

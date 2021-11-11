@@ -14,16 +14,25 @@
 	if ($router->getTitle() == "Account" && !isset($_SESSION['IS_AUTHORIZED']))
 		header("Location: /login");
 	
+	if (count($url) == 2 && $url[1] != "create" && $url[0] == "t" && $router->getTitle() == "Create Thread") {
+		require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/ThreadController.class.php';
+		if (!(new ThreadController())->findThreadByUrl($url[1]))
+			header("Location: /");
+	}
+
 	if ($router->getTitle() == "Create Thread" && !isset($_SESSION['IS_AUTHORIZED']))
+		header("Location: /login");
+	
+	if ($router->getTitle() == "Create Post" && !isset($_SESSION['IS_AUTHORIZED']))
 		header("Location: /login");
 
 	if ($router->getTitle() == "Account Edit" && !isset($_SESSION['IS_AUTHORIZED']))
 		header("Location: /login");
 	
-		if (count($url) == 2 && $router->getTitle() == "Account Edit" && !is_numeric($url[1]) && $url[1] != "edit") {
+	if (count($url) == 2 && $router->getTitle() == "Account Edit" && !is_numeric($url[1]) && $url[1] != "edit") {
 		header("Location: /account");
 	} else if (count($url) == 2 && $router->getTitle() == "Account" && is_numeric($url[1])) {
-		include $_SERVER["DOCUMENT_ROOT"].'/server/controllers/UserController.class.php';
+		require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/UserController.class.php';
 		if (!(new UserController())->findUserById($url[1]))
 			header("Location: /account");
 	}
