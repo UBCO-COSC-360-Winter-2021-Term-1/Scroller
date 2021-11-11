@@ -6,22 +6,22 @@ header('Content-Type: application/json; charset=utf-8');
 $response = array("response" => 400, "data" => array("message" => "Fields are empty."));
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
-	var_dump($_FILES);
-	if (!empty($_POST['title']) && !empty($_POST['url']) && !empty($_POST['threadBackground']) && !empty($_POST['threadProfile'])) {
+
+	if (!empty($_POST['title']) && !empty($_POST['url']) && !empty($_FILES)) {
+		
 		$response = (new ThreadMiddleware())->createThread([$_POST['title'], $_POST['url'], $_FILES['threadBackground'], $_FILES['threadProfile']]);
 	}
 }
 
 class ThreadMiddleware {
     
-    public function isLogged() : bool {
+  public function isLogged() : bool {
 		if (isset($_SESSION['IS_AUTHORIZED'])) return true;
 		return false;
 	}
     	
 	public function createThread(array $params) : array {
 		if (!$this->isLogged()) return array("response" => 403);
-		echo "am i emptyy";
 		$threadTitle = $params[0];
 		$threadUrl = $params[1];
 		$threadBackground = $params[2];
@@ -44,8 +44,6 @@ class ThreadMiddleware {
 			return array("response" => 400, "data" => array("message" => "The thread URL must match the thread title."));
 		}
 
-		echo $toCheckURL;
-
 		if ($threadBackground['size'] == 0 || $threadProfile['size'] > (5 * 1024 * 1024)) {
 			return array("response" => 400, "data" => array("message" => "The thread background image must be less than 5MB."));
 		}
@@ -54,8 +52,8 @@ class ThreadMiddleware {
 			return array("response" => 400, "data" => array("message" => "The thread profile image must be less than 5MB."));
 		}
 
-		$targetDirThreadBackground = $_SERVER["DOCUMENT_ROOT"].'server/uploads/thread_backgrounds/';
-		$targetDirThreadProfile = $_SERVER["DOCUMENT_ROOT"].'server/uploads/thread_profile/';
+		$targetDirThreadBackground = $_SERVER["DOCUMENT_ROOT"].'/server/uploads/thread_backgrounds/';
+		$targetDirThreadProfile = $_SERVER["DOCUMENT_ROOT"].'/server/uploads/thread_profile/';
 
 		$threadBackgroundFileType = strtolower(pathinfo($threadBackground['name'], PATHINFO_EXTENSION));
 		$threadProfileFileType = strtolower(pathinfo($threadProfile['name'], PATHINFO_EXTENSION));
@@ -89,7 +87,7 @@ class ThreadMiddleware {
 		move_uploaded_file($threadProfile["tmp_name"], $targetThreadProfileFile);
 
 		return (new ThreadController())->post($params);
-    }
+  }
 	
 }
 
