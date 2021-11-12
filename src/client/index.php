@@ -11,7 +11,7 @@
 
 	if (($router->getTitle() == "Login" || $router->getTitle() == "Register" || $router->getTitle() == "Register Confirm" || $router->getTitle() == "Restore" || $router->getTitle() == "Restore Confirm") && isset($_SESSION['IS_AUTHORIZED'])) header("Location: /");
 	
-	if ($router->getTitle() == "Admin Dashboard" && !$_SESSION['IS_ADMIN'])
+	if (($router->getTitle() == "Admin Dashboard" || $router->getTitle() == "Admin") && (!isset($_SESSION['IS_ADMIN']) || !$_SESSION['IS_ADMIN']))
 		header("Location: /");
 		
 	if ($router->getTitle() == "Account" && !isset($_SESSION['IS_AUTHORIZED']))

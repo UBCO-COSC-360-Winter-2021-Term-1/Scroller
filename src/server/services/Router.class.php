@@ -10,7 +10,7 @@ class Router {
 		"t" => array("Thread", "Create Thread", "Create Post"),
 		"account" => array("Account", "Account Edit"),
 		"notifications" => array("Notifications"),
-		"admin" => array("Admin Dashboard")
+		"admin" => array("Admin Dashboard", "Admin")
 	);
 	protected $url = array();
 
@@ -21,7 +21,6 @@ class Router {
     $action = substr($action, 1);
     $url = explode("/", $action);
 		$this->url = $url;
-
 	}
 
 	public function getTitle() : string {
@@ -118,6 +117,17 @@ class Router {
 					}
 					return PUBLIC_DIR.'/layout/main.php';
 				}
+				case "admin": {
+					if (!$auth)
+						return PUBLIC_DIR.'/login.php';
+					else if ($admin && !$_SESSION['IS_ADMIN'])
+						return PUBLIC_DIR.'/login.php';
+					else if ($this->url[1] == "users")
+						return PUBLIC_DIR.'/admin-users.php';
+					else if ($this->url[1] == "threads")
+						return PUBLIC_DIR.'/admin-threads.php';
+					return PUBLIC_DIR.'/layout/main.php';
+				};
 				case "account": {
 					if (!$auth)
 						return PUBLIC_DIR.'/login.php';

@@ -221,7 +221,7 @@ $(document).ready(() => {
 		var regex = /^[a-zA-Z0-9\s]+$/;
 		
 		if (!regex.test(formattedURL) && formattedURL != '') {
-			$(".create-thread-content .system-message.error p").text("* Title shouldn't contain numbers or special characters.");
+			$(".create-thread-content .system-message.error p").text("Title shouldn't contain numbers or special characters.");
 			$(".create-thread-content .system-message.error p").removeClass("d-none");
 			
 			if (e.key != "Backspace") {
@@ -758,18 +758,224 @@ $(document).ready(() => {
 				$(".system-message").removeClass("d-none");
 				return;
 			});
-	})
-	/* Check if the URL is a Valid YouTube URL */
-	// $("#create-post-text-url").on("change", (e) => {
-    //     var youtubeURL = e.target.value;
-    //     var regex = /^(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?(?=.*v=((\w|-){11}))(?:\S+)?$/;
-    //     if (!regex.test(youtubeURL) && youtubeURL != '') {
-    //         $(".create-post-content-post-url .system-message.error p").text("* Please enter a valid YouTube URL.");
-    //         $(".create-post-content-post-url .system-message.error p").removeClass("d-none");
+	});
 
-    //         if (e.key != "Backspace") {
-    //             return e.preventDefault();
-    //         }
-    //     }
-    // });
+
+	$(".search-input-box").on("input", (e) => {
+	
+		var regex = /^[a-z0-9]+$/;
+
+		if (!regex.test($(".search-input-box").val()) && $(".search-input-box").val().length != 0) {
+			$(".admin-search-users-table").addClass("d-none");
+			return;
+		}
+
+		$(".admin-search-users-table").removeClass("d-none");
+
+		$.get(`http://${$(location).attr('host')}/server/middlewares/AdminMiddleware.class.php`, {
+			query: $(".search-input-box").val()
+		}).done(function (result) {
+			if (parseInt(result["response"]) === 200) {
+				$("tbody").html("");
+				$.each(result["data"], (_, value) => {
+					
+					$.each(value, function(_ , element) {
+
+						var result = `<tr><td scope="row">${element["id"]}</td><td><a href="/account/${element["id"]}">${element["username"]}</a></td><td>${element["regdate"]}</td><td>${element["email"]}</td>`;
+						
+						result += (element["is_email_confirmed"] == 1) ? `<td><span class="bg-success rounded p-1 text-light">Confirmed</span></td>` : `<td><span class="bg-danger rounded p-1 text-light">Not Confirmed</span></td>`;
+			
+						result += (element["is_admin"] == 1) ? "<td><span class=\"admin-user-status true p-1 rounded text-light\">Yes</span></td>" : "<td><span class=\"admin-user-status false p-1 rounded text-light\">No</span></td>";
+
+						result += (element["is_account_disabled"] == 1) ? `<td><button class="admin-users-act-block" data-id=\"${element["id"]}\" data-status=\"unblock\">Unblock</button><br>` : `<td><button class="admin-users-act-block" data-id=\"${element["id"]}\" data-status=\"block\">Block</button><br>`;
+
+						result += (element["is_admin"] == 1) ? `<button class="admin-users-act-admin" data-id=\"${element["id"]}\" data-status=\"demote-admin\">Demote Admin</button>` : `<button class="admin-users-act-admin" data-id=\"${element["id"]}\" data-status=\"new-admin\">Make Admin</button>`;
+
+						result += `</td></tr>`;
+					
+						$("tbody").append(result);
+					});
+				});
+				$(".admin-search-users-table").removeClass("d-none");
+				return;
+			} else if (parseInt(result["response"]) === 403) {
+				$("tbody").html("");
+				$(".admin-search-users-table").addClass("d-none");
+				return;
+			} else if (parseInt(result["response"]) === 400) {
+				$("tbody").html("");
+				$(".admin-search-users-table").addClass("d-none");
+				return;
+			}
+			$("tbody").html("");
+			$.each(result, (_, element) => {
+				var result = `<tr><td scope="row">${element["id"]}</td><td><a href="/account/${element["id"]}">${element["username"]}</a></td><td>${element["regdate"]}</td><td>${element["email"]}</td>`;
+					
+				result += (element["is_email_confirmed"] == 1) ? `<td><span class="bg-success rounded p-1 text-light">Confirmed</span></td>` : `<td><span class="bg-danger rounded p-1 text-light">Not Confirmed</span></td>`;
+	
+				result += (element["is_admin"] == 1) ? "<td><span class=\"admin-user-status true p-1 rounded text-light\">Yes</span></td>" : "<td><span class=\"admin-user-status false p-1 rounded text-light\">No</span></td>";
+
+				result += (!element["is_account_disabled"] == 1) ? `<td><button class="admin-users-act-block" data-id=\"${element["id"]}\" data-status=\"unblock\">Unblock</button><br>>` : `<td><button class="admin-users-act-block" data-id=\"${element["id"]}\" data-status=\"block\">Block</button><br>`;
+
+				result += (element["is_admin"] == 1) ? `<button class="admin-users-act-admin" data-id=\"${element["id"]}\" data-status=\"demote-admin\">Demote Admin</button>` : `<button class="admin-users-act-admin" data-id=\"${element["id"]}\" data-status=\"new-admin\">Make Admin</button>`;
+
+				result += `</td></tr>`;
+			
+				$("tbody").append(result)
+			});
+			$(".admin-search-users-table").removeClass("d-none");
+			return;
+		});
+	});
+
+	$(document).on("click",".admin-users-act-block", (e) => {
+		e.preventDefault();
+
+		var action = ($(".admin-users-act-block").data("status") == "block") ? true : false;
+		
+		$.post(`http://${$(location).attr('host')}/server/middlewares/AdminMiddleware.class.php`, {
+			action: action,
+			userId: $(".admin-users-act-block").data("id")
+		}).done(function (_) {
+			setTimeout(() => { window.location = "/admin/users"; }, 1000);
+			return;
+		});
+
+	});
+
+	$(document).on("click",".admin-users-act-admin", (e) => {
+		e.preventDefault();
+
+		var action = ($(".admin-users-act-admin").data("status") === "new-admin") ? true : false;
+
+		$.post(`http://${$(location).attr('host')}/server/middlewares/AdminMiddleware.class.php`, {
+			actionAdmin: action,
+			userId: $(".admin-users-act-admin").data("id")
+		}).done(function (result) {
+			setTimeout(() => { window.location = "/admin/users"; }, 1000);
+			return;
+		});
+
+	});
+
+
+	$(".search-input-thread").on("input", (e) => {
+		var regex = /^[a-zA-Z0-9\s]+$/;
+
+		if (!regex.test($(".search-input-thread").val()) && $(".search-input-thread").val().length != 0) {
+			$(".admin-search-threads-table ").addClass("d-none");
+			return;
+		}
+
+		$(".admin-search-threads-table").removeClass("d-none");
+
+		$.get(`http://${$(location).attr('host')}/server/middlewares/AdminMiddleware.class.php`, {
+			queryThread: $(".search-input-thread").val()
+		}).done(function (result) {
+			if (parseInt(result["response"]) === 200) {
+				$("tbody").html("");
+				$.each(result["data"], (_, value) => {
+					
+					$.each(value, function(_ , element) {
+						
+						var result = `<tr><td scope='row'>${element['thread_id']}</td>`;
+						result += `<td>${element['thread_title']}</td>`;
+						result += `<td><a href=\"/t/${element['thread_url']}\">/t/${element['thread_url']}/</a></td>`;
+						result += `<td>${element['created_date']}</td>`;
+						result += `<td><a href=\"/account/${element['ownerId']}\">${element['ownerName']}</a></td>`;
+						if (element['is_locked'] != 1 && element['is_deleted'] != 1)
+							result += `<td><span class=\"bg-success rounded p-1 text-light\">Active</span></td>`;
+						else if (element['is_locked'] == 1 && element['is_deleted'] != 1)
+							result += `<td><span class=\"bg-warning rounded p-1 text-light\">Hidden</span></td>`;
+						else 
+							result += `<td><span class=\"bg-danger rounded p-1 text-light\">Deleted</span></td>`;
+						
+						result += `<td>${element['members']}</td><td>`;
+
+						if (element['is_locked'] != 1 && element['is_deleted'] != 1)
+							result += `<button class=\"admin-threads-act-delete\" data-id=\"${element['thread_id']}\" data-status=\"delete\">Delete</button><br><button class=\"admin-threads-act-hide hide\" data-id=\"${element['thread_id']}\" data-status=\"hide\">Hide</button><br>`
+						else 
+							result += `<button class=\"admin-threads-act-restore\" data-id=\"${element['thread_id']}\" data-status=\"restore\">Restore</button>`
+
+						result += `</td></tr>`;
+						$("tbody").append(result);
+					});
+				});
+				$(".admin-search-threads-table").removeClass("d-none");
+				return;
+			} else if (parseInt(result["response"]) === 403) {
+				$("tbody").html("");
+				$(".admin-search-threads-table").addClass("d-none");
+				return;
+			} else if (parseInt(result["response"]) === 400) {
+				$("tbody").html("");
+				$(".admin-search-threads-table").addClass("d-none");
+				return;
+			}
+			$("tbody").html("");
+			$.each(result, (_, element) => {
+				var result = `<tr><td scope='row'>${element['thread_id']}</td>`;
+				result += `<td>${element['thread_title']}</td>`;
+				result += `<td><a href=\"/t/${element['thread_url']}\">/t/${element['thread_url']}/</a></td>`;
+				result += `<td>${element['created_date']}</td>`;
+				result += `<td><a href=\"/account/${element['ownerId']}\">${element['ownerName']}</a></td>`;
+				if (element['is_locked'] != 1 && element['is_deleted'] != 1)
+					result += `<td><span class=\"bg-success rounded p-1 text-light\">Active</span></td>`;
+				else if (element['is_locked'] == 1 && element['is_deleted'] != 1)
+					result += `<td><span class=\"bg-warning rounded p-1 text-light\">Hidden</span></td>`;
+				else 
+					result += `<td><span class=\"bg-danger rounded p-1 text-light\">Deleted</span></td>`;
+				
+				result += `<td>${element['members']}</td><td>`;
+
+				if (element['is_locked'] != 1 && element['is_deleted'] != 1)
+					result += `<button class=\"admin-threads-act-delete\" data-id=\"${element['thread_id']}\" data-status=\"delete\">Delete</button><br><button class=\"admin-threads-act-hide hide\" data-id=\"${element['thread_id']}\" data-status=\"hide\">Hide</button><br>`
+				else 
+					result += `<button class=\"admin-threads-act-restore\" data-id=\"${element['thread_id']}\" data-status=\"restore\">Restore</button>`
+
+				result += `</td></tr>`;
+				$("tbody").append(result);
+			});
+			$(".admin-search-threads-table").removeClass("d-none");
+			return;
+		});
+	});
+
+	$(document).on("click",".admin-threads-act-delete", (e) => {
+		e.preventDefault();
+	
+		console.log($(".admin-threads-act-delete").data("status"));
+		console.log($(".admin-threads-act-delete").data("id"));
+
+		$.post(`http://${$(location).attr('host')}/server/middlewares/AdminMiddleware.class.php`, {
+			actionTypeDelete: $(".admin-threads-act-delete").data("status"),
+			threadId: $(".admin-threads-act-delete").data("id")
+		}).done(function (_) {
+			setTimeout(() => { window.location = "/admin/threads"; }, 1000);
+			return;
+		});
+
+	});
+
+	$(document).on("click",".admin-threads-act-hide", (e) => {
+		e.preventDefault();
+		$.post(`http://${$(location).attr('host')}/server/middlewares/AdminMiddleware.class.php`, {
+			actionTypeHide: $(".admin-threads-act-hide").data("status"),
+			threadId: $(".admin-threads-act-hide").data("id")
+		}).done(function (_) {
+			setTimeout(() => { window.location = "/admin/threads"; }, 1000);
+			return;
+		});
+	});
+
+	$(document).on("click",".admin-threads-act-restore", (e) => {
+		e.preventDefault();
+		$.post(`http://${$(location).attr('host')}/server/middlewares/AdminMiddleware.class.php`, {
+			actionTypeRecover: $(".admin-threads-act-restore").data("status"),
+			threadId: $(".admin-threads-act-restore").data("id")
+		}).done(function (_) {
+			setTimeout(() => { window.location = "/admin/threads"; }, 1000);
+			return;
+		});
+	});
 });
