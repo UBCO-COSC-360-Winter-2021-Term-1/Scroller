@@ -1,6 +1,7 @@
 <?php 
 @session_start();
 require_once $_SERVER["DOCUMENT_ROOT"].'/server/helpers/Controller.class.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/UserController.class.php';
 require_once $_SERVER["DOCUMENT_ROOT"].'/server/services/DatabaseConnector.class.php';
 
 class ThreadController extends Controller {
@@ -45,7 +46,59 @@ class ThreadController extends Controller {
 	}
 
 	public function delete(array $params) : array {
-		return array();
+
+		$conn = (new DatabaseConnector())->getConnection();
+
+		$sql = "UPDATE threads SET is_deleted = 1 WHERE thread_id = ".$params[0]."";
+		mysqli_query($conn, $sql);
+
+		$sql = "SELECT id FROM users WHERE username = '".$_SESSION['USERNAME']."' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		
+		$admin = mysqli_fetch_row($result);
+
+		$sql = "SELECT owner_id FROM threads WHERE thread_id = ".$params[0]." LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		
+		$row = mysqli_fetch_row($result);
+
+		$sql = "INSERT INTO notifications(user_id, replied_user_id, action_type, thread_id) VALUES (".$row[0].", ".$admin[0].", 6, ".$params[0].")";
+		mysqli_query($conn, $sql);
+		mysqli_close($conn);
+		return array("response" => 200);
+	}
+
+	public function hide(array $params) : array {
+
+		$conn = (new DatabaseConnector())->getConnection();
+
+		$sql = "UPDATE threads SET is_locked = 1 WHERE thread_id = ".$params[0]."";
+		mysqli_query($conn, $sql);
+
+		$sql = "SELECT id FROM users WHERE username = '".$_SESSION['USERNAME']."' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		
+		$admin = mysqli_fetch_row($result);
+
+		$sql = "SELECT owner_id FROM threads WHERE thread_id = ".$params[0]." LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		
+		$row = mysqli_fetch_row($result);
+
+		$sql = "INSERT INTO notifications(user_id, replied_user_id, action_type, thread_id) VALUES (".$row[0].", ".$admin[0].", 6, ".$params[0].")";
+		mysqli_query($conn, $sql);
+		mysqli_close($conn);
+		return array("response" => 200);
+	}
+
+	public function restore(array $params) : array {
+		$conn = (new DatabaseConnector())->getConnection();
+
+		$sql = "UPDATE threads SET is_locked = 0, is_deleted = 0 WHERE thread_id = ".$params[0]."";
+		mysqli_query($conn, $sql);
+
+		mysqli_close($conn);
+		return array("response" => 200);
 	}
 
 	public function findById(int $id) : array {

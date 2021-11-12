@@ -9,7 +9,8 @@ class Router {
 		"restore" => array("Restore", "Restore Confirm"),
 		"t" => array("Thread", "Create Thread", "Create Post"),
 		"account" => array("Account", "Account Edit"),
-		"notifications" => array("Notifications")
+		"notifications" => array("Notifications"),
+		"admin" => array("Admin Dashboard", "Admin")
 	);
 	protected $url = array();
 
@@ -20,7 +21,6 @@ class Router {
     $action = substr($action, 1);
     $url = explode("/", $action);
 		$this->url = $url;
-
 	}
 
 	public function getTitle() : string {
@@ -47,6 +47,7 @@ class Router {
 	public function show() : string {
 
 		$auth = isset($_SESSION['IS_AUTHORIZED']);
+		$admin = isset($_SESSION['IS_ADMIN']);
 
 		if (count($this->url) == 1) {
 
@@ -85,6 +86,14 @@ class Router {
 					session_destroy();
 					return PUBLIC_DIR.'/layout/main.php';
 				}
+				case "admin": {
+					if (!$auth)
+						return PUBLIC_DIR.'/login.php';
+					else if ($admin && !$_SESSION['IS_ADMIN'])
+						return PUBLIC_DIR.'/login.php';
+					else 
+						return PUBLIC_DIR.'/admin.php';
+				}
 				default: return PUBLIC_DIR.'/error.php';
 			}
 		} else if (count($this->url) == 2) {
@@ -108,6 +117,17 @@ class Router {
 					}
 					return PUBLIC_DIR.'/layout/main.php';
 				}
+				case "admin": {
+					if (!$auth)
+						return PUBLIC_DIR.'/login.php';
+					else if ($admin && !$_SESSION['IS_ADMIN'])
+						return PUBLIC_DIR.'/login.php';
+					else if ($this->url[1] == "users")
+						return PUBLIC_DIR.'/admin-users.php';
+					else if ($this->url[1] == "threads")
+						return PUBLIC_DIR.'/admin-threads.php';
+					return PUBLIC_DIR.'/layout/main.php';
+				};
 				case "account": {
 					if (!$auth)
 						return PUBLIC_DIR.'/login.php';
