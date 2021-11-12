@@ -26,12 +26,12 @@
 			<div class="create-post-big-container col-md-9 overflow-auto mx-auto mb-4 p-4">
 				<h2>Create a Post</h2>
 				<!-- Error Thread Creating-->
-				<!--<div class="system-message bg-danger mb-3 mt-4">
+				<div class="system-message bg-danger d-none mb-3 mt-4">
 					<div class="system-message-content d-inline-flex px-3 py-3 w-100">
 						<i class="fas fa-ban text-center my-auto text-light"></i>
-						<p class="ms-3 my-auto">This thread cannot be created. <br><span class="fw-bolder">Reason: </span> Invalid title. Image Error.</p>
+						<p class="ms-3 my-auto">This post cannot be created. <br><span class="fw-bolder">Reason: </span><span class="error-message"></span></p>
 					</div>
-				</div>-->
+				</div>
 				<!-- Normal content flow -->
 				<form enctype="multipart/form-data">
 					<div class="create-post-title-container mt-4">

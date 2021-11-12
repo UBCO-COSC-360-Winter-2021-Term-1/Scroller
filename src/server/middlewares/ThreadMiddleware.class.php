@@ -1,4 +1,5 @@
 <?php
+require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/UserController.class.php';
 require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/ThreadController.class.php';
 
 header('Content-Type: application/json; charset=utf-8');
@@ -85,8 +86,7 @@ class ThreadMiddleware {
 		move_uploaded_file($threadBackground["tmp_name"], $targetThreadBackgroundFile);
 		move_uploaded_file($threadProfile["tmp_name"], $targetThreadProfileFile);
 
-		return (new ThreadController())->post(
-			[
+		return (new ThreadController())->post([
 			$threadTitle, $threadUrl, 
 			$threadBackgroundFile.'.'.$threadBackgroundFileType, 
 			$threadProfileFile.'.'.$threadProfileFileType

@@ -254,7 +254,7 @@ $(document).ready(() => {
 		var regex = /^[a-zA-Z0-9\s]+$/;
 		
 		if (!regex.test(formattedURL)) {
-			$("span.error-message").text("Title shouldn't contain numbers or special characters.");
+			$("span.error-message").text("Title shouldn't contain special characters.");
 			$(".system-message").removeClass("d-none");
 			return;
 		}
@@ -299,6 +299,84 @@ $(document).ready(() => {
 	});	
 	
 	/* Create Post */
+	$(".btn-create-post").click((e) => {
+		e.preventDefault();
+		var postTitle = $("#create-post-name").val();
+		var youtubeLink = $("#create-post-text-url").val();
+		var titleRegex = /^[a-zA-Z0-9\s]+$/;
+		var youtubeRegex = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/
+
+		// Title validation
+		if (postTitle.length == 0) {
+			$("span.error-message").text("You cannot have an empty title.");
+			$(".system-message").removeClass("d-none");
+			return;
+		} else if (postTitle.length < 5 && !titleRegex.test(postTitle)) {
+			$("span.error-message").text("The post title should be at least 5 characters and cannot contain any special characters.");
+			$(".system-message").removeClass("d-none");
+			return;
+		} else if (postTitle.length > 75 && !titleRegex.test(postTitle)) {
+			$("span.error-message").text("The post title should be less than 75 characters and cannot contain any special characters.");
+			$(".system-message").removeClass("d-none");
+			return;
+		} else if (postTitle.length < 5) {
+			$("span.error-message").text("The post title should be at least 5 characters.");
+			$(".system-message").removeClass("d-none");
+			return;
+		} else if (postTitle.length > 75) { 
+			$("span.error-message").text("The post title should be less than 75 characters.");
+			$(".system-message").removeClass("d-none");
+			return;
+		} else if (!titleRegex.test(postTitle)) {
+			$("span.error-message").text("The post title shouldn't contain special characters.");
+			$(".system-message").removeClass("d-none");
+			return;
+		} else {
+			$(".system-message").addClass("d-none");
+		}
+
+		if (youtubeLink.length > 0 && !youtubeRegex.test(youtubeLink)) {
+			$("span.error-message").text("The YouTube link is invalid.");
+			$(".system-message").removeClass("d-none");
+			return;
+		}
+
+		if ($("#create-post-image").get(0).files.length == 0 && youtubeLink.length == 0 && $("#create-post-text").val().length == 0) {
+			$("span.error-message").text("Post Body Text cannot remain empty if you are not uploading an image or a YouTube link.");
+			$(".system-message").removeClass("d-none");
+			return;
+		} 
+		
+		// get current url
+		var threadUrl = window.location.pathname.split("/")[2];
+
+		var form_data = new FormData();
+		form_data.append("postTitle", postTitle);
+		form_data.append("postBody", $("#create-post-text").val());
+		form_data.append("postImage", $("#create-post-image").get(0).files[0]);
+		form_data.append("postYoutubeLink", youtubeLink);
+		form_data.append("threadUrl", threadUrl);
+
+		$.ajax({
+			url: `http://${$(location).attr('host')}/server/middlewares/PostMiddleware.class.php`,
+			type: 'POST',
+			data: form_data,
+			contentType: false,
+			cache: false,
+			processData: false,
+			success: (result) => {
+				if (parseInt(result["response"]) === 200) {
+					$(".system-message").addClass("d-none");
+					$(location).prop('href', `/thread/${URL}`);
+				} else if (parseInt(result["response"]) === 403) {
+					$(location).prop('href', '/');
+				} else {
+					$(".system-message").removeClass("d-none");
+					$(".system-message div:last-child p").text(result["data"]["message"]);
+				}
+			},
+		});
+	});
 
 	/* Create Post Title */
 	$("#create-post-name").on("keyup, keydown", (e) => {
@@ -313,8 +391,8 @@ $(document).ready(() => {
 			}
 		}
 
-		if (postTitle.length > 15) {
-			$(".create-post-content .system-message.error p").text("* Title should contain less than 15 characters.");
+		if (postTitle.length > 75) {
+			$(".create-post-content .system-message.error p").text("* Title should contain less than 75 characters.");
 			$(".create-post-content .system-message.error p").removeClass("d-none");
 				
 			if (e.key != "Backspace") {
@@ -322,7 +400,7 @@ $(document).ready(() => {
 			}
 		}
 		
-		if (postTitle.length <= 15)
+		if (postTitle.length <= 75)
 			$(".create-post-content .system-message.error p").addClass("d-none");
 	});
 
