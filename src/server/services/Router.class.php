@@ -10,7 +10,8 @@ class Router {
 		"t" => array("Thread", "Create Thread", "Create Post"),
 		"account" => array("Account", "Account Edit"),
 		"notifications" => array("Notifications"),
-		"admin" => array("Admin Dashboard", "Admin")
+		"admin" => array("Admin Dashboard", "Admin"),
+		"search" => array("Search")
 	);
 	protected $url = array();
 
@@ -77,6 +78,9 @@ class Router {
 						return PUBLIC_DIR.'/login.php';
 					return PUBLIC_DIR.'/notifications.php';
 				};
+				case "search": {
+					return PUBLIC_DIR.'/search.php';
+				}
 				case "": {
 					return PUBLIC_DIR.'/layout/main.php';
 				}

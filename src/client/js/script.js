@@ -433,29 +433,70 @@ $(document).ready(() => {
 		}
 	});
 
-	$(".search-input-box").on("keyup", (e) => {
-		return (e.target.value.length === 0) ? $(".search-result-query").text("All") : $(".search-result-query").text(e.target.value);
+	$(".search-page-input-box").on("input", (e) => {
+
+		if (e.target.value.length === 0) {
+			$(".search-result-query").text("All");
+		} else {
+			$(".search-result-query").text(e.target.value);
+		}
+
+		if (($("#threads-option").prop("checked") || !$("#threads-option").prop("checked")) && !$("#posts-option").prop("checked") && !$("#comments-option").prop("checked")) {
+			$.ajax({
+				url: `http://${$(location).attr('host')}/server/middlewares/ThreadMiddleware.class.php`,
+				dataType: "json",
+				contentType: "application/json;charset=utf-8",
+				type: "GET",
+				data: {
+					query: e.target.value,
+					threadSearch: true
+				},
+				success: function (result) {
+					$(".search-results-block").html("");
+					if (parseInt(result["response"]) !== 400 && !jQuery.isEmptyObject(result)) {
+						$.each(result, (_, element) => {
+							var result = `<div class="search-result thread mb-3 p-3 bg-white">`;
+							var url = `http://${$(location).attr('host')}/server/uploads/thread_backgrounds/${element['thread_background_picture']}`;
+							result += `<div class="img-thread-background ${element['thread_url']}"></div>`;
+							result += `<div class="img-thread-search-cover d-flex">`;
+							result += `<img id="img-thread-profile" src="http://${$(location).attr('host')}/server/uploads/thread_profile/${element['thread_cover_picture']}" alt="thread_profile_picture" class="img-thumbnail">`;
+							result += `<div>`;
+							result += `<h3 class="">${element['thread_title']}</h3>`;
+							result += `<a href="/t/${element['thread_url']}" class="thread-sm-link">t/${element['thread_url']}</a>`;
+							result += `</div></div></div>`;
+							$(".search-results-block").append(result);
+							$(`.${element['thread_url']}`).css('backgroundImage','url("' + url +'")'); 
+						});
+						return;
+					}
+					$(".search-results-block").html(`<div class="system-message error-content text-center bg-none p-3 mt-2"><img src="http://${$(location).attr('host')}/client/img/error-empty-content.svg" alt="no content available" class="d-block no-content mx-auto"><p class="pt-5">It's a little bit lonely here. We couldn't find anything...</p></div>`);
+					return;
+				}
+			});
+		}
 	});
 
 	$("#posts-option, #threads-option, #comments-option").change((e) => {
-		if ($("#posts-option").prop("checked") && $("#threads-option").prop("checked") && $("#comments-option").prop("checked")) {
-			$(".search-result-options").text("Posts, Threads, Comments");
-		} else if ($("#posts-option").prop("checked") && !$("#threads-option").prop("checked") && !$("#comments-option").prop("checked")) {
-			$(".search-result-options").text("Posts");
-		} else if (!$("#posts-option").prop("checked") && $("#threads-option").prop("checked") && !$("#comments-option").prop("checked")) {
+		
+		if (!$("#threads-option").prop("checked") && $("#posts-option").prop("disabled") && $("#comments-option").prop("disabled")) {
+			$("#posts-option").prop("disabled", false);
+			$("#threads-option").prop("disabled", false);
+			$("#comments-option").prop("disabled", false);
+		} else if ($("#threads-option").prop("checked") && !$("#posts-option").prop("disabled") && !$("#comments-option").prop("disabled")) {
+			$("#posts-option").prop("disabled", true);
+			$("#threads-option").prop("disabled", false);
+			$("#comments-option").prop("disabled", true);
+			$("#posts-option").prop("checked", false);
+			$("#comments-option").prop("checked", false);
 			$(".search-result-options").text("Threads");
-		} else if (!$("#posts-option").prop("checked") && !$("#threads-option").prop("checked") && $("#comments-option").prop("checked")) {
+		} else if (!$("#threads-option").prop("checked") && $("#posts-option").prop("checked") && !$("#comments-option").prop("checked")) {
+			$(".search-result-options").text("Posts");
+		} else if (!$("#threads-option").prop("checked") && !$("#posts-option").prop("checked") && $("#comments-option").prop("checked")) {
 			$(".search-result-options").text("Comments");
-		} else if ($("#posts-option").prop("checked") && $("#threads-option").prop("checked") && !$("#comments-option").prop("checked")) {
-			$(".search-result-options").text("Posts, Threads");
-		} else if ($("#posts-option").prop("checked") && !$("#threads-option").prop("checked") && $("#comments-option").prop("checked")) {
+		} else if (!$("#threads-option").prop("checked") && $("#posts-option").prop("checked") && $("#comments-option").prop("checked")) {
 			$(".search-result-options").text("Posts, Comments");
-		} else if (!$("#posts-option").prop("checked") && $("#threads-option").prop("checked") && $("#comments-option").prop("checked")) {
-			$(".search-result-options").text("Threads, Comments");
-		} else if ($("#posts-option").prop("checked") && !$("#threads-option").prop("checked") && $("#comments-option").prop("checked")) {
-			$(".search-result-options").text("Posts, Comments");
-		} else {
-			$(".search-result-options").text("Posts, Threads, Comments");
+		} else if (!$("#threads-option").prop("checked") && !$("#posts-option").prop("checked") && !$("#comments-option").prop("checked")) {
+			$(".search-result-options").text("Threads");
 		}
 	});
 

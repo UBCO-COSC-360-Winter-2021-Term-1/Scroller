@@ -165,7 +165,7 @@ ul > li > a:hover{
 	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
 }
 
-.topic-threads > article > .row > .col-sm-10 > p {
+.topic-threads > article > .row > .col-sm-10 > p, .admin-d-trending > article > .row > .col-sm-10 > p {
 	color: #919191;
 	padding-top: 1.2em;
 	padding-bottom: 1.5em;
@@ -179,7 +179,8 @@ ul > li > a:hover{
 	padding-bottom: 1em;
 }
 
-.topic-threads > article > .row > .col-sm-10 > p > img, .topic-threads > article > .row > .col-sm-10 > p > iframe {
+.topic-threads > article > .row > .col-sm-10 > p > img, .topic-threads > article > .row > .col-sm-10 > p > iframe,
+.admin-d-trending > article > .row > .col-sm-10 > p > img {
 	max-width: 100%;
 }
 

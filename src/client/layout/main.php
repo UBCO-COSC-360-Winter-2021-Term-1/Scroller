@@ -15,9 +15,9 @@
 						<?php if (isset($_SESSION['IS_AUTHORIZED']) && isset($_SESSION['IS_ADMIN']) && $_SESSION['IS_ADMIN']) { ?>
 						<li><a href="/admin" class="rounded"><i class="fas fa-toolbox"></i><span class="ms-2">Admin Portal</span></a></li>
 						<?php } ?>
-						<li><a href="/search?q=all" class="rounded"><i class="far fa-compass"></i><span class="ms-2">Threads</span></a></li>
-						<li><a href="/search?q=d3li0n" class="rounded"><i class="fas fa-question"></i><span class="ms-2">My Threads</span></a></li>
-						<li><a href="/serach?q=d3li0n&comments=d3li0n" class="rounded"><i class="far fa-comment-alt"></i><span class="ms-2">My Replies</span></a></li>
+						<li><a href="/search" class="rounded"><i class="far fa-compass"></i><span class="ms-2">Threads</span></a></li>
+						<li><a href="/search" class="rounded"><i class="fas fa-question"></i><span class="ms-2">My Threads</span></a></li>
+						<li><a href="/serach" class="rounded"><i class="far fa-comment-alt"></i><span class="ms-2">My Replies</span></a></li>
 					</ul>
 				</nav>
 			</div>
@@ -25,185 +25,78 @@
 				<?php 
 					require_once SERVER_DIR.'/controllers/PostController.class.php';
 
-					$result = (new PostController())->findAll(array());
-					if ($result["response"] === 200) {
-				?>
-				
-				<?php } else { ?>
-					<div class="system-message error-content text-center bg-none p-3">
-						<img src="<?php echo "http://".$_SERVER['HTTP_HOST']; ?>/client/img/error-empty-content.svg" alt="no content available" class="d-block no-content mx-auto">
-						<p class="pt-5">It's a little bit lonely here. We couldn't find anything...</p>
-					</div>
+					$posts = (new PostController())->loadAllPosts();
+					if (count($posts) != 0) {
+						foreach ($posts as $post) {
+							echo '<article class="rounded p-4 mb-5">';
+								echo '<div class="row">';
+									echo '<div class="col-sm-2">';
+										echo '<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">';
+											if ($post['isVoted'] == 0) {
+												echo '<i class="fas fa-arrow-up my-auto"></i>';
+												echo '<span class="d-block mt-2 mb-2"><a href="#">'.$post['numOfVotes'].'</a></span>';
+												echo '<i class="fas fa-arrow-down my-auto"></i>';
+											} else if ($post['isVoted'] == 1 && $post['typeVote'] == 1) {
+												echo '<i class="fas fa-arrow-up voted-up my-auto"></i>';
+												echo '<span class="d-block mt-2 mb-2"><a href="#" class="voted-up">'.$post['numOfVotes'].'</a></span>';
+												echo '<i class="fas fa-arrow-down my-auto"></i>';
+											} else if ($post['isVoted'] == 1 && $post['typeVote'] == -1) {
+												echo '<i class="fas fa-arrow-up my-auto"></i>';
+												echo '<span class="d-block mt-2 mb-2"><a href="#" class="voted-down">'.$post['numOfVotes'].'</a></span>';
+												echo '<i class="fas fa-arrow-down voted-down my-auto"></i>';
+											}
+										echo '</div>';
+									echo '</div>';
+									echo '<div class="col-sm-10">';
+										echo '<span class="thread-name">Posted in <a href="/t/'.$post['thread_url'].'">/t/'.$post['thread_url'].'</a></span>';
+										echo '<h4><a href="/t/'.$post['thread_url'].'/'.$post['post_id'].'">'.$post['title'].'</a></h4>';
+										echo '<p>';
+											if (is_null($post['post_image']) && is_null($post['media_url']) && !is_null($post['body'])) {
+												echo $post['body'];
+											} else if (!is_null($post['post_image']) && is_null($post['media_url']) && is_null($post['body'])) {
+												echo '<img src="http://'.''.$_SERVER['HTTP_HOST'].'/server/uploads/post_images/'.$post['post_image'].'" alt="content-img">';
+											} else if (is_null($post['post_image']) && !is_null($post['media_url']) && is_null($post['body'])) {
+												echo '<iframe width="100%" height="300" src="'.$post['media_url'].'" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+											} else if (!is_null($post['post_image']) && is_null($post['media_url']) && !is_null($post['body'])) {
+												echo $post['body'];
+												echo '<img src="http://'.''.$_SERVER['HTTP_HOST'].'/server/uploads/post_images/'.$post['post_image'].'" alt="content-img" class="pt-2">';
+											} else if (is_null($post['post_image']) && !is_null($post['media_url']) && !is_null($post['body'])) {
+												echo $post['body'];
+												echo '<iframe class="pt-2" width="100%" height="300" src="'.$post['media_url'].'" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+											} else if (!is_null($post['post_image']) && !is_null($post['media_url']) && !is_null($post['body'])) {
+												echo $post['body'];
+												echo '<img src="http://'.''.$_SERVER['HTTP_HOST'].'/server/uploads/post_images/'.$post['post_image'].'" alt="content-img" class="pt-2">';
+												echo '<iframe class="pt-2" width="100%" height="300" src="'.$post['media_url'].'" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+											} else {
+												echo $post['body'];
+											}
+										echo '</p>';
+										echo '<div class="post-info-container d-flex justify-content-between">';
+											echo '<div class="profile-info-sm d-flex align-middle">';
+												echo '<img id="img-header-profile" class="img-fluid" src="http://'.''.$_SERVER['HTTP_HOST'].'/server/uploads/user_images/'.$post['avatar_url'].'" alt="'.$post['username'].'-profile-picture" />';
+												echo '<span class="ms-2">Posted by <a href="/account/'.$post['ownerId'].'">'.$post['username'].'</a></span>';
+											echo '</div>';
+											if ($post['timestamp'] / 60 < 60) {
+												echo '<span class="d-block time-post">'.ceil($post['timestamp'] / 60).'m ago</span>';
+											} else if ($post['timestamp'] / 60 >= 60 && $post['timestamp'] / 60 < 1409) {
+												echo '<span class="d-block time-post">'.ceil($post['timestamp'] / 3600).'h ago</span>';
+											} else {
+												echo '<span class="d-block time-post">'.ceil($post['timestamp'] / 86400).'d ago</span>';
+											}
+											echo '<div class="post-info-comments">';
+												echo '<a href="/t/'.$post['thread_url'].'/'.$post['post_id'].'"><i class="far fa-comment-alt"></i><span class="ms-1">'.$post['totalComments'].'</a></span>';
+											echo '</div>';
+										echo '</div>';
+									echo '</div>';
+								echo '</div>';
+							echo '</article>';
+						}
+					} else { ?>
+						<div class="system-message error-content text-center bg-none p-3">
+							<img src="<?php echo "http://".$_SERVER['HTTP_HOST']; ?>/client/img/error-empty-content.svg" alt="no content available" class="d-block no-content mx-auto">
+							<p class="pt-5">It's a little bit lonely here. We couldn't find anything...</p>
+						</div>
 				<?php } ?>
-				<!--<article class="rounded p-4 mb-5">
-					<div class="row">
-						<div class="col-sm-2">
-							<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">
-								<i class="fas fa-arrow-up my-auto"></i>
-								<span class="d-block mt-2 mb-2"><a href="#">56</a></span>
-								<i class="fas fa-arrow-down my-auto"></i>
-							</div>
-						</div>
-						<div class="col-sm-10">
-							<span class="thread-name">Posted in <a href="/t/cute-kittens">/t/ubco-directed-studies</a></span>
-							<h4><a href="/t/1">My GPA</a></h4>
-							<p>
-								<img src="https://cloudinary-res.cloudinary.com/image/upload/c_limit,w_770/f_auto,fl_lossy,q_auto/Mario_1.gif" alt="content-img">
-							</p>
-							<div class="post-info-container d-flex justify-content-between">
-								<div class="profile-info-sm d-flex align-middle">
-									<img id="img-header-profile" class="img-fluid" src="https://thumbor.forbes.com/thumbor/fit-in/416x416/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F5f47d4de7637290765bce495%2F0x0.jpg%3Fbackground%3D000000%26cropX1%3D1699%26cropX2%3D3845%26cropY1%3D559%26cropY2%3D2704" alt="d3li0n-profile-picture" />
-									<span class="ms-2">Posted by <a href="/account/1">d3li0n</a></span>
-								</div>
-								<span class="d-block time-post">52m ago</span>
-								<div class="post-info-comments">
-									<a href="/t/1"><i class="far fa-comment-alt"></i><span class="ms-1">50+</a></span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</article>
-				<article class="rounded p-4 mb-5">
-					<div class="row">
-						<div class="col-sm-2">
-							<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">
-								<i class="fas fa-arrow-up voted-up my-auto"></i>
-								<span class="d-block mt-2 mb-2"><a href="#" class="voted-up">56</a></span>
-								<i class="fas fa-arrow-down my-auto"></i>
-							</div>
-						</div>
-						<div class="col-sm-10">
-							<span class="thread-name">Posted in <a href="/t/cute-kittens">/t/ylyl-videos</a></span>
-							<h4><a href="/t/1">YLYL. Challenge #1</a></h4>
-							<p>
-								<iframe width="100%" height="300" src="https://www.youtube.com/embed/W4KpyYm_u8w" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-							</p>
-							<div class="post-info-container d-flex justify-content-between">
-								<div class="profile-info-sm d-flex align-middle">
-									<img id="img-header-profile" class="img-fluid" src="https://thumbor.forbes.com/thumbor/fit-in/416x416/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F5f47d4de7637290765bce495%2F0x0.jpg%3Fbackground%3D000000%26cropX1%3D1699%26cropX2%3D3845%26cropY1%3D559%26cropY2%3D2704" alt="d3li0n-profile-picture" />
-									<span class="ms-2">Posted by <a href="/account/1">d3li0n</a></span>
-								</div>
-								<span class="d-block time-post">52m ago</span>
-								<div class="post-info-comments">
-									<a href="/t/1"><i class="far fa-comment-alt"></i><span class="ms-1">50+</a></span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</article>
-				<article class="rounded p-4 mb-5">
-					<div class="row">
-						<div class="col-sm-2">
-							<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">
-								<i class="fas fa-arrow-up my-auto"></i>
-								<span class="d-block mt-2 mb-2"><a href="#" class="voted-down">56</a></span>
-								<i class="fas fa-arrow-down voted-down my-auto"></i>
-							</div>
-						</div>
-						<div class="col-sm-10">
-							<span class="thread-name">Posted in <a href="/t/cute-kittens">/t/cute-kittens</a></span>
-							<h4><a href="/t/1">Title goes here</a></h4>
-							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus fermentum sem quis ex porta, porta eleifend est lacinia. Quisque elementum pretium congue. Phasellus euismod nisi vitae vestibulum lacinia. Aenean at nunc mauris. Phasellus dignissim ultrices nulla ac pretium...
-							</p>
-							<div class="post-info-container d-flex justify-content-between">
-								<div class="profile-info-sm d-flex align-middle">
-									<img id="img-header-profile" class="img-fluid" src="https://thumbor.forbes.com/thumbor/fit-in/416x416/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F5f47d4de7637290765bce495%2F0x0.jpg%3Fbackground%3D000000%26cropX1%3D1699%26cropX2%3D3845%26cropY1%3D559%26cropY2%3D2704" alt="d3li0n-profile-picture" />
-									<span class="ms-2">Posted by <a href="/account/1">d3li0n</a></span>
-								</div>
-								<span class="d-block time-post">52m ago</span>
-								<div class="post-info-comments">
-									<a href="/t/1"><i class="far fa-comment-alt"></i><span class="ms-1">50+</a></span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</article>
-				<article class="rounded p-4 mb-5">
-					<div class="row">
-						<div class="col-sm-2">
-							<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">
-								<i class="fas fa-arrow-up my-auto"></i>
-								<span class="d-block mt-2 mb-2"><a href="#">56</a></span>
-								<i class="fas fa-arrow-down my-auto"></i>
-							</div>
-						</div>
-						<div class="col-sm-10">
-							<span class="thread-name">Posted in <a href="/t/cute-kittens">/t/cute-kittens</a></span>
-							<h4><a href="/t/1">Title goes here</a></h4>
-							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus fermentum sem quis ex porta, porta eleifend est lacinia. Quisque elementum pretium congue. Phasellus euismod nisi vitae vestibulum lacinia. Aenean at nunc mauris. Phasellus dignissim ultrices nulla ac pretium...
-							</p>
-							<div class="post-info-container d-flex justify-content-between">
-								<div class="profile-info-sm d-flex align-middle">
-									<img id="img-header-profile" class="img-fluid" src="https://thumbor.forbes.com/thumbor/fit-in/416x416/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F5f47d4de7637290765bce495%2F0x0.jpg%3Fbackground%3D000000%26cropX1%3D1699%26cropX2%3D3845%26cropY1%3D559%26cropY2%3D2704" alt="d3li0n-profile-picture" />
-									<span class="ms-2">Posted by <a href="/account/1">d3li0n</a></span>
-								</div>
-								<span class="d-block time-post">52m ago</span>
-								<div class="post-info-comments">
-									<a href="/t/1"><i class="far fa-comment-alt"></i><span class="ms-1">50+</a></span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</article>
-				<article class="rounded p-4 mb-5">
-					<div class="row">
-						<div class="col-sm-2">
-							<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">
-								<i class="fas fa-arrow-up voted-up my-auto"></i>
-								<span class="d-block mt-2 mb-2"><a href="#" class="voted-up">56</a></span>
-								<i class="fas fa-arrow-down my-auto"></i>
-							</div>
-						</div>
-						<div class="col-sm-10">
-							<span class="thread-name">Posted in <a href="/t/cute-kittens">/t/cute-kittens</a></span>
-							<h4><a href="/t/1">Title goes here</a></h4>
-							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus fermentum sem quis ex porta, porta eleifend est lacinia. Quisque elementum pretium congue. Phasellus euismod nisi vitae vestibulum lacinia. Aenean at nunc mauris. Phasellus dignissim ultrices nulla ac pretium...
-							</p>
-							<div class="post-info-container d-flex justify-content-between">
-								<div class="profile-info-sm d-flex align-middle">
-									<img id="img-header-profile" class="img-fluid" src="https://thumbor.forbes.com/thumbor/fit-in/416x416/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F5f47d4de7637290765bce495%2F0x0.jpg%3Fbackground%3D000000%26cropX1%3D1699%26cropX2%3D3845%26cropY1%3D559%26cropY2%3D2704" alt="d3li0n-profile-picture" />
-									<span class="ms-2">Posted by <a href="/account/1">d3li0n</a></span>
-								</div>
-								<span class="d-block time-post">52m ago</span>
-								<div class="post-info-comments">
-									<a href="/t/1"><i class="far fa-comment-alt"></i><span class="ms-1">50+</a></span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</article>
-				<article class="rounded p-4 mb-5">
-					<div class="row">
-						<div class="col-sm-2">
-							<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">
-								<i class="fas fa-arrow-up my-auto"></i>
-								<span class="d-block mt-2 mb-2"><a href="#" class="voted-down">56</a></span>
-								<i class="fas fa-arrow-down voted-down my-auto"></i>
-							</div>
-						</div>
-						<div class="col-sm-10">
-							<span class="thread-name">Posted in <a href="/t/cute-kittens">/t/cute-kittens</a></span>
-							<h4><a href="/t/1">Title goes here</a></h4>
-							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus fermentum sem quis ex porta, porta eleifend est lacinia. Quisque elementum pretium congue. Phasellus euismod nisi vitae vestibulum lacinia. Aenean at nunc mauris. Phasellus dignissim ultrices nulla ac pretium...
-							</p>
-							<div class="post-info-container d-flex justify-content-between">
-								<div class="profile-info-sm d-flex align-middle">
-									<img id="img-header-profile" class="img-fluid" src="https://thumbor.forbes.com/thumbor/fit-in/416x416/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F5f47d4de7637290765bce495%2F0x0.jpg%3Fbackground%3D000000%26cropX1%3D1699%26cropX2%3D3845%26cropY1%3D559%26cropY2%3D2704" alt="d3li0n-profile-picture" />
-									<span class="ms-2">Posted by <a href="/account/1">d3li0n</a></span>
-								</div>
-								<span class="d-block time-post">52m ago</span>
-								<div class="post-info-comments">
-									<a href="/t/1"><i class="far fa-comment-alt"></i><span class="ms-1">50+</a></span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</article>-->
-				
 			</div>
 			<div class="col-md-3">
 				<div class="post-create-block text-center rounded">

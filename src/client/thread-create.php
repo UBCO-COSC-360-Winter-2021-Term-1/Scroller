@@ -14,12 +14,12 @@
 						<li><a href="/" class="rounded"><i class="fas fa-home"></i><span class="ms-2">Home</span></a></li>
 
 						<?php if (isset($_SESSION['IS_AUTHORIZED']) && isset($_SESSION['IS_ADMIN']) && $_SESSION['IS_ADMIN']) { ?>
-                        <li><a href="/admin" class="rounded"><i class="fas fa-toolbox"></i><span class="ms-2">Admin Portal</span></a></li>
-                        <?php } ?>
+						<li><a href="/admin" class="rounded"><i class="fas fa-toolbox"></i><span class="ms-2">Admin Portal</span></a></li>
+						<?php } ?>
 						
-						<li><a href="/search?q=all" class="active rounded"><i class="far fa-compass"></i><span class="ms-2">Threads</span></a></li>
-						<li><a href="/search?q=d3li0n" class="rounded"><i class="fas fa-question"></i><span class="ms-2">My Threads</span></a></li>
-						<li><a href="/serach?q=d3li0n&comments=d3li0n" class="rounded"><i class="far fa-comment-alt"></i><span class="ms-2">My Replies</span></a></li>
+						<li><a href="/search" class="active rounded"><i class="far fa-compass"></i><span class="ms-2">Threads</span></a></li>
+						<li><a href="/search" class="rounded"><i class="fas fa-question"></i><span class="ms-2">My Threads</span></a></li>
+						<li><a href="/serach" class="rounded"><i class="far fa-comment-alt"></i><span class="ms-2">My Replies</span></a></li>
 					</ul>
 				</nav>
 			</div>

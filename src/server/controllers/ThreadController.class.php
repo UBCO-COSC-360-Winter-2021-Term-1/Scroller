@@ -5,8 +5,47 @@ require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/UserController.class
 require_once $_SERVER["DOCUMENT_ROOT"].'/server/services/DatabaseConnector.class.php';
 
 class ThreadController extends Controller {
-    public function get(array $params) : array {
+  public function get(array $params) : array {
 		return array();
+	}
+
+	public function getAllThreads() : array {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "SELECT threads.thread_title, threads.thread_url, threads.background_picture, threads.thread_picture FROM threads";
+
+		$response = mysqli_query($conn, $sql);
+
+		$result = array();
+
+		while($row = mysqli_fetch_assoc($response)) {
+			array_push($result, [
+				"thread_title" => $row['thread_title'],
+				"thread_url" => $row['thread_url'],
+				"thread_background_picture" => $row['background_picture'],
+				"thread_cover_picture" => $row['thread_picture']
+			]);
+		}
+		mysqli_close($conn);
+		return $result;
+	}
+
+	public function getThreadByQuery(string $query) : array {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "SELECT threads.thread_title, threads.thread_url, threads.background_picture, threads.thread_picture FROM threads WHERE thread_title LIKE '%$query%' OR thread_url LIKE '%$query%'";
+		$response = mysqli_query($conn, $sql);
+
+		$result = array();
+
+		while($row = mysqli_fetch_assoc($response)) {
+			array_push($result, [
+				"thread_title" => $row['thread_title'],
+				"thread_url" => $row['thread_url'],
+				"thread_background_picture" => $row['background_picture'],
+				"thread_cover_picture" => $row['thread_picture']
+			]);
+		}
+		mysqli_close($conn);
+		return $result;
 	}
 
 	public function post(array $params) : array {

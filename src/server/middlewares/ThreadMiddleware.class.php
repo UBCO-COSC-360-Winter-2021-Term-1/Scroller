@@ -10,6 +10,12 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 	if (!empty($_POST['title']) && !empty($_POST['url']) && !empty($_FILES)) {
 		$response = (new ThreadMiddleware())->createThread([$_POST['title'], $_POST['url'], $_FILES['threadBackground'], $_FILES['threadProfile']]);
 	}
+} else if ($_SERVER['REQUEST_METHOD'] === "GET") {
+	if (!empty($_GET['query']) && isset($_GET['threadSearch']) && (bool) $_GET['threadSearch']) {
+		$response = (new ThreadMiddleware())->searchThreads([$_GET['query']]);
+	} else if (empty($_GET['query'])) {
+		$response =(new ThreadController())->getAllThreads();
+	}
 }
 
 class ThreadMiddleware {
@@ -18,7 +24,18 @@ class ThreadMiddleware {
 		if (isset($_SESSION['IS_AUTHORIZED'])) return true;
 		return false;
 	}
-    	
+	
+	public function searchThreads(array $params) : array {
+		if (!is_string($params[0])) return array( "response" => 400, "data" => array("message" => "Invalid information"));
+
+		$query = filter_var($params[0], FILTER_SANITIZE_STRING);
+		$query = trim($query);
+		$query = stripslashes($query);
+		$query = htmlspecialchars($query);
+		
+		return (new ThreadController())->getThreadByQuery($query);
+	}
+
 	public function createThread(array $params) : array {
 		if (!$this->isLogged()) return array("response" => 403);
 
