@@ -287,7 +287,7 @@ $(document).ready(() => {
 			success: (result) => {
 				if (parseInt(result["response"]) === 200) {
 					$(".system-message").addClass("d-none");
-					$(location).prop('href', `/thread/${URL}`);
+					$(location).prop('href', `/t/${URL}`);
 				} else if (parseInt(result["response"]) === 403) {
 					$(location).prop('href', '/');
 				} else {
@@ -367,7 +367,7 @@ $(document).ready(() => {
 			success: (result) => {
 				if (parseInt(result["response"]) === 200) {
 					$(".system-message").addClass("d-none");
-					$(location).prop('href', `/thread/${URL}`);
+					$(location).prop('href', `/t/${threadUrl}`);
 				} else if (parseInt(result["response"]) === 403) {
 					$(location).prop('href', '/');
 				} else {
