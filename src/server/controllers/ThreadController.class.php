@@ -9,6 +9,24 @@ class ThreadController extends Controller {
 		return array();
 	}
 
+	public function getTopThreads() : array {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "SELECT threads.thread_url, COUNT(posts.post_id) as top FROM `threads` LEFT JOIN posts ON threads.thread_id = posts.thread_id GROUP BY threads.thread_id ORDER BY top DESC LIMIT 5";
+		$response = mysqli_query($conn, $sql);
+
+		$result = array();
+
+		while($row = mysqli_fetch_assoc($response)) {
+			array_push($result, [
+		
+				"thread_url" => $row['thread_url'],
+				"total_posts" => $row['top'] 
+			]);
+		}
+		mysqli_close($conn);
+		return $result;
+	}
+
 	public function getAllThreads() : array {
 		$conn = (new DatabaseConnector())->getConnection();
 		$sql = "SELECT threads.thread_title, threads.thread_url, threads.background_picture, threads.thread_picture FROM threads";

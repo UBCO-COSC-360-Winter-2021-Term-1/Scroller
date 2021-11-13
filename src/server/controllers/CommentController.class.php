@@ -10,60 +10,7 @@ class PostController extends Controller {
 	}
 
 	public function post(array $params) : array {
-		$result = array("response" => 400, "data" => array("message" => "Cannot create thread."));
-		$conn = (new DatabaseConnector())->getConnection();
-		
-		$threadUrl = end($params);
-		$thread_id_query = "SELECT thread_id from threads WHERE thread_url = '$threadUrl' AND is_deleted != 1";
-		$result = mysqli_query($conn, $thread_id_query);
-		while ($row = mysqli_fetch_assoc($result)) {
-			$thread_id = $row["thread_id"];
-		}
-		
-		$get_user_query = "SELECT id FROM users WHERE username = '".$_SESSION["USERNAME"]."' LIMIT 1";
-		$result = mysqli_query($conn, $get_user_query);
-		while ($row = mysqli_fetch_assoc($result)) {
-			$user_id = $row["id"];
-		}
-
-		$caseNumber = (int)$params[0];
-        switch ($caseNumber) {
-            case 1:
-				$sql = "INSERT INTO posts(user_id, thread_id, title, body, post_image, media_url) 
-						VALUES ($user_id, $thread_id, '".$params[1]."', '".$params[2]."', '".$params[3]."', '".$params[4]."')";
-				mysqli_query($conn, $sql);
-				break;
-
-            case 2:
-                $sql = "INSERT INTO posts(user_id, thread_id, title, body, post_image) 
-						VALUES ($user_id, $thread_id, '".$params[1]."', '".$params[2]."', '".$params[3]."')";
-				mysqli_query($conn, $sql);
-                break;
-            case 3:
-                $sql = "INSERT INTO posts(user_id, thread_id, title, body, media_url) 
-						VALUES ($user_id, $thread_id, '".$params[1]."', '".$params[2]."', '".$params[3]."')";
-				mysqli_query($conn, $sql);
-                break;
-            case 4:
-                $sql = "INSERT INTO posts(user_id, thread_id, title, post_image, media_url) 
-						VALUES ($user_id, $thread_id, '".$params[1]."', '".$params[2]."', '".$params[3]."')";
-				mysqli_query($conn, $sql);
-                break;
-            case 5:
-				$sql = "INSERT INTO posts(user_id, thread_id, title, body) VALUES ($user_id, $thread_id, '".$params[1]."', '".$params[2]."')";
-				mysqli_query($conn, $sql);
-				break;
-            case 6:
-				$sql = "INSERT INTO posts(user_id, thread_id, title, post_image) VALUES ($user_id, $thread_id, '".$params[1]."', '".$params[2]."')";
-				mysqli_query($conn, $sql);
-				break;
-            case 7:
-				$sql = "INSERT INTO posts(user_id, thread_id, title, media_url) VALUES ($user_id, $thread_id, '".$params[1]."', '".$params[2]."')";
-				mysqli_query($conn, $sql);
-				break;
-		}
-		mysqli_close($conn);
-		return array("response" => 200);
+		return array();
 	}
 
 	public function update(array $params) : array {
@@ -78,18 +25,30 @@ class PostController extends Controller {
 		return array();
 	}
 
-	public function getPostByQuery(string $query) : array {
+	public function getCommentByQuery(string $query) : array {
 		$conn = (new DatabaseConnector())->getConnection();
 		if(!isset($_SESSION['USERNAME'])) {
 			$conn = (new DatabaseConnector())->getConnection();
 
-			$sql = "SELECT posts.post_id, posts.title, posts.body, posts.post_image, posts.media_url, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(posts.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, threads.thread_url, COUNT(comments.post_id) as totalComments,
+			/*
+			SELECT comments.comment_id, comments.body, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(comments.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url,
+			CASE WHEN EXISTS(SELECT comments_votes.user_id FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id) THEN 1 ELSE 0 END as voted,
+			IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
+			(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
+			FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id LEFT JOIN comments ON posts.post_id = comments.post_id LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
+			WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 AND (posts.title LIKE '%$query%' OR posts.body LIKE '%$query%')
+			GROUP BY posts.post_id ORDER BY numOfVotes DESC
+			*/
+
+
+			
+			/* $sql = "SELECT posts.post_id, posts.title, posts.body, posts.post_image, posts.media_url, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(posts.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, threads.thread_url, COUNT(comments.post_id) as totalComments,
 			CASE WHEN EXISTS(SELECT post_votes.user_id FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id) THEN 1 ELSE 0 END as voted,
 			IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
 			(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
 			FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id LEFT JOIN comments ON posts.post_id = comments.post_id LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
 			WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 AND (posts.title LIKE '%$query%' OR posts.body LIKE '%$query%')
-			GROUP BY posts.post_id ORDER BY numOfVotes DESC";
+			GROUP BY posts.post_id ORDER BY numOfVotes DESC";*/
 			$response = mysqli_query($conn, $sql);
 
 			$result = array();
@@ -154,7 +113,8 @@ class PostController extends Controller {
 		mysqli_close($conn);
 		return $result;
 	}
-	public function loadAllPosts() : array {
+
+	public function loadAllComments() : array {
 		$conn = (new DatabaseConnector())->getConnection();
 
 		if (!isset($_SESSION['USERNAME'])) {
@@ -231,19 +191,7 @@ class PostController extends Controller {
 		return $result;
 	}
 	public function findAll(array $params) : array {
-
-		$result = array(
-			"response" => 400,
-			"data" => array()
-		);
-
-		if ($_SERVER['REQUEST_METHOD'] == "GET") {
-
-			$result["response"] = 200;
-			return $result;
-		}
-
-		return $result;
+		return array();
 	}
 }
 ?>

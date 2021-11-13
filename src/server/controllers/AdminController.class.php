@@ -22,9 +22,9 @@
 			return $result;
 		}
 
-		public function getAllThreads() : array {
+		public function getAllThreads(array $params) : array {
 			$conn = (new DatabaseConnector())->getConnection();
-			$sql = "SELECT threads.thread_id, threads.thread_title, threads.thread_url, DATE_FORMAT((threads.created_at), '%M %D, %Y') as created_date, users.id as ownerId, users.username as ownerName, threads.is_locked, threads.is_deleted, COUNT(user_threads.user_id) as members FROM `threads` JOIN users ON threads.owner_id = users.id JOIN user_threads ON user_threads.thread_id = threads.thread_id GROUP BY threads.thread_id ORDER BY threads.thread_id";
+			$sql = "SELECT threads.thread_id, threads.thread_title, threads.thread_url, DATE_FORMAT((threads.created_at), '%M %D, %Y') as created_date, users.id as ownerId, users.username as ownerName, threads.is_locked, threads.is_deleted, COUNT(user_threads.user_id) as members FROM `threads` JOIN users ON threads.owner_id = users.id LEFT JOIN user_threads ON user_threads.thread_id = threads.thread_id GROUP BY threads.thread_id ORDER BY threads.thread_id";
 
 			$response = mysqli_query($conn, $sql);
 			$result = array();
