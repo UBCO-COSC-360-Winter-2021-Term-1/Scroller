@@ -378,6 +378,20 @@ $(document).ready(() => {
 		});
 	});
 
+	/* Join Thread */
+
+	$(".join-thread-button").click((e) => {
+		e.preventDefault();
+		var threadUrl = window.location.pathname.split("/")[1];
+		$.post(`http://${$(location).attr('host')}/server/middlewares/ThreadMiddleware.class.php`, {
+			dataStatus: $(".join-thread-button").data("status"),
+			threadUrl: threadUrl
+		}).done(function (_) {
+			setTimeout(() => { window.location = "/t/" + threadUrl; }, 1000);
+			return;
+		});
+	});
+
 	/* Create Post Title */
 	$("#create-post-name").on("keyup, keydown", (e) => {
 		var postTitle = e.target.value;
@@ -1063,9 +1077,6 @@ $(document).ready(() => {
 	$(document).on("click",".admin-threads-act-delete", (e) => {
 		e.preventDefault();
 	
-		console.log($(".admin-threads-act-delete").data("status"));
-		console.log($(".admin-threads-act-delete").data("id"));
-
 		$.post(`http://${$(location).attr('host')}/server/middlewares/AdminMiddleware.class.php`, {
 			actionTypeDelete: $(".admin-threads-act-delete").data("status"),
 			threadId: $(".admin-threads-act-delete").data("id")

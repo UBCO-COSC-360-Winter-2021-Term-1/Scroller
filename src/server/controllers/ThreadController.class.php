@@ -69,7 +69,7 @@ class ThreadController extends Controller {
 
 	public function findThreadByUrl(string $url) : bool {
 		$conn = (new DatabaseConnector())->getConnection();
-		$sql = "SELECT thread_url FROM threads where thread_url = '$url' AND is_deleted != 1";
+		$sql = "SELECT thread_url FROM threads where thread_url = '$url' AND is_deleted = 0";
 		
 		$result = mysqli_query($conn, $sql);
 		while ($row = mysqli_fetch_assoc($result)) {
@@ -147,6 +147,34 @@ class ThreadController extends Controller {
 	public function findAll(array $params) : array {
 
 		return array();
+	}
+
+	public function getTitle(string $params): string {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "SELECT thread_title FROM threads WHERE thread_url = '$params' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		$title = mysqli_fetch_row($result);
+		return $title[0];
+	}
+
+	public function getThread(string $threadUrl) {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "SELECT threads.thread_title, threads.background_picture, threads.thread_picture, threads.is_locked, CASE WHEN EXISTS(SELECT user_threads.user_id FROM user_threads JOIN users ON user_threads.user_id = users.id WHERE users.username = '".$_SESSION["USERNAME"]."' AND user_threads.thread_id = threads.thread_id) THEN 1 ELSE 0 END as isSubscribed FROM threads WHERE threads.thread_url = '$threadUrl'";
+		$response = mysqli_query($conn, $sql);
+
+		$result = array();
+
+		while($row = mysqli_fetch_assoc($response)) {
+			array_push($result, [
+				"thread_title" => $row['thread_title'],
+				"thread_background" => $row['background_picture'],
+				"thread_profile" => $row['thread_picture'],
+				"is_locked" => $row['is_locked'],
+				"isSubscribed" => $row['isSubscribed']
+			]);
+		}
+		mysqli_close($conn);
+		return $result;
 	}
 }
 ?>

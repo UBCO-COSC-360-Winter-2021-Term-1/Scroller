@@ -50,7 +50,7 @@
 		$token = (new TokenMiddleware())->validateToken([$_GET['token'], 1]);
 		if ($token["response"] == 400) header("Location: /");
 	} else if (!empty($_GET['token']) && $router->getTitle() == "Restore Confirm") {
-		include $_SERVER["DOCUMENT_ROOT"].'/server/middlewares/TokenMiddleware.class.php';
+		require_once $_SERVER["DOCUMENT_ROOT"].'/server/middlewares/TokenMiddleware.class.php';
 		
 		$token = (new TokenMiddleware())->validateToken([$_GET['token'], 0]);
 		if ($token["response"] == 400) header("Location: /");
@@ -63,7 +63,15 @@
 <html lang="en">
 <head>
 	<?php require_once $_SERVER["DOCUMENT_ROOT"].'/server/modules/header.php'; ?>
-	<title>Scroller | <?php echo $router->getTitle(); ?></title>
+	<title>Scroller | 
+		<?php 
+			if (count($url) == 2 && $url[0] == "t" && $url[1] != "create") {
+				require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/ThreadController.class.php';
+				echo (new ThreadController())->getTitle($url[1]);
+			} else {
+				echo $router->getTitle(); 
+			}
+		?></title>
 </head>
 <body>
 	<?php if ($router->getTitle() != "Login" && $router->getTitle() != "Register" && $router->getTitle() != "Register Confirm" && $router->getTitle() != "Restore" && $router->getTitle() != "Restore Confirm") { ?>

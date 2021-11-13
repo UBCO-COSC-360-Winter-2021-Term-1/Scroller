@@ -1,69 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!-- Bootstrap CDN -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-	<!-- Fonts -->
-	<link rel="stylesheet" href="css/fonts.css">
-	<!-- Custom CSS -->
-	<link rel="stylesheet" href="css/style.css">
+<?php 																						
+	$urlSecurity = $_SERVER['REQUEST_URI'];
+	$urlSecurity = substr($urlSecurity, strpos($urlSecurity, ".") + 1);
+	if ($urlSecurity === "php")
+		header("Location: /");
 
-	<script src="https://kit.fontawesome.com/104f28ad82.js" crossorigin="anonymous"></script>
-	<title>Scroller</title>
-</head>
-<body>
-	<header>
-		<nav class="d-flex justify-content-center justify-content-md-between w-75 mx-auto py-3">
-			<a href="/" class="d-flex align-items-center brand me-3">
-				<i class="fas fa-mouse"></i><span class="ms-2">Scroller</span>
-			</a>
-	
-			<div class="text-end ms-3">
-				<ul>
-					<li class="me-3">
-						<a href="/notifications" class="header-icon"><i class="far fa-bell"></i></a>
-					</li>
-					<li>
-						<a href="/account" class="header-icon d-inline-flex">
-							<img class="img-fluid img-header-profile" src="https://thumbor.forbes.com/thumbor/fit-in/416x416/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F5f47d4de7637290765bce495%2F0x0.jpg%3Fbackground%3D000000%26cropX1%3D1699%26cropX2%3D3845%26cropY1%3D559%26cropY2%3D2704" alt="d3li0n-profile-picture" />
-							<span class="ms-2">d3li0n</span>
-						</a>
-					</li>
-					<li class="ms-3">
-						<a href="/logout" class="header-icon">
-							<i class="fas fa-sign-out-alt"></i>
-						</a>
-					</li>
-					<!--
-					<li>
-						<a href="/account" class="header-icon active-sign-in-header">
-							Sign in
-						</a>
-					</li>
-					-->
-				</ul> 
-			</div>
-		</nav>
-	</header>
+	require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/ThreadController.class.php';
+	$threadInfo = (new ThreadController())->getThread($url[1]);
+?>
+
   <div class="thread-navbar mb-5">
         <div class="img-thread-background" 
-			style="background-image: url('https://i.imgur.com/pj0h7aO.jpg');">
+		style="background-image: url('<?php echo 'http://'.''.$_SERVER['HTTP_HOST'].'/server/uploads/thread_backgrounds/'.$threadInfo[0]['thread_background'];?>">
 		</div>
-        <div class="bg-light">
+        <div class="bg-light">																
             <div class="w-75 mx-auto">
                 <div class="d-inline-flex justify-content-center w-50">
-                    <img id="img-thread-profile" src="https://wallpapercave.com/wp/wp5165982.jpg" 
-					alt="thread_profile_picture" class="img-thumbnail me-2">
+                    <img id="img-thread-profile" src="<?php echo 'http://'.''.$_SERVER['HTTP_HOST'].'/server/uploads/thread_profile/'.$threadInfo[0]['thread_profile'];?>" alt="thread_profile_picture" class="img-thumbnail me-2">
 					<div class="py-2">
-						<h3 class="">Animemes</h3>
-						<a href="" class="thread-sm-link">t/Animemes</a>
+						<h3 class=""><?php echo $threadInfo[0]["thread_title"]?></h3>
+						<a href="" class="thread-sm-link"><?php echo "t/" . $url[1] ?></a>
 					</div>
 					<div class="py-2 ms-3">
-						<button type="button" class="join-thread-button">Join</button>
+						<button type="button" class="join-thread-button" data-status="<?php echo $threadInfo[0]["isSubscribed"];?>">
+							<?php 
+								if ($threadInfo[0]["isSubscribed"] == 0) {
+									echo "Join";
+								} else {
+									echo "Leave";
+								}
+							?>
+						</button>
 					</div>
 				</div>
 			</div>
@@ -77,7 +43,9 @@
 				<nav class="mt-3">
 					<ul>
 						<li><a href="/" class="rounded"><i class="fas fa-home"></i><span class="ms-2">Home</span></a></li>
+						<?php if (isset($_SESSION['IS_AUTHORIZED']) && isset($_SESSION['IS_ADMIN']) && $_SESSION['IS_ADMIN']) { ?>
 						<li><a href="/admin" class="rounded"><i class="fas fa-toolbox"></i><span class="ms-2">Admin Portal</span></a></li>
+						<?php } ?>
 						<li><a href="/search" class="active rounded"><i class="far fa-compass"></i><span class="ms-2">Threads</span></a></li>
 						<li><a href="/search" class="rounded"><i class="fas fa-question"></i><span class="ms-2">My Threads</span></a></li>
 						<li><a href="/serach" class="rounded"><i class="far fa-comment-alt"></i><span class="ms-2">My Replies</span></a></li>
@@ -86,12 +54,19 @@
 			</div>
 			<div class="col-md-6 topic-threads overflow-auto mx-auto mb-4">
 				<!-- Disabled Thread -->
+				<?php 
+					if ($threadInfo[0]["is_locked"] == 1) {
+							
+
+					
+				?>
 				<div class="system-message bg-danger mb-3">
 					<div class="system-message-content d-inline-flex px-3 py-3 w-100">
 						<i class="fas fa-ban text-center my-auto text-light"></i>
 						<p class="ms-3 my-auto">This thread was disabled by Administrator.<br><span class="fw-bolder">Reason:</span> Violation of Community Guidelines.</p>
 					</div>
 				</div>
+				<?php } ?>
 				<!-- Normal Content-->
 				<div class="d-inline-flex flex-fill bg-white mb-4 w-100 p-3 rounded">
 					<div class="w-50">
@@ -229,10 +204,11 @@
 				</article>
 			</div>
 			<div class="col-md-3">
+				<?php if ($threadInfo[0]["is_locked"] == 0){?>
 				<div class="post-create-block text-center rounded">
 					<a href="/t/create"><i class="fas fa-plus"></i><span class="ms-3">Start a New Topic</span></a>
 				</div>
-
+				<?php } ?>
 				<div class="top-threads-container mt-4 mb-4 rounded px-3 py-3">
 					<h5>Top Users</h5>
 					<div class="top-thread-container">
@@ -314,5 +290,3 @@
 			</div>
 		</div>
 	</main>
-</body>
-</html>
