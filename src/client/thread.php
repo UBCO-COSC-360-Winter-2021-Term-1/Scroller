@@ -56,9 +56,6 @@
 				<!-- Disabled Thread -->
 				<?php 
 					if ($threadInfo[0]["is_locked"] == 1) {
-							
-
-					
 				?>
 				<div class="system-message bg-danger mb-3">
 					<div class="system-message-content d-inline-flex px-3 py-3 w-100">
@@ -90,7 +87,7 @@
 								<i class="fas fa-arrow-down voted-down"></i>
 							</div>
 						</div>
-						<div class="col-sm-10">
+						<div class="col-sm-10">												
 							<h4><a href="/t/1">What is your Favorite Anime?</a></h4>
 							<p class="no-border">
 								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus fermentum sem quis ex porta, porta eleifend est lacinia. Quisque elementum pretium congue. Phasellus euismod nisi vitae vestibulum lacinia. Aenean at nunc mauris. Phasellus dignissim ultrices nulla ac pretium...

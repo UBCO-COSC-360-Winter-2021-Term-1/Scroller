@@ -9,14 +9,19 @@ $response = array("response" => 400, "data" => array("message" => "Fields are em
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
 	if (!empty($_POST['title']) && !empty($_POST['url']) && !empty($_FILES)) {
 		$response = (new ThreadMiddleware())->createThread([$_POST['title'], $_POST['url'], $_FILES['threadBackground'], $_FILES['threadProfile']]);
+	} else if (!empty($_POST['threadUrl']) && ($_POST['dataStatus']) == 0 || ($_POST['dataStatus']) == 1) {
+		$response = (new ThreadMiddleware())->updateUserThreads([$_POST['threadUrl'], $_POST['dataStatus']]);
 	}
-} else if ($_SERVER['REQUEST_METHOD'] === "GET") {
+} 
+
+if ($_SERVER['REQUEST_METHOD'] === "GET") {
 	if (!empty($_GET['query']) && isset($_GET['threadSearch']) && (bool) $_GET['threadSearch']) {
 		$response = (new ThreadMiddleware())->searchThreads([$_GET['query']]);
 	} else if (empty($_GET['query'])) {
 		$response =(new ThreadController())->getAllThreads();
 	}
 }
+
 
 class ThreadMiddleware {
     
@@ -109,6 +114,16 @@ class ThreadMiddleware {
 			$threadProfileFile.'.'.$threadProfileFileType
 			]);
     }
+
+	public function updateUserThreads(array $params) {
+		if (!$this->isLogged()) return array("response" => 403);
+
+		if (!(new UserController())->isEmailConfirmedByUserName($_SESSION['USERNAME'])) return array( "response" => 400, "data" => array("message" => "Email is not verified."));
+		
+		if ((new UserController())->isAccountDisabled($_SESSION['USERNAME'])) return array( "response" => 400, "data" => array("message" => "Unathorized attempt. Account is disabled."));
+		
+		return (new ThreadController())->userThreadsOperations([$params[0], $params[1]]);
+	}
 	
 }
 

@@ -176,5 +176,34 @@ class ThreadController extends Controller {
 		mysqli_close($conn);
 		return $result;
 	}
+
+	public function userThreadsOperations(array $params): array {
+		$conn = (new DatabaseConnector())->getConnection();
+		$dataStatus = (int)$params[1];
+		$get_user_query = "SELECT id FROM users WHERE username = '".$_SESSION["USERNAME"]."' LIMIT 1";
+		$result = mysqli_query($conn, $get_user_query);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$user_id = $row["id"];
+		}
+		
+		$sql = "SELECT thread_id FROM threads WHERE thread_url = '$params[0]' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$thread_id = $row["thread_id"];
+		}
+		
+		switch ($dataStatus) {
+			case 0:
+				$sql = "INSERT INTO user_threads(thread_id, user_id) VALUES ($thread_id, $user_id)";
+				break;
+			case 1:
+				$sql = "DELETE FROM user_threads WHERE thread_id=$thread_id AND user_id=$user_id";
+				break;
+		}
+
+		mysqli_query($conn, $sql);
+		mysqli_close($conn);
+		return array("response" => 200);
+	}
 }
 ?>
