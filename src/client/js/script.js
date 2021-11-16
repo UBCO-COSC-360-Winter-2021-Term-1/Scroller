@@ -383,13 +383,6 @@ $(document).ready(() => {
 	$(".join-thread-button").click((e) => {
 		e.preventDefault();
 		var threadUrl = window.location.pathname.split("/")[2];
-		// $.post(`http://${$(location).attr('host')}/server/middlewares/ThreadMiddleware.class.php`, {
-		// 	dataStatus: $(".join-thread-button").data("status"),
-		// 	threadUrl: threadUrl
-		// }).done(function (_) {
-		// 	setTimeout(() => { window.location = "/t/" + threadUrl; }, 1000);
-		// 	return;
-		// });
 		var form_data = new FormData();
 		form_data.append("threadUrl", threadUrl);
 		form_data.append("dataStatus", $(".join-thread-button").data("status"));
@@ -403,15 +396,18 @@ $(document).ready(() => {
 			processData: false,
 			success: (result) => {
 				if (parseInt(result["response"]) === 200) {
+					if ($(".join-thread-button").data("status") == 0) {
+						$(".join-thread-button").data("status", 1);
+						$(".join-thread-button").text("Leave");
+					} else {
+						$(".join-thread-button").data("status", 0);
+						$(".join-thread-button").text("Join");
+					}
 					$(".system-message").addClass("d-none");
 					$(location).prop('href', `/t/${threadUrl}`);
 				} else if (parseInt(result["response"]) === 403) {
 					$(location).prop('href', '/');
-				} else {
-					console.log("dang it");
-					// $(".system-message").removeClass("d-none");
-					// $(".system-message div:last-child p").text(result["data"]["message"]);
-				}
+				} 
 			},
 		});
 	});

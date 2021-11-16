@@ -205,5 +205,26 @@ class ThreadController extends Controller {
 		mysqli_close($conn);
 		return array("response" => 200);
 	}
+
+	public function getTopUsers(string $url): array {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "SELECT threads.thread_id FROM threads WHERE threads.thread_url = '$url' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$thread_id = $row["thread_id"];
+		}
+		
+		$sql = "SELECT count(posts.user_id), users.username, users.avatar_url FROM posts JOIN users ON posts.user_id=users.id WHERE posts.thread_id=$thread_id GROUP BY (posts.user_id) ORDER BY count(posts.user_id) DESC LIMIT 5";
+		$result = mysqli_query($conn, $sql);
+		$resultArray = array();
+		while ($row = mysqli_fetch_assoc($result)) {
+			array_push($resultArray, [
+				"count" => $row["count(posts.user_id)"],
+				"username" => $row["username"],
+				"avatar_url" => $row["avatar_url"]
+			]);
+		}
+		return $resultArray;
+	}
 }
 ?>
