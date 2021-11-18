@@ -6,7 +6,6 @@
 
 	require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/ThreadController.class.php';
 	$threadInfo = (new ThreadController())->getThread($url[1]);
-	$topUsers = (new ThreadController())->getTopUsers($url[1]);
 ?>
   <div class="thread-navbar mb-5">
         <div class="img-thread-background" 
@@ -78,6 +77,10 @@
 						<input type="text" class="w-100 mt-1 px-2 search-thread" placeholder="Search Thread...">
 					</div>
 				</div>
+				<?php 
+					require_once SERVER_DIR.'/controllers/PostController.class.php';
+					
+				?>
 				<article class="rounded p-4 mb-5">
 					<div class="row">
 						<div class="col-sm-2">
@@ -211,123 +214,25 @@
 				<div class="top-threads-container mt-4 mb-4 rounded px-3 py-3">
 					<h5>Top Users</h5>
 					<div class="top-thread-container">
-						<div class="top-thread-container-info d-flex align-middle py-2">
-							<div class="top-thread-info-name me-auto d-inline-flex">
-							<?php 
-								if (!empty($topUsers[0])){
-									echo '<img class="img-fluid img-header-profile" src="http://'.$_SERVER['HTTP_HOST'].'/server/uploads/user_images/'.$topUsers[0]['avatar_url'].'" alt="user_profile_picture">';
+						<?php $topUsers = (new ThreadController())->getTopUsers($url[1]); 
+							if (count($topUsers) != 0) {
+								foreach($topUsers as $user) {
+									echo '<div class="top-thread-container-info d-flex align-middle py-2">';
+									echo '<div class="top-thread-info-name me-auto d-inline-flex">';
+									echo '<img class="img-fluid img-header-profile" src="http://'.$_SERVER['HTTP_HOST'].'/server/uploads/user_images/'.$user['avatar_url'].'" alt="'.$user['username'].'_profile_picture">';
+									echo '<span class="ms-1"><a href="/account/'.$user["userId"].'">';
+									echo $user['username'];
+									echo '</a></span>';
+									echo '</div>';
+									echo '<div class="top-thread-info-upvote">';
+									echo '<span class="me-2">'.$user['count'].'</span><i class="fas fa-arrow-up"></i>';
+									echo '</div>';
+									echo '</div>';
 								}
+							}
 							?>
-								<span class="ms-1"><a href="/t/cute-kittens/"><?php 
-										if (!empty($topUsers[0])){
-											echo $topUsers[0]["username"];
-										} 
-									?>
-									</a></span>
-							</div>
-							<div class="top-thread-info-upvote">
-								<span class="me-2"><?php 
-										if (!empty($topUsers[0])){
-											echo $topUsers[0]["count"];
-										}
-									?></span><i class="fas fa-arrow-up"></i>
-							</div>
-						</div>
-						<div class="top-thread-container-info d-flex align-middle py-2">
-							<div class="top-thread-info-name me-auto d-inline-flex">
-							<?php 
-								if (!empty($topUsers[1])){
-									echo '<img class="img-fluid img-header-profile" src="http://'.$_SERVER['HTTP_HOST'].'/server/uploads/user_images/'.$topUsers[1]['avatar_url'].'" alt="user_profile_picture">';
-								}
-							?>
-							<span class="ms-1"><a href="/t/cute-kittens/"><?php 
-										if (!empty($topUsers[1])){
-											echo $topUsers[1]["username"];
-										} 
-									?>
-									</a>
-								</span>
-							</div>
-							<div class="top-thread-info-upvote">
-								<span class="me-2"><?php 
-										if (!empty($topUsers[1])){
-											echo $topUsers[1]["count"];
-										}
-									?></span><i class="fas fa-arrow-up"></i>
-							</div>
-						</div>
-						<div class="top-thread-container-info d-flex align-middle py-2">
-							<div class="top-thread-info-name me-auto d-inline-flex">
-							<?php 
-								if (!empty($topUsers[2])){
-									echo '<img class="img-fluid img-header-profile" src="http://'.$_SERVER['HTTP_HOST'].'/server/uploads/user_images/'.$topUsers[2]['avatar_url'].'" alt="user_profile_picture">';
-								}
-							?>
-							<span class="ms-1"><a href="/t/cute-kittens/"><?php 
-										if (!empty($topUsers[2])){
-											echo $topUsers[2]["username"];
-										}
-									?>
-									</a>
-								</span>
-							</div>
-							<div class="top-thread-info-upvote">
-								<span class="me-2"><?php 
-										if (!empty($topUsers[2])){
-											echo $topUsers[2]["count"];
-										} 
-									?></span><i class="fas fa-arrow-up"></i>
-							</div>
-						</div>
-						<div class="top-thread-container-info d-flex align-middle py-2">
-							<div class="top-thread-info-name me-auto d-inline-flex">
-							<?php 
-								if (!empty($topUsers[3])){
-									echo '<img class="img-fluid img-header-profile" src="http://'.$_SERVER['HTTP_HOST'].'/server/uploads/user_images/'.$topUsers[3]['avatar_url'].'" alt="user_profile_picture">';
-								}
-							?>
-								<span class="ms-1"><a href="/t/cute-kittens/"><?php 
-										if (!empty($topUsers[3])){
-											echo $topUsers[3]["username"];
-										}
-									?>
-									</a>
-								</span>
-							</div>
-							<div class="top-thread-info-upvote">
-								<span class="me-2"><?php 
-										if (!empty($topUsers[3])){
-											echo $topUsers[3]["count"];
-										} 
-									?></span><i class="fas fa-arrow-up"></i>
-							</div>
-						</div>
-						<div class="top-thread-container-info d-flex align-middle py-2">
-							<div class="top-thread-info-name me-auto d-inline-flex">
-							<?php 
-								if (!empty($topUsers[4])){
-									echo '<img class="img-fluid img-header-profile" src="http://'.$_SERVER['HTTP_HOST'].'/server/uploads/user_images/'.$topUsers[4]['avatar_url'].'" alt="user_profile_picture">';
-								}
-							?>
-								<span class="ms-1"><a href="/t/cute-kittens/"><?php 
-										if (!empty($topUsers[4])){
-											echo $topUsers[4]["username"];
-										}
-									?>
-									</a>
-								</span>
-							</div>
-							<div class="top-thread-info-upvote">
-								<span class="me-2"><?php 
-										if (!empty($topUsers[4])){
-											echo $topUsers[4]["count"];
-										}
-									?></span><i class="fas fa-arrow-up"></i>
-							</div>
-						</div>
 					</div>
 				</div>
-
 				<div class="useful-links mt-4 mb-5 p-4 py-3 rounded d-flex flex-column">
 					<div class="row">
 						<div class="col-md-6">

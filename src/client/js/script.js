@@ -379,7 +379,6 @@ $(document).ready(() => {
 	});
 
 	/* Join Thread */
-
 	$(".join-thread-button").click((e) => {
 		e.preventDefault();
 		var threadUrl = window.location.pathname.split("/")[2];
@@ -403,8 +402,6 @@ $(document).ready(() => {
 						$(".join-thread-button").data("status", 0);
 						$(".join-thread-button").text("Join");
 					}
-					$(".system-message").addClass("d-none");
-					$(location).prop('href', `/t/${threadUrl}`);
 				} else if (parseInt(result["response"]) === 403) {
 					$(location).prop('href', '/');
 				} 
