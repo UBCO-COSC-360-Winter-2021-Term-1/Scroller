@@ -19,7 +19,7 @@
 						
 						<li><a href="/search" class="active rounded"><i class="far fa-compass"></i><span class="ms-2">Threads</span></a></li>
 						<li><a href="/search" class="rounded"><i class="fas fa-question"></i><span class="ms-2">My Threads</span></a></li>
-						<li><a href="/serach" class="rounded"><i class="far fa-comment-alt"></i><span class="ms-2">My Replies</span></a></li>
+						<li><a href="/search" class="rounded"><i class="far fa-comment-alt"></i><span class="ms-2">My Replies</span></a></li>
 					</ul>
 				</nav>
 			</div>

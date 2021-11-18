@@ -17,7 +17,7 @@
 						<?php } ?>
 						<li><a href="/search" class="rounded"><i class="far fa-compass"></i><span class="ms-2">Threads</span></a></li>
 						<li><a href="/search" class="rounded"><i class="fas fa-question"></i><span class="ms-2">My Threads</span></a></li>
-						<li><a href="/serach" class="rounded"><i class="far fa-comment-alt"></i><span class="ms-2">My Replies</span></a></li>
+						<li><a href="/search" class="rounded"><i class="far fa-comment-alt"></i><span class="ms-2">My Replies</span></a></li>
 					</ul>
 				</nav>
 			</div>
@@ -106,49 +106,38 @@
 				<div class="top-threads-container mt-4 mb-4 rounded px-3 py-3">
 					<h5>Top Threads</h5>
 					<div class="top-thread-container">
-						<div class="top-thread-container-info d-flex align-middle py-2">
-							<div class="top-thread-info-name me-auto">
-								<i class="fas fa-trophy first-place"></i>
-								<span class="ms-1"><a href="/t/cute-kittens/">t/cute-kittens/</a></span>
-							</div>
-							<div class="top-thread-info-upvote">
-								<span class="me-2">15,5k</span><i class="fas fa-arrow-up"></i>
-							</div>
-						</div>
-						<div class="top-thread-container-info d-flex align-middle py-2">
-							<div class="top-thread-info-name me-auto">
-								<i class="fas fa-trophy second-place"></i>
-								<span class="ms-1"><a href="/t/cute-kittens/">t/cute-kittens/</a></span>
-							</div>
-							<div class="top-thread-info-upvote">
-								<span class="me-2">15,5k</span><i class="fas fa-arrow-up"></i>
-							</div>
-						</div>
-						<div class="top-thread-container-info d-flex align-middle py-2">
-							<div class="top-thread-info-name me-auto">
-								<i class="fas fa-trophy third-place"></i>
-								<span class="ms-1"><a href="/t/cute-kittens/">t/cute-kittens/</a></span>
-							</div>
-							<div class="top-thread-info-upvote">
-								<span class="me-2">15,5k</span><i class="fas fa-arrow-up"></i>
-							</div>
-						</div>
-						<div class="top-thread-container-info d-flex align-middle py-2">
-							<div class="top-thread-info-name me-auto">
-								<span class="ms-1"><a href="/t/cute-kittens/">t/ubco-studies-bad/</a></span>
-							</div>
-							<div class="top-thread-info-upvote">
-								<span class="me-2">15,5k</span><i class="fas fa-arrow-up"></i>
-							</div>
-						</div>
-						<div class="top-thread-container-info d-flex align-middle py-2">
-							<div class="top-thread-info-name me-auto">
-								<span class="ms-1"><a href="/t/cute-kittens/">t/cute-kittens/</a></span>
-							</div>
-							<div class="top-thread-info-upvote">
-								<span class="me-2">15,5k</span><i class="fas fa-arrow-up"></i>
-							</div>
-						</div>
+					<?php 
+					
+						require_once SERVER_DIR.'/controllers/ThreadController.class.php';
+
+						$threads = (new ThreadController())->getTopThreads();
+						$counter = 0;
+
+						if (count($threads) == 0) {
+							echo '<p class="text-center mt-3">Not information.</p>';
+						} else {
+							foreach($threads as $thread) {
+								echo '<div class="top-thread-container-info d-flex align-middle py-2">';
+								echo '<div class="top-thread-info-name me-auto">';
+								if ($counter == 0) {
+									echo '<i class="fas fa-trophy first-place"></i>';
+									echo '<span class="ms-1"><a href="/t/'.$thread['thread_url'].'/">t/'.$thread['thread_url'].'/</a></span>';
+								} else if ($counter == 1) {
+									echo '<i class="fas fa-trophy second-place"></i>';
+									echo '<span class="ms-1"><a href="/t/'.$thread['thread_url'].'/">t/'.$thread['thread_url'].'/</a></span>';
+								} else if ($counter == 2) {
+									echo '<i class="fas fa-trophy third-place"></i>';
+									echo '<span class="ms-1"><a href="/t/'.$thread['thread_url'].'/">t/'.$thread['thread_url'].'/</a></span>';
+								} else {
+									echo '<span class="ms-1"><a href="/t/'.$thread['thread_url'].'/">t/'.$thread['thread_url'].'/</a></span>';
+								}
+								echo '</div><div class="top-thread-info-upvote"><span class="me-2">'.$thread['total_posts'].'</span><i class="fas fa-arrow-up"></i>';
+								echo '</div>';
+								echo '</div>';
+								$counter += 1;
+							}
+						}
+					?>
 					</div>
 				</div>
 
