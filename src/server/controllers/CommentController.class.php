@@ -25,6 +25,7 @@ class CommentController extends Controller {
 		return array();
 	}
 
+	
 	public function getCommentByQuery(string $query) : array {
 		$conn = (new DatabaseConnector())->getConnection();
 		if(!isset($_SESSION['USERNAME'])) {
@@ -162,6 +163,37 @@ class CommentController extends Controller {
 		mysqli_close($conn);
 		return $result;
 	}
+
+	public function loadCommentsByPost(int $postId): array {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "SELECT comments.comment_id, comments.body, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(comments.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, (SELECT COUNT(comments.comment_id) FROM comments WHERE comments.post_id=1) as totalComments,
+		CASE WHEN EXISTS(SELECT comment_votes.user_id FROM comment_votes WHERE comment_votes.user_id = -1 AND comments.comment_id = comment_votes.comment_id) THEN 1 ELSE 0 END as voted,
+		IF ((SELECT comment_votes.vote FROM comment_votes WHERE comment_votes.user_id = -1 AND comments.comment_id = comment_votes.comment_id AND comment_votes.vote = 1), 1, -1) as voteType,
+		(SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 1 AND comments.comment_id = comment_votes.comment_id) - (SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 0 AND comments.comment_id = comment_votes.comment_id) as numOfVotes
+		FROM comments JOIN users ON comments.user_id = users.id JOIN threads ON threads.thread_id = comments.thread_id LEFT JOIN comment_votes ON comment_votes.comment_id = comments.comment_id 
+		WHERE comments.is_hidden = 0 AND comments.is_deleted = 0 AND comments.post_id=$postId GROUP BY comments.comment_id ORDER BY numOfVotes DESC LIMIT 3";
+		$response = mysqli_query($conn, $sql);
+
+		$result = array();
+
+		while($row = mysqli_fetch_assoc($response)) {
+			array_push($result, [
+				"comment_id" => $row['comment_id'],
+				"body" => $row['body'],
+				"timestamp" => $row['createdFromNowInSeconds'],
+				"username" => $row['username'],
+				"ownerId" => $row['ownerId'],
+				"avatar_url" => $row['avatar_url'],
+				"isVoted" => 0,
+				"typeVote" => 0,
+				"numOfVotes" => $row['numOfVotes'],
+				"totalComments" => $row['totalComments']
+			]);
+		}
+		mysqli_close($conn);
+		return $result;
+	}
+
 	public function findAll(array $params) : array {
 		return array();
 	}
