@@ -145,19 +145,18 @@
 							} else {
 								echo '<span class="d-block time-post">'.ceil($post['timestamp'] / 86400).'d ago</span>';
 							}
+							echo '<div class="post-info-comments">';
+							echo '<a href="/t/'.$post['thread_url'].'/'.$post['post_id'].'"><i class="far fa-comment-alt"></i><span class="ms-1">'.$post['totalComments'].'</span></a>';
+							echo '</div>';
+							echo '</div>';
+							if ((isset($_SESSION['IS_AUTHORIZED']) && isset($_SESSION['IS_ADMIN']) && $_SESSION['IS_ADMIN']) || $_SESSION["USERNAME"] == $post["username"]) {
+								echo '<div class="mt-2 mb-2">';
+								echo '<button id="hide" class="me-4 thread-hide">Hide</button>';
+								echo '<button id="delete" class="thread-delete">Delete</button>';
+								echo '</div>';
+							}
 							$postComments = (new CommentController())->loadCommentsByPost($post["post_id"]);
 							if (!empty($postComments)) {
-								echo '<div class="post-info-comments">';
-								echo '<a href="/t/1"><i class="far fa-comment-alt"></i><span class="ms-1">'.$postComments[0]["totalComments"].'</span></a>';
-								echo '</div>';
-								echo '</div>';
-								echo '<div class="mt-2">';
-								if (isset($_SESSION['IS_ADMIN'] || $_SESSION["USERNAME"] == $postComments[0]["username"]) { 
-									echo '<button id="hide" class="me-4 thread-hide">Hide</button>';
-									echo '<button id="delete" class="thread-delete">Delete</button>';
-								}
-								echo '</div>';
-								echo '<div class="thread-comments">';
 								foreach($postComments as $comment){
 									echo '<article class="rounded p-4 px-0 mb-2 pt-2">';
 									echo '<div class="row">';
@@ -196,7 +195,7 @@
 									}
 									echo '</div>';
 									echo '<div class="mt-2">';
-									if ((isset($_SESSION['IS_ADMIN']) && $_SESSION["IS_ADMIN"]) || $_SESSION["USERNAME"] == $comment["username"]){
+									if ((isset($_SESSION['IS_AUTHORIZED']) && isset($_SESSION['IS_ADMIN']) && $_SESSION['IS_ADMIN']) || $_SESSION["USERNAME"] == $comment["username"]) {
 										echo '<button id="hide" class="me-4 thread-hide">Hide</button>';
 										echo '<button id="delete" class="thread-delete">Delete</button>';
 									}
@@ -206,6 +205,7 @@
 									echo '</article>';
 								}
 							}
+							echo '</div>';
 							echo '</div>';
 							echo '</article>';
 						}
