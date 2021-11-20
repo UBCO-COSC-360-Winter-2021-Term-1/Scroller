@@ -166,7 +166,7 @@ class CommentController extends Controller {
 
 	public function loadCommentsByPost(int $postId): array {
 		$conn = (new DatabaseConnector())->getConnection();
-		$sql = "SELECT comments.comment_id, comments.body, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(comments.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, (SELECT COUNT(comments.comment_id) FROM comments WHERE comments.post_id=1) as totalComments,
+		$sql = "SELECT comments.comment_id, comments.body, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(comments.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url,
 		CASE WHEN EXISTS(SELECT comment_votes.user_id FROM comment_votes WHERE comment_votes.user_id = -1 AND comments.comment_id = comment_votes.comment_id) THEN 1 ELSE 0 END as voted,
 		IF ((SELECT comment_votes.vote FROM comment_votes WHERE comment_votes.user_id = -1 AND comments.comment_id = comment_votes.comment_id AND comment_votes.vote = 1), 1, -1) as voteType,
 		(SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 1 AND comments.comment_id = comment_votes.comment_id) - (SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 0 AND comments.comment_id = comment_votes.comment_id) as numOfVotes
@@ -187,7 +187,6 @@ class CommentController extends Controller {
 				"isVoted" => 0,
 				"typeVote" => 0,
 				"numOfVotes" => $row['numOfVotes'],
-				"totalComments" => $row['totalComments']
 			]);
 		}
 		mysqli_close($conn);

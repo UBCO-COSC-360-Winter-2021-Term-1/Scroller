@@ -23,15 +23,17 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 			} else if (empty($_POST['postBody']) && empty($_FILES['postImage']) && !empty($_POST['postYoutubeLink'])) {
 				$response = (new PostMiddleware())->createPost([7, $_POST['postTitle'], $_POST['postYoutubeLink'], $_POST['threadUrl']]);
 			}
-    } else if (!empty($_POST['threadUrl']) && !empty($_POST['sortType'])) {
-		$response = (new PostMiddleware())->sortPosts([$_POST['threadUrl'], $_POST['sortType']]);
-	}
+    }
 } else if ($_SERVER['REQUEST_METHOD'] === "GET") {
-	if (!empty($_GET['query']) && isset($_GET['postSearch']) && (bool) $_GET['postSearch']) {
+	if (!empty($_GET['threadUrl']) && !empty($_GET['sortType'])) {
+		$response = (new PostMiddleware())->sortPosts([$_GET['threadUrl'], $_GET['sortType']]);
+	} else if (!empty($_GET['threadUrl']) && empty($_GET['sortType'])) {
+		$response = (new PostMiddleware())->sortPosts([$_GET['threadUrl']]);
+	} else if (!empty($_GET['query']) && isset($_GET['postSearch']) && (bool) $_GET['postSearch']) {
 		$response = (new PostMiddleware())->searchPosts([$_GET['query']]);
 	} else if (empty($_GET['query'])) {
 		$response =(new PostController())->loadAllPosts();
-	}
+	} 
 }
 
 class PostMiddleware {
@@ -256,7 +258,19 @@ class PostMiddleware {
 	}
 
 	public function sortPosts(array $params) {
-			return (new PostController())->loadPostByThread($params[0], $params[1]);
+		if (empty($params[0])) {
+			return array("response" => 400, "data" => array("message" => "You must click a sort button in a valid thread."));
+		}
+
+		if (!empty($params[1]) && !($params[1] == "Top" || $params[1] == "New")) {
+			return array("response" => 400, "data" => array("message" => "You must click a sort button in a valid thread."));
+		}
+
+		if (empty($params[1])) {
+			return (new PostController())->loadPostByThread([$params[0]]);
+		}
+
+		return (new PostController())->loadPostByThread([$params[0], $params[1]]);
 	}
 }
 

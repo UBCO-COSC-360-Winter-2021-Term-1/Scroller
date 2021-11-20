@@ -154,11 +154,11 @@ ul > li > a:hover{
 	transition: 0.2s ease-out;
 }
 
-.topic-threads {
+.topic-threads, .post-results-block {
 	max-height: 90vh;
 }
 
-.topic-threads > article {
+.topic-threads > article, .post-results-block > article {
 	background-color: #fff !important;
 	height: auto;
 	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
@@ -169,7 +169,8 @@ ul > li > a:hover{
 	max-width: 100%;
 }
 
-.topic-threads > article > .row > .col-sm-10 > p, .admin-d-trending > article > .row > .col-sm-10 > p {
+.topic-threads > article > .row > .col-sm-10 > p, .admin-d-trending > article > .row > .col-sm-10 > p,
+.post-results-block > .row > .col-sm-10 > p, .admin-d-trending > article > .row > .col-sm-10 > p {
 	color: #919191;
 	padding-top: 1.2em;
 	padding-bottom: 1.5em;
@@ -178,13 +179,16 @@ ul > li > a:hover{
 	line-height: 2;
 }
 
-.topic-threads > article > .row > .col-sm-10 > p.no-border {
+.topic-threads > article > .row > .col-sm-10 > p.no-border,
+.post-results-block > article > .row > .col-sm-10 > p.no-border {
 	border-bottom: none;
 	padding-bottom: 1em;
 }
 
 .topic-threads > article > .row > .col-sm-10 > p > img, .topic-threads > article > .row > .col-sm-10 > p > iframe,
-.admin-d-trending > article > .row > .col-sm-10 > p > img {
+.admin-d-trending > article > .row > .col-sm-10 > p > img,
+.post-results-block > article > .row > .col-sm-10 > p > img, .post-results-block > article > .row > .col-sm-10 > p > iframe,
+.admin-d-trending > .post-results-block > article > .row > .col-sm-10 > p > img {
 	max-width: 100%;
 }
 
@@ -197,11 +201,13 @@ ul > li > a:hover{
 	color: var(--navigation-link-hover);
 }
 
-.topic-threads > article > .row > .col-sm-10 > h4 > a {
+.topic-threads > article > .row > .col-sm-10 > h4 > a,
+.post-results-block > article > .row > .col-sm-10 > h4 > a {
 	color: #000;
 }
 
-.topic-threads > article > .row > .col-sm-10 > h4 > a:hover {
+.topic-threads > article > .row > .col-sm-10 > h4 > a:hover,
+.post-results-block > article > .row > .col-sm-10 > h4 > a:hover {
 	color: var(--navigation-link-hover);
 }
 
