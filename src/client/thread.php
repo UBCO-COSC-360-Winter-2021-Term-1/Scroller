@@ -158,7 +158,7 @@
 							$postComments = (new CommentController())->loadCommentsByPost($post["post_id"]);
 							if (!empty($postComments)) {
 								foreach($postComments as $comment){
-									echo '<article class="rounded p-4 px-0 mb-2 pt-2">';
+									echo '<article class="rounded p-4 px-0">';
 									echo '<div class="row">';
 									echo '<div class="col-sm-2">';
 									echo '<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">';
