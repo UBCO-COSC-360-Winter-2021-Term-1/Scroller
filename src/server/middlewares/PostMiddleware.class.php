@@ -27,6 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 } else if ($_SERVER['REQUEST_METHOD'] === "GET") {
 	if (!empty($_GET['threadUrl']) && !empty($_GET['sortType'])) {
 		$response = (new PostMiddleware())->sortPosts([$_GET['threadUrl'], $_GET['sortType']]);
+	} else if (!empty($_GET['query']) && !empty($_GET['threadUrl']) && isset($_GET['postSearch']) && (bool) $_GET['postSearch']) {
+		$response = (new PostMiddleware())->searchPostsInThread([$_GET['query'], $_GET['threadUrl']]);
 	} else if (!empty($_GET['threadUrl']) && empty($_GET['sortType'])) {
 		$response = (new PostMiddleware())->sortPosts([$_GET['threadUrl']]);
 	} else if (!empty($_GET['query']) && isset($_GET['postSearch']) && (bool) $_GET['postSearch']) {
@@ -52,6 +54,17 @@ class PostMiddleware {
 
 		return (new PostController())->getPostByQuery($query);
 	}
+
+	public function searchPostsInThread(array $params) : array {
+		
+		$query = filter_var($params[0], FILTER_SANITIZE_STRING);
+		$query = trim($query);
+		$query = stripslashes($query);
+		$query = htmlspecialchars($query);
+
+		return (new PostController())->searchPostByQueryInThread([$query, $params[1]]);
+	}
+
 	public function createPost(array $params) : array {
 		if (!$this->isLogged()) return array("response" => 403);
 
