@@ -151,8 +151,8 @@
 							echo '</div>';
 							if ((isset($_SESSION['IS_AUTHORIZED']) && isset($_SESSION['IS_ADMIN']) && $_SESSION['IS_ADMIN']) || $_SESSION["USERNAME"] == $post["username"]) {
 								echo '<div class="mt-2 mb-2">';
-								echo '<button id="hide" class="me-4 thread-hide">Hide</button>';
-								echo '<button id="delete" class="thread-delete">Delete</button>';
+								echo '<button id="hide" class="me-4 thread-hide" data-post-id="'.$post['post_id'].'">Hide</button>';
+								echo '<button id="delete" class="thread-delete" data-post-id="'.$post['post_id'].'">Delete</button>';
 								echo '</div>';
 							}
 							$postComments = (new CommentController())->loadCommentsByPost($post["post_id"]);
@@ -196,8 +196,7 @@
 									echo '</div>';
 									echo '<div class="mt-2">';
 									if ((isset($_SESSION['IS_AUTHORIZED']) && isset($_SESSION['IS_ADMIN']) && $_SESSION['IS_ADMIN']) || $_SESSION["USERNAME"] == $comment["username"]) {
-										echo '<button id="hide" class="me-4 thread-hide">Hide</button>';
-										echo '<button id="delete" class="thread-delete">Delete</button>';
+										echo '<button id="delete" class="thread-delete" data-comment-id="'.$comment['comment_id'].'">Delete</button>';
 									}
 									echo '</div>';
 									echo '</div>';
