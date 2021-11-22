@@ -187,6 +187,8 @@ class CommentController extends Controller {
 				"isVoted" => 0,
 				"typeVote" => 0,
 				"numOfVotes" => $row['numOfVotes'],
+				"isAdmin" => $_SESSION["IS_ADMIN"] == 1 ? true : false,
+				"isOwner" => $_SESSION["USERNAME"] == $row['username'] ? true : false
 			]);
 		}
 		mysqli_close($conn);

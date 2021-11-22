@@ -167,44 +167,6 @@ class PostController extends Controller {
 			$thread_id = $row["thread_id"];
 		}
 
-		if(!isset($_SESSION['USERNAME'])) {
-			$conn = (new DatabaseConnector())->getConnection();
-
-			$sql = "SELECT posts.post_id, posts.title, posts.body, posts.post_image, posts.media_url, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(posts.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, threads.thread_url, COUNT(comments.post_id) as totalComments,
-			CASE WHEN EXISTS(SELECT post_votes.user_id FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id) THEN 1 ELSE 0 END as voted,
-			IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
-			(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
-			FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id LEFT JOIN comments ON posts.post_id = comments.post_id LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
-			WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 AND (posts.title LIKE '%$query%' OR posts.body LIKE '%$query%') AND posts.thread_id = $thread_id
-			GROUP BY posts.post_id ORDER BY numOfVotes DESC";
-			$response = mysqli_query($conn, $sql);
-
-			$result = array();
-
-			while($row = mysqli_fetch_assoc($response)) {
-				array_push($result, [
-					"post_id" => $row['post_id'],
-					"title" => $row['title'],
-					"body" => $row['body'],
-					"post_image" => $row['post_image'],
-					"media_url" => $row['media_url'],
-					"timestamp" => $row['createdFromNowInSeconds'],
-					"username" => $row['username'],
-					"ownerId" => $row['ownerId'],
-					"avatar_url" => $row['avatar_url'],
-					"thread_url" => $row['thread_url'],
-					"totalComments" => $row['totalComments'],
-					"isVoted" => 0,
-					"typeVote" => 0,
-					"numOfVotes" => $row['numOfVotes'], 
-					"comments" => (new CommentController())->loadCommentsByPost($row['post_id'])
-				]);
-			}
-
-			mysqli_close($conn);
-			return $result;
-		}
-
 		$sql = "SELECT id FROM users WHERE username='".$_SESSION["USERNAME"]."' LIMIT 1";
 		$result = mysqli_query($conn, $sql);
 		
@@ -216,7 +178,7 @@ class PostController extends Controller {
 		IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = $userId AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
 		(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
 		FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id LEFT JOIN comments ON posts.post_id = comments.post_id LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
-		WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 AND (posts.title LIKE '%$query%' OR posts.body LIKE '%$query%')
+		WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 AND (posts.title LIKE '%$query%' OR posts.body LIKE '%$query%') AND posts.thread_id = $thread_id
 		GROUP BY posts.post_id ORDER BY numOfVotes DESC";
 		$response = mysqli_query($conn, $sql);
 
@@ -237,7 +199,10 @@ class PostController extends Controller {
 				"totalComments" => $row['totalComments'],
 				"isVoted" => $row['voted'],
 				"typeVote" => $row['voteType'],
-				"numOfVotes" => $row['numOfVotes']
+				"numOfVotes" => $row['numOfVotes'],
+				"isAdmin" => $_SESSION["IS_ADMIN"] == 1 ? true : false,
+				"isOwner" => $_SESSION["USERNAME"] == $row['username'] ? true : false,
+				"comments" => (new CommentController())->loadCommentsByPost($row['post_id'])
 			]);
 		}
 		mysqli_close($conn);
@@ -323,60 +288,6 @@ class PostController extends Controller {
 
 	public function loadPostByThread(array $params): array {
 		$conn = (new DatabaseConnector())->getConnection();
-		if (!isset($_SESSION['USERNAME'])) {
-			if ($params[1] == "Top") {
-				$sql = "SELECT posts.post_id, posts.title, posts.body, posts.post_image, posts.media_url, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(posts.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, threads.thread_url, COUNT(comments.post_id) as totalComments,
-				CASE WHEN EXISTS(SELECT post_votes.user_id FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id) THEN 1 ELSE 0 END as voted,
-				IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
-				(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
-				FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id LEFT JOIN comments ON posts.post_id = comments.post_id LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
-				WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 AND threads.thread_url = '$params[0]'
-				GROUP BY posts.post_id ORDER BY numOfVotes DESC";
-			} else if ($params[1] == "New") {
-				$sql = "SELECT posts.post_id, posts.title, posts.body, posts.post_image, posts.media_url, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(posts.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, threads.thread_url, COUNT(comments.post_id) as totalComments,
-				CASE WHEN EXISTS(SELECT post_votes.user_id FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id) THEN 1 ELSE 0 END as voted,
-				IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
-				(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
-				FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id LEFT JOIN comments ON posts.post_id = comments.post_id LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
-				WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 AND threads.thread_url = '$params[0]'
-				GROUP BY posts.post_id ORDER BY createdFromNowInSeconds ASC";
-			} else {
-				$sql = "SELECT posts.post_id, posts.title, posts.body, posts.post_image, posts.media_url, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(posts.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, threads.thread_url, COUNT(comments.post_id) as totalComments,
-				CASE WHEN EXISTS(SELECT post_votes.user_id FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id) THEN 1 ELSE 0 END as voted,
-				IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
-				(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
-				FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id LEFT JOIN comments ON posts.post_id = comments.post_id LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
-				WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 AND threads.thread_url = '$params[0]' AND (posts.title LIKE '%$params[1]%' OR posts.body LIKE '%$params[1]%')
-				GROUP BY posts.post_id ORDER BY numOfVotes DESC";
-			}
-
-			$response = mysqli_query($conn, $sql);
-
-			$result = array();
-	
-			while($row = mysqli_fetch_assoc($response)) {
-				array_push($result, [
-					"post_id" => $row['post_id'],
-					"title" => $row['title'],
-					"body" => $row['body'],
-					"post_image" => $row['post_image'],
-					"media_url" => $row['media_url'],
-					"timestamp" => $row['createdFromNowInSeconds'],
-					"username" => $row['username'],
-					"ownerId" => $row['ownerId'],
-					"avatar_url" => $row['avatar_url'],
-					"thread_url" => $row['thread_url'],
-					"totalComments" => $row['totalComments'],
-					"isVoted" => 0,
-					"typeVote" => 0,
-					"numOfVotes" => $row['numOfVotes'],
-					"comments" => (new CommentController())->loadCommentsByPost($row['post_id'])
-				]);
-			}
-			mysqli_close($conn);
-			return $result;
-		}
-
 		$sql = "SELECT id FROM users WHERE username='".$_SESSION["USERNAME"]."' LIMIT 1";
 		$result = mysqli_query($conn, $sql);
 		
@@ -430,6 +341,8 @@ class PostController extends Controller {
 				"isVoted" => $row['voted'],
 				"typeVote" => $row['voteType'],
 				"numOfVotes" => $row['numOfVotes'],
+				"isAdmin" => $_SESSION["IS_ADMIN"] == 1 ? true : false,
+				"isOwner" => $_SESSION["USERNAME"] == $row['username'] ? true : false,
 				"comments" => (new CommentController())->loadCommentsByPost($row['post_id'])
 			]);
 		}
