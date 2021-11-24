@@ -86,6 +86,61 @@ class CommentController extends Controller {
 		return $result;
 	}
 
+	public function isExist(int $id) : bool {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "SELECT comment_id FROM comments WHERE comment_id = $id AND is_hidden = 0 AND is_deleted = 0 LIMIT 1";
+		$response = mysqli_query($conn, $sql);
+		while($row = mysqli_fetch_assoc($response)) {
+			mysqli_close($conn);
+			return true;
+		}
+		mysqli_close($conn);
+		return false;
+	}
+
+	public function vote(array $params) : array {
+		$conn = (new DatabaseConnector())->getConnection();
+
+		$sql = "SELECT id FROM users WHERE username='".$_SESSION["USERNAME"]."' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		
+		$user = mysqli_fetch_row($result);
+		$userId = $user[0];
+		if ($params[1] === "voteUp") {
+			$sql = "SELECT comment_id FROM comment_votes WHERE comment_id = $params[0] AND user_id = $userId LIMIT 1";
+			$response = mysqli_query($conn, $sql);
+			
+			if(mysqli_num_rows($response) === 0){
+				$sql = "INSERT INTO comment_votes VALUES($params[0], $userId, 1)";
+				mysqli_query($conn, $sql);
+			} else{
+				$sql = "UPDATE comment_votes SET vote = 1 WHERE comment_id = $params[0] AND user_id = $userId";
+				mysqli_query($conn, $sql);
+			}
+		} else {
+			$sql = "SELECT comment_id FROM comment_votes WHERE comment_id = $params[0] AND user_id = $userId LIMIT 1";
+			$response = mysqli_query($conn, $sql);
+			
+			if(mysqli_num_rows($response) === 0){
+				$sql = "INSERT INTO comment_votes VALUES($params[0], $userId, 0)";
+				mysqli_query($conn, $sql);
+			} else{
+				$sql = "UPDATE comment_votes SET vote = 0 WHERE comment_id = $params[0] AND user_id = $userId";
+				mysqli_query($conn, $sql);
+			}
+		}
+		$sql = "SELECT 
+		(SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 1 AND comments.comment_id = comment_votes.comment_id) - (SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 0 AND comments.comment_id = comment_votes.comment_id) as numOfVotes
+		FROM comments LEFT JOIN comment_votes ON comment_votes.comment_id = comments.comment_id 
+		WHERE comments.is_hidden = 0 AND comments.is_deleted = 0 AND comments.comment_id = $params[0]";
+		$result = mysqli_query($conn, $sql);
+		$comment = mysqli_fetch_row($result);
+		$numOfVotes = $comment[0];
+
+		mysqli_close($conn);
+		return array("response" => 200, "numOfVotes" => $numOfVotes);
+	}
+
 	public function loadAllComments() : array {
 		$conn = (new DatabaseConnector())->getConnection();
 
