@@ -65,6 +65,8 @@ class PostMiddleware {
 		$query = htmlspecialchars($query);
 
 		return (new PostController())->searchPostByQueryInThread([$query, $params[1]]);
+	}
+	
 	public function vote(array $params) : array {
 		if (!$this->isLogged()) return array("response" => 403);
 		if (!(new UserController())->isEmailConfirmedByUserName($_SESSION['USERNAME'])) return array( "response" => 400, "data" => array("message" => "Email is not verified."));
