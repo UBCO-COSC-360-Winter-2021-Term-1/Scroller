@@ -31,7 +31,7 @@
 							echo '<article class="rounded p-4 mb-5">';
 								echo '<div class="row">';
 									echo '<div class="col-sm-2">';
-										echo '<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">';
+										echo '<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting" data-post-id="'.$post['post_id'].'">';
 											if ($post['isVoted'] == 0) {
 												echo '<i class="fas fa-arrow-up my-auto"></i>';
 												echo '<span class="d-block mt-2 mb-2"><a href="#">'.$post['numOfVotes'].'</a></span>';
@@ -114,7 +114,7 @@
 						$counter = 0;
 
 						if (count($threads) == 0) {
-							echo '<p class="text-center mt-3">Not information.</p>';
+							echo '<p class="text-center mt-3">No information.</p>';
 						} else {
 							foreach($threads as $thread) {
 								echo '<div class="top-thread-container-info d-flex align-middle py-2">';
@@ -141,7 +141,7 @@
 					</div>
 				</div>
 
-				<div class="useful-links mt-4 mb-5 p-4 py-3 rounded d-flex flex-column">
+				<div class="useful-links mt-4 mb-5 p-3 rounded d-flex flex-column">
 					<div class="row">
 						<div class="col-md-6">
 							<h5 class="mt-2">General</h5>

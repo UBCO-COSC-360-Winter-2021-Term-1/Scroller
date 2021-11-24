@@ -236,31 +236,31 @@ ul > li > a:hover{
 	float: right;
 }
 
-.post-voting > i {
+.post-voting > i, .comment-voting > i {
 	font-size: 1.5em;
 }
 
-.post-voting > span {
+.post-voting > span, .comment-voting > span {
 	font-size: 1.5em;
 }
 
-.post-voting > span > a {
+.post-voting > span > a, .comment-voting > span > a {
 	color: #000;
 }
 
-.post-voting > span > a.voted-up {
+.post-voting > span > a.voted-up, .comment-voting > span > a.voted-up {
 	color: var(--navigation-link-hover);
 }
 
-.post-voting > i.voted-up {
+.post-voting > i.voted-up, .comment-voting > i.voted-up {
 	color: var(--navigation-link-hover);
 }
 
-.post-voting > span > a.voted-down {
+.post-voting > span > a.voted-down, .comment-voting > span > a.voted-down {
 	color: #BD3F32;
 }
 
-.post-voting > i.voted-down {
+.post-voting > i.voted-down, .comment-voting > i.voted-down {
 	color: #BD3F32;
 }
 
@@ -317,6 +317,7 @@ ul > li > a:hover{
 }
 
 .useful-links > .row > .col-md-6 > nav ul li > a {
+	font-size: 1em;
 	color: #858383;
 	margin-bottom: .5em;
 }
@@ -331,8 +332,8 @@ ul > li > a:hover{
 	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
 }
 
-.useful-links > .row > .col > h5 {
-	font-size: 1em !important;
+.useful-links > .row > .col-md-6 > h5 {
+	font-size: 1.2em !important;
 	text-transform: uppercase;
 	font-weight: 600;
 }
@@ -1030,4 +1031,71 @@ article > .row > .col-sm-10 > h4 > a {
 .account-no-content img {
 	width: 15em;
 	height: 15em;
+}
+
+.fa-arrow-up:hover, .fa-arrow-down:hover {
+	cursor: pointer;
+}
+
+@media only screen 
+  and (min-device-width: 280px) 
+  and (max-device-width: 480px) {
+
+		header > nav > div > ul > li {
+			margin-left: 1.5vw;
+			margin-right: 1.5vw;
+		}
+		.brand {
+			display: none !important;
+		}
+		.active-sign-in-header {
+			width: 100%;
+		}
+		.header-icon {
+			padding: 0.475em 0.55em;
+		}
+		.post-info-container > .profile-info-sm > span, .time-post, .post-info-comments {
+			font-size: 0.75em;
+		}
+		.profile-info-sm {
+			width:min-content;
+		}
+}
+
+@media only screen 
+  and (min-device-width: 768px) 
+  and (max-device-width: 1024px) {
+	main > .row, .admin-dashboard > .row {
+		flex-direction: column !important;
+	}
+	.admin-dashboard > .row > .col-sm-5, .admin-dashboard > .row > .col-sm-7 {
+		width: 100%;
+	}
+
+	main > .row > .col-md-2 {
+		width: 100%;
+	}
+
+	.search-big-container {
+		width: 100%;
+	}
+
+	.login-page > .row, .recover-page > .row, .register-page > .row {
+		flex-direction: row !important;
+	}
+	.topic-threads, .account-page, .notifications-container {
+		width: 100%;
+	}
+	
+	.register-desc-bg-image, .register-desc-container, .recover-desc-container{
+		height: 100%;
+	}
+
+	.profile-activity {
+		height: auto;
+	}
+
+	main > .row > .col-md-3 {
+		width: 100%;
+	}
 }

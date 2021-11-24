@@ -794,7 +794,7 @@ $(document).ready(() => {
 					$(".search-results-block").html("");
 					if (parseInt(result["response"]) !== 400 && !jQuery.isEmptyObject(result)) {
 						$.each(result, (_, element) => {
-							var result = `<div class="search-result post bg-white mb-3 p-3"><div class="row"><div class="col-sm-2"><div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">`;
+							var result = `<div class="search-result post bg-white mb-3 p-3"><div class="row"><div class="col-sm-2"><div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting" data-post-id="${element['post_id']}">`;
 							
 							if (element['isVoted'] == 0) {
 								result += `<i class="fas fa-arrow-up my-auto"></i>`;
@@ -875,9 +875,8 @@ $(document).ready(() => {
 					$(".search-results-block").html("");
 					if (parseInt(result["response"]) !== 400 && !jQuery.isEmptyObject(result)) {
 						$.each(result, (_, element) => {
-							console.log(element);
 							
-							var result = `<div class="search-result comment bg-white mb-3 p-3"><div class="row"><div class="col-sm-2"><div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">`;
+							var result = `<div class="search-result comment bg-white mb-3 p-3"><div class="row"><div class="col-sm-2"><div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center comment-voting" data-comment-id="${element['comment_id']}">`;
 							if (element['isVoted'] == 0) {
 								result += `<i class="fas fa-arrow-up my-auto"></i>`;
 								result += `<span class="d-block mt-2 mb-2"><a href="#">${element['numOfVotes']}</a></span>`;
@@ -939,6 +938,7 @@ $(document).ready(() => {
 		} else if (!$("#threads-option").prop("checked") && !$("#posts-option").prop("checked") && !$("#comments-option").prop("checked")) {
 			$(".search-result-options").text("Threads");
 			$("#comments-option").prop("disabled", false);
+			$("#posts-option").prop("disabled", false);
 		} else {
 			$(".search-result-options").text("Threads");
 			$("#posts-option").prop("disabled", true);
@@ -1539,6 +1539,74 @@ $(document).ready(() => {
 			threadId: $(".admin-threads-act-restore").data("id")
 		}).done(function (_) {
 			setTimeout(() => { window.location = "/admin/threads"; }, 1000);
+			return;
+		});
+	});
+
+	$(document).on("click", ".post-voting > .fa-arrow-up", (e) => {
+		let postId = parseInt($(e.target.parentNode).data("post-id"));
+		$.post(`http://${$(location).attr('host')}/server/middlewares/PostMiddleware.class.php`, {
+			postId: postId,
+			type: "voteUp"
+		}).done( (result) => {
+			if (parseInt(result["response"]) === 200) {
+				$(".post-voting[data-post-id="+postId+"] .fa-arrow-down").removeClass("voted-down");
+				$(".post-voting[data-post-id="+postId+"] > span > a").removeClass("voted-down");
+				$(".post-voting[data-post-id="+postId+"] .fa-arrow-up").addClass("voted-up");
+				$(".post-voting[data-post-id="+postId+"]> span > a").addClass("voted-up");
+				$(".post-voting[data-post-id="+postId+"] > span > a").text(parseInt(result["numOfVotes"]));
+			}
+			return;
+		});
+	});
+
+	$(document).on("click", ".comment-voting > .fa-arrow-up", (e) => {
+		let commentId = parseInt($(e.target.parentNode).data("comment-id"));
+		$.post(`http://${$(location).attr('host')}/server/middlewares/CommentMiddleware.class.php`, {
+			commentId: commentId,
+			type: "voteUp"
+		}).done( (result) => {
+			if (parseInt(result["response"]) === 200) {
+				$(".comment-voting[data-comment-id="+commentId+"] .fa-arrow-down").removeClass("voted-down");
+				$(".comment-voting[data-comment-id="+commentId+"] > span > a").removeClass("voted-down");
+				$(".comment-voting[data-comment-id="+commentId+"] .fa-arrow-up").addClass("voted-up");
+				$(".comment-voting[data-comment-id="+commentId+"]> span > a").addClass("voted-up");
+				$(".comment-voting[data-comment-id="+commentId+"] > span > a").text(parseInt(result["numOfVotes"]));
+			}
+			return;
+		});
+	});
+	
+	$(document).on("click", ".comment-voting > .fa-arrow-down", (e) => {
+		let commentId = parseInt($(e.target.parentNode).data("comment-id"));
+		$.post(`http://${$(location).attr('host')}/server/middlewares/CommentMiddleware.class.php`, {
+			commentId: commentId,
+			type: "voteDown"
+		}).done( (result) => {
+			if (parseInt(result["response"]) === 200) {
+				$(".comment-voting[data-comment-id="+commentId+"] .fa-arrow-up").removeClass("voted-up");
+				$(".comment-voting[data-comment-id="+commentId+"] > span > a").removeClass("voted-up");
+				$(".comment-voting[data-comment-id="+commentId+"] .fa-arrow-down").addClass("voted-down");
+				$(".comment-voting[data-comment-id="+commentId+"] > span > a").addClass("voted-down");
+				$(".comment-voting[data-comment-id="+commentId+"] > span > a").text(parseInt(result["numOfVotes"]));
+			}
+			return;
+		});
+	});
+
+	$(document).on("click", ".post-voting > .fa-arrow-down", (e) => {
+		let postId = parseInt($(e.target.parentNode).data("post-id"));
+		$.post(`http://${$(location).attr('host')}/server/middlewares/PostMiddleware.class.php`, {
+			postId: postId,
+			type: "voteDown"
+		}).done( (result) => {
+			if (parseInt(result["response"]) === 200) {
+				$(".post-voting[data-post-id="+postId+"] .fa-arrow-up").removeClass("voted-up");
+				$(".post-voting[data-post-id="+postId+"] > span > a").removeClass("voted-up");
+				$(".post-voting[data-post-id="+postId+"] .fa-arrow-down").addClass("voted-down");
+				$(".post-voting[data-post-id="+postId+"] > span > a").addClass("voted-down");
+				$(".post-voting[data-post-id="+postId+"] > span > a").text(parseInt(result["numOfVotes"]));
+			}
 			return;
 		});
 	});

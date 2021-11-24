@@ -7,23 +7,25 @@ header('Content-Type: application/json; charset=utf-8');
 $response = array("response" => 400, "data" => array("message" => "Fields are empty."));
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
-    if (!empty($_POST['postTitle'])) {
-			if (!empty($_POST['postBody']) && !empty($_FILES['postImage']) && !empty($_POST['postYoutubeLink'])) {
-				$response = (new PostMiddleware())->createPost([1, $_POST['postTitle'], $_POST['postBody'], $_FILES['postImage'], $_POST['postYoutubeLink'], $_POST['threadUrl']]);
-			} else if (!empty($_POST['postBody']) && !empty($_FILES['postImage']) && empty($_POST['postYoutubeLink'])) {
-				$response = (new PostMiddleware())->createPost([2, $_POST['postTitle'], $_POST['postBody'], $_FILES['postImage'], $_POST['threadUrl']]);
-			} else if (!empty($_POST['postBody']) && empty($_FILES['postImage']) && !empty($_POST['postYoutubeLink'])) {
-				$response = (new PostMiddleware())->createPost([3, $_POST['postTitle'], $_POST['postBody'], $_POST['postYoutubeLink'], $_POST['threadUrl']]);
-			} else if (empty($_POST['postBody']) && !empty($_FILES['postImage']) && !empty($_POST['postYoutubeLink'])) {
-				$response = (new PostMiddleware())->createPost([4, $_POST['postTitle'], $_FILES['postImage'], $_POST['postYoutubeLink'], $_POST['threadUrl']]);
-			} else if (!empty($_POST['postBody']) && empty($_FILES['postImage']) && empty($_POST['postYoutubeLink'])) {
-				$response = (new PostMiddleware())->createPost([5, $_POST['postTitle'], $_POST['postBody'], $_POST['threadUrl']]);
-			} else if (empty($_POST['postBody']) && !empty($_FILES['postImage']) && empty($_POST['postYoutubeLink'])) {
-				$response = (new PostMiddleware())->createPost([6, $_POST['postTitle'], $_FILES['postImage'], $_POST['threadUrl']]);
-			} else if (empty($_POST['postBody']) && empty($_FILES['postImage']) && !empty($_POST['postYoutubeLink'])) {
-				$response = (new PostMiddleware())->createPost([7, $_POST['postTitle'], $_POST['postYoutubeLink'], $_POST['threadUrl']]);
-			}
-    }
+	if (!empty($_POST['postTitle'])) {
+		if (!empty($_POST['postBody']) && !empty($_FILES['postImage']) && !empty($_POST['postYoutubeLink'])) {
+			$response = (new PostMiddleware())->createPost([1, $_POST['postTitle'], $_POST['postBody'], $_FILES['postImage'], $_POST['postYoutubeLink'], $_POST['threadUrl']]);
+		} else if (!empty($_POST['postBody']) && !empty($_FILES['postImage']) && empty($_POST['postYoutubeLink'])) {
+			$response = (new PostMiddleware())->createPost([2, $_POST['postTitle'], $_POST['postBody'], $_FILES['postImage'], $_POST['threadUrl']]);
+		} else if (!empty($_POST['postBody']) && empty($_FILES['postImage']) && !empty($_POST['postYoutubeLink'])) {
+			$response = (new PostMiddleware())->createPost([3, $_POST['postTitle'], $_POST['postBody'], $_POST['postYoutubeLink'], $_POST['threadUrl']]);
+		} else if (empty($_POST['postBody']) && !empty($_FILES['postImage']) && !empty($_POST['postYoutubeLink'])) {
+			$response = (new PostMiddleware())->createPost([4, $_POST['postTitle'], $_FILES['postImage'], $_POST['postYoutubeLink'], $_POST['threadUrl']]);
+		} else if (!empty($_POST['postBody']) && empty($_FILES['postImage']) && empty($_POST['postYoutubeLink'])) {
+			$response = (new PostMiddleware())->createPost([5, $_POST['postTitle'], $_POST['postBody'], $_POST['threadUrl']]);
+		} else if (empty($_POST['postBody']) && !empty($_FILES['postImage']) && empty($_POST['postYoutubeLink'])) {
+			$response = (new PostMiddleware())->createPost([6, $_POST['postTitle'], $_FILES['postImage'], $_POST['threadUrl']]);
+		} else if (empty($_POST['postBody']) && empty($_FILES['postImage']) && !empty($_POST['postYoutubeLink'])) {
+			$response = (new PostMiddleware())->createPost([7, $_POST['postTitle'], $_POST['postYoutubeLink'], $_POST['threadUrl']]);
+		}
+	} else if (!empty($_POST['postId']) && !empty($_POST['type']) && ($_POST['type'] === "voteUp" || $_POST['type'] === "voteDown")) {
+		$response = (new PostMiddleware())->vote([$_POST['postId'], $_POST['type']]);
+	}
 } else if ($_SERVER['REQUEST_METHOD'] === "GET") {
 	if (!empty($_GET['threadUrl']) && !empty($_GET['sortType'])) {
 		$response = (new PostMiddleware())->sortPosts([$_GET['threadUrl'], $_GET['sortType']]);
@@ -63,6 +65,21 @@ class PostMiddleware {
 		$query = htmlspecialchars($query);
 
 		return (new PostController())->searchPostByQueryInThread([$query, $params[1]]);
+	public function vote(array $params) : array {
+		if (!$this->isLogged()) return array("response" => 403);
+		if (!(new UserController())->isEmailConfirmedByUserName($_SESSION['USERNAME'])) return array( "response" => 400, "data" => array("message" => "Email is not verified."));
+	
+		if ((new UserController())->isAccountDisabled($_SESSION['USERNAME'])) return array( "response" => 400, "data" => array("message" => "Unathorized attempt. Account is disabled."));
+		
+		$postId = intval($params[0]);
+		if ($postId <= 0) return array("response" => 403);
+
+		if (!(new PostController())->isExist($postId)) return array("response" => 403);
+
+		if ($params[1] === "voteUp" || $params[1] === "voteDown")
+			return (new PostController())->vote([$postId, $params[1]]);
+		
+		return array("response" => 403);
 	}
 
 	public function createPost(array $params) : array {

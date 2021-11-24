@@ -75,15 +75,84 @@ class PostController extends Controller {
 		return array();
 	}
 
+	public function isExist(int $id) : bool {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "SELECT post_id FROM posts WHERE post_id = $id AND is_hidden = 0 AND is_deleted = 0 LIMIT 1";
+		$response = mysqli_query($conn, $sql);
+		while($row = mysqli_fetch_assoc($response)) {
+			mysqli_close($conn);
+			return true;
+		}
+		mysqli_close($conn);
+		return false;
+	}
+
 	public function findById(int $id) : array {
 		return array();
+	}
+
+	public function vote(array $params) : array {
+		$conn = (new DatabaseConnector())->getConnection();
+
+		$sql = "SELECT id FROM users WHERE username='".$_SESSION["USERNAME"]."' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		
+		$user = mysqli_fetch_row($result);
+		$userId = $user[0];
+		if ($params[1] === "voteUp") {
+			$sql = "SELECT post_id FROM post_votes WHERE post_id = $params[0] AND user_id = $userId LIMIT 1";
+			$response = mysqli_query($conn, $sql);
+			
+			if(mysqli_num_rows($response) === 0){
+				$sql = "INSERT INTO post_votes VALUES($params[0], $userId, 1)";
+				mysqli_query($conn, $sql);
+
+				$sql = "SELECT user_id, thread_id FROM posts WHERE post_id = $params[0] LIMIT 1";
+				$result = mysqli_query($conn, $sql);
+				$post = mysqli_fetch_row($result);
+				$postOwner = $post[0];
+				$postThreadId = $post[1];
+				$sql = "INSERT INTO notifications(user_id, replied_user_id, action_type, thread_id) VALUES($postOwner, $userId, 4, $postThreadId)";
+				mysqli_query($conn, $sql);
+			} else{
+				$sql = "UPDATE post_votes SET votes = 1 WHERE post_id = $params[0] AND user_id = $userId";
+				mysqli_query($conn, $sql);
+			}
+		} else {
+			$sql = "SELECT post_id FROM post_votes WHERE post_id = $params[0] AND user_id = $userId LIMIT 1";
+			$response = mysqli_query($conn, $sql);
+			
+			if(mysqli_num_rows($response) === 0){
+				$sql = "INSERT INTO post_votes VALUES($params[0], $userId, 0)";
+				mysqli_query($conn, $sql);
+
+				$sql = "SELECT user_id, thread_id FROM posts WHERE post_id = $params[0] LIMIT 1";
+				$result = mysqli_query($conn, $sql);
+				$post = mysqli_fetch_row($result);
+				$postOwner = $post[0];
+				$postThreadId = $post[1];
+				$sql = "INSERT INTO notifications(user_id, replied_user_id, action_type, thread_id) VALUES($postOwner, $userId, 3, $postThreadId)";
+				mysqli_query($conn, $sql);
+			} else{
+				$sql = "UPDATE post_votes SET votes = 0 WHERE post_id = $params[0] AND user_id = $userId";
+				mysqli_query($conn, $sql);
+			}
+		}
+		$sql = "SELECT 
+		(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
+		FROM posts LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
+		WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 AND posts.post_id = $params[0]";
+		$result = mysqli_query($conn, $sql);
+		$post = mysqli_fetch_row($result);
+		$numOfVotes = $post[0];
+
+		mysqli_close($conn);
+		return array("response" => 200, "numOfVotes" => $numOfVotes);
 	}
 
 	public function getPostByQuery(string $query) : array {
 		$conn = (new DatabaseConnector())->getConnection();
 		if(!isset($_SESSION['USERNAME'])) {
-			$conn = (new DatabaseConnector())->getConnection();
-
 			$sql = "SELECT posts.post_id, posts.title, posts.body, posts.post_image, posts.media_url, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(posts.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, threads.thread_url, COUNT(comments.post_id) as totalComments,
 			CASE WHEN EXISTS(SELECT post_votes.user_id FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id) THEN 1 ELSE 0 END as voted,
 			IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,

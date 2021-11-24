@@ -97,7 +97,7 @@
 				</div>
 			</div>
 
-			<div class="useful-links mt-4 mb-5 p-4 py-3 rounded d-flex flex-column">
+			<div class="useful-links mt-4 mb-5 p-3 rounded d-flex flex-column">
 				<div class="row">
 					<div class="col-md-6">
 						<h5 class="mt-2">General</h5>
