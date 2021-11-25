@@ -759,7 +759,7 @@ ul > li > a:hover{
 	object-fit: cover;
 }
 
-.thread-hide, .thread-delete {
+.thread-delete, .post-hide, .post-delete, .comment-delete {
 	background-color: transparent;
 	font-size: small;
 	color:  #858383;

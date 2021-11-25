@@ -484,8 +484,8 @@ $(document).ready(() => {
 						result += `</div>`;
 						if (element['isAdmin'] == 1 || element['isOwner'] == 1) {
 							result += `<div class="mt-2">`;
-							result += `<button id="hide" class="me-4 thread-hide data-post-id="${element['post_id']}">Hide</button>`;
-							result += `<button id="delete" class="thread-delete" data-post-id="${element['post_id']}">Delete</button>`;
+							result += `<button id="hide" class="me-4 post-hide data-post-id="${element['post_id']}">Hide</button>`;
+							result += `<button id="delete" class="post-delete" data-post-id="${element['post_id']}">Delete</button>`;
 							result += `</div>`;
 						}
 						element['comments'].forEach((comment) => {
@@ -525,7 +525,7 @@ $(document).ready(() => {
 							result += `</div>`;
 							if (comment['isAdmin'] == 1 || comment['isOwner'] == 1) {
 								result += `<div class="mt-2">`;
-								result += `<button id="delete" class="thread-delete" data-comment-id="${comment['comment_id']}">Delete</button>`;
+								result += `<button id="delete" class="comment-delete" data-comment-id="${comment['comment_id']}">Delete</button>`;
 								result += `</div>`;
 							}
 							result += `</div>`;
@@ -622,8 +622,8 @@ $(document).ready(() => {
 						result += `</div>`
 						if (element['isAdmin'] == 1 || element['isOwner'] == 1) {
 							result+= `<div class="mt-2">`;
-							result += `<button id="hide" class="me-4 thread-hide data-post-id="${element['post_id']}">Hide</button>`;
-							result += `<button id="delete" class="thread-delete" data-post-id="${element['post_id']}">Delete</button>`;
+							result += `<button id="hide" class="me-4 post-hide data-post-id="${element['post_id']}">Hide</button>`;
+							result += `<button id="delete" class="post-delete" data-post-id="${element['post_id']}">Delete</button>`;
 							result += `</div>`;
 						}
 						element['comments'].forEach((comment) => {
@@ -663,7 +663,7 @@ $(document).ready(() => {
 							result += `</div>`;
 							if (comment['isAdmin'] == 1 || comment['isOwner'] == 1) {
 								result += `<div class="mt-2">`;
-								result += `<button id="delete" class="thread-delete" data-comment-id="${comment['comment_id']}">Delete</button>`;
+								result += `<button id="delete" class="comment-delete" data-comment-id="${comment['comment_id']}">Delete</button>`;
 								result += `</div>`;
 							}
 							result += `</div>`;
@@ -678,6 +678,30 @@ $(document).ready(() => {
 					return;
 				}
 			}
+		});
+	});
+
+	/* Delete Post */
+	$(document).on("click", ".post-delete", (e) => {
+		let postId = $(e.target).attr("data-post-id");
+		$.post(`http://${$(location).attr('host')}/server/middlewares/PostMiddleware.class.php`, {
+			postId: postId,
+			deletePost: true
+		}).done((result) => {
+			if (parseInt(result["response"]) === 200)
+				window.location.href=window.location.href;
+		});
+	});
+
+	/* Delete Comment */
+	$(document).on("click", ".comment-delete", (e) => {
+		let commentId = $(e.target).attr("data-comment-id");
+		$.post(`http://${$(location).attr('host')}/server/middlewares/CommentMiddleware.class.php`, {
+			commentId: commentId,
+			deleteComment: true
+		}).done((result) => {
+			if (parseInt(result["response"]) === 200)
+				window.location.href=window.location.href;
 		});
 	});
 

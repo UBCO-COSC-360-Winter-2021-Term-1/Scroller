@@ -22,9 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 			$response = (new PostMiddleware())->createPost([6, $_POST['postTitle'], $_FILES['postImage'], $_POST['threadUrl']]);
 		} else if (empty($_POST['postBody']) && empty($_FILES['postImage']) && !empty($_POST['postYoutubeLink'])) {
 			$response = (new PostMiddleware())->createPost([7, $_POST['postTitle'], $_POST['postYoutubeLink'], $_POST['threadUrl']]);
-		}
+		} 
 	} else if (!empty($_POST['postId']) && !empty($_POST['type']) && ($_POST['type'] === "voteUp" || $_POST['type'] === "voteDown")) {
 		$response = (new PostMiddleware())->vote([$_POST['postId'], $_POST['type']]);
+	} else if (!empty($_POST['postId']) && (bool)$_POST['deletePost']) {
+		$response = (new PostMiddleware())->removePost($_POST['postId']);
 	}
 } else if ($_SERVER['REQUEST_METHOD'] === "GET") {
 	if (!empty($_GET['threadUrl']) && !empty($_GET['sortType'])) {
@@ -66,7 +68,7 @@ class PostMiddleware {
 
 		return (new PostController())->searchPostByQueryInThread([$query, $params[1]]);
 	}
-	
+
 	public function vote(array $params) : array {
 		if (!$this->isLogged()) return array("response" => 403);
 		if (!(new UserController())->isEmailConfirmedByUserName($_SESSION['USERNAME'])) return array( "response" => 400, "data" => array("message" => "Email is not verified."));
@@ -303,6 +305,18 @@ class PostMiddleware {
 		}
 
 		return (new PostController())->loadPostByThread([$params[0], $params[1]]);
+	}
+
+	public function removePost(int $postId) : array {
+		if (empty($postId)) {
+			return array("response" => 400, "data" => array("message" => "You must click a valid delete button in a valid thread of a valid post."));
+		} 
+
+		if ($postId <= 0) {
+			return array("response" => 400, "data" => array("message" => "You must click a valid delete button in a valid thread of a valid post."));
+		}
+
+		return (new PostController())->deletePost([$postId]);
 	}
 }
 

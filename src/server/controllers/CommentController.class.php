@@ -259,5 +259,13 @@ class CommentController extends Controller {
 	public function findAll(array $params) : array {
 		return array();
 	}
+
+	public function deleteComment(array $params) : array {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "UPDATE comments SET is_deleted=1 WHERE comments.comment_id=$params[0] LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		mysqli_close($conn);
+		return array("response" => 200);
+	} 
 }
 ?>
