@@ -94,7 +94,7 @@
 							echo '<article class="rounded p-4 mb-5">';
 							echo '<div class="row">';
 							echo '<div class="col-sm-2">';
-							echo '<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">';
+							echo '<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting" data-post-id="'.$post['post_id'].'">';
 							if ($post['isVoted'] == 0) {
 								echo '<i class="fas fa-arrow-up my-auto"></i>';
 								echo '<span class="d-block mt-2 mb-2"><a href="#">'.$post['numOfVotes'].'</a></span>';
@@ -161,7 +161,7 @@
 									echo '<article class="rounded p-4 px-0">';
 									echo '<div class="row">';
 									echo '<div class="col-sm-2">';
-									echo '<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">';
+									echo '<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center comment-voting" data-comment-id="'.$comment['comment_id'].'">';
 									if ($comment['isVoted'] == 0) {
 										echo '<i class="fas fa-arrow-up my-auto"></i>';
 										echo '<span class="d-block mt-2 mb-2"><a href="#">'.$comment['numOfVotes'].'</a></span>';

@@ -430,7 +430,7 @@ $(document).ready(() => {
 						var result = `<article class="rounded p-4 mb-5">`;
 						result += `<div class="row">`;
 						result += `<div class="col-md-2">`;
-						result += `<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">`;
+						result += `<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting" data-post-id="${element['post_id']}">`;
 						if (element['isVoted'] == 0) {
 							result += `<i class="fas fa-arrow-up my-auto"></i>`;
 							result += `<span class="d-block mt-2 mb-2"><a href="#">${element['numOfVotes']}</a></span>`;
@@ -492,7 +492,7 @@ $(document).ready(() => {
 							result += `<article class="rounded p-4 px-0">`;
 							result += `<div class="row">`;
 							result +=  `<div class="col-sm-2">`;
-							result += `<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">`;
+							result += `<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center comment-voting" data-comment-id="${comment['comment_id']}">`;
 							if (comment['isVoted'] == 0) {
 								result += `<i class="fas fa-arrow-up my-auto"></i>`;
 								result += `<span class="d-block mt-2 mb-2"><a href="#">${comment['numOfVotes']}</a></span>`;
@@ -566,7 +566,7 @@ $(document).ready(() => {
 				if (parseInt(result["response"]) !== 400 && !jQuery.isEmptyObject(result)) {
 					$.each(result, (_, element) => {
 						console.log(element);
-						var result = `<div class="search-result post bg-white mb-3 p-3"><div class="row"><div class="col-sm-2"><div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">`;
+						var result = `<div class="search-result post bg-white mb-3 p-3"><div class="row"><div class="col-sm-2"><div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting" data-post-id="${element['post_id']}">`;
 						if (element['isVoted'] == 0) {
 							result += `<i class="fas fa-arrow-up my-auto"></i>`;
 							result += `<span class="d-block mt-2 mb-2"><a href="#">${element['numOfVotes']}</a></span>`;
@@ -630,7 +630,7 @@ $(document).ready(() => {
 							result += `<article class="rounded p-4 px-0">`;
 							result += `<div class="row">`;
 							result +=  `<div class="col-sm-2">`;
-							result += `<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting">`;
+							result += `<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center comment-voting" data-comment-id="${comment['comment_id']}">`;
 							if (comment['isVoted'] == 0) {
 								result += `<i class="fas fa-arrow-up my-auto"></i>`;
 								result += `<span class="d-block mt-2 mb-2"><a href="#">${comment['numOfVotes']}</a></span>`;
