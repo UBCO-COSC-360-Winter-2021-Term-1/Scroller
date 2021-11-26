@@ -440,6 +440,7 @@ class PostController extends Controller {
 		$conn = (new DatabaseConnector())->getConnection();
 		$sql = "UPDATE posts SET is_deleted=1 WHERE posts.post_id=$params[0] LIMIT 1";
 		$result = mysqli_query($conn, $sql);
+		// $sql = "INSERT INTO notifications (user_id,	replied_user_id, action_type, thread_id) VALUES (, , 5, )"
 		mysqli_close($conn);
 		return array("response" => 200);
 	} 

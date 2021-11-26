@@ -1,54 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!-- Bootstrap CDN -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-	<!-- Fonts -->
-	<link rel="stylesheet" href="css/fonts.css">
-	<!-- Custom CSS -->
-	<link rel="stylesheet" href="css/style.css">
-
-	<script src="https://kit.fontawesome.com/104f28ad82.js" crossorigin="anonymous"></script>
-	<title>Scroller</title>
-</head>
-<body>
-	<header>
-		<nav class="d-flex justify-content-center justify-content-md-between w-75 mx-auto py-3">
-			<a href="/" class="d-flex align-items-center brand me-3">
-				<i class="fas fa-mouse"></i><span class="ms-2">Scroller</span>
-			</a>
-	
-			<div class="text-end ms-3">
-				<ul>
-					<li class="me-3">
-						<a href="/notifications" class="header-icon"><i class="far fa-bell"></i></a>
-					</li>
-					<li>
-						<a href="/account" class="header-icon d-inline-flex">
-							<img class="img-fluid img-header-profile" src="https://thumbor.forbes.com/thumbor/fit-in/416x416/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F5f47d4de7637290765bce495%2F0x0.jpg%3Fbackground%3D000000%26cropX1%3D1699%26cropX2%3D3845%26cropY1%3D559%26cropY2%3D2704" alt="d3li0n-profile-picture" />
-							<span class="ms-2">d3li0n</span>
-						</a>
-					</li>
-					<li class="ms-3">
-						<a href="/logout" class="header-icon">
-							<i class="fas fa-sign-out-alt"></i>
-						</a>
-					</li>
-					<!--
-					<li>
-						<a href="/account" class="header-icon active-sign-in-header">
-							Sign in
-						</a>
-					</li>
-					-->
-				</ul> 
-			</div>
-		</nav>
-	</header>
+<?php 																						
+	$urlSecurity = $_SERVER['REQUEST_URI'];
+	$urlSecurity = substr($urlSecurity, strpos($urlSecurity, ".") + 1);
+	if ($urlSecurity === "php")
+		header("Location: /");
+?>
     <div class="thread-navbar mb-5">
         <div class="img-thread-background" 
 			style="background-image: url('https://i.imgur.com/pj0h7aO.jpg');">
@@ -77,7 +32,9 @@
 				<nav class="mt-3">
 					<ul>
 						<li><a href="/" class="rounded"><i class="fas fa-home"></i><span class="ms-2">Home</span></a></li>
+						<?php if (isset($_SESSION['IS_AUTHORIZED']) && isset($_SESSION['IS_ADMIN']) && $_SESSION['IS_ADMIN']) { ?>
 						<li><a href="/admin" class="rounded"><i class="fas fa-toolbox"></i><span class="ms-2">Admin Portal</span></a></li>
+						<?php } ?>
 						<li><a href="/search" class="active rounded"><i class="far fa-compass"></i><span class="ms-2">Threads</span></a></li>
 						<li><a href="/search" class="rounded"><i class="fas fa-question"></i><span class="ms-2">My Threads</span></a></li>
 						<li><a href="/search" class="rounded"><i class="far fa-comment-alt"></i><span class="ms-2">My Replies</span></a></li>
@@ -85,6 +42,7 @@
 				</nav>
 			</div>
 			<div class="col-md-6 topic-threads overflow-auto mx-auto mb-4">
+				
 				<!-- Disabled Thread -->
 				<div class="system-message bg-danger mb-3">
 					<div class="system-message-content d-inline-flex px-3 py-3 w-100">
@@ -92,6 +50,7 @@
 						<p class="ms-3 my-auto">This post was disabled by Administrator.<br><span class="fw-bolder">Reason:</span> Violation of Community Guidelines.</p>
 					</div>
 				</div>
+				
 				<!-- Normal Content-->
 				<article class="rounded p-4 mb-5">
 					<div class="row">
@@ -121,6 +80,7 @@
 								<button id="hide" class="me-4 thread-hide">Hide</button>
 								<button id="delete" class="thread-delete">Delete</button>
 							</div>
+							
 							<div class="reply-post my-3">
 								<form method="post">
 									<h6>Comment as <span><a href="/account/1">d3li0n</a>.</span></h6>
@@ -128,6 +88,7 @@
 									<button type="submit" class="btn btn-sm btn-reply-post">Post Reply</button>
 								</form>
 							</div>
+							
 							<div class="thread-comments">
 								<article class="rounded p-4 px-0 mb-2 pt-2">
 									<div class="row">
@@ -304,5 +265,3 @@
 			</div>
 		</div>
 	</main>
-</body>
-</html>
