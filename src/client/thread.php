@@ -155,7 +155,7 @@
 								echo '<button id="delete" class="post-delete" data-post-id="'.$post['post_id'].'">Delete</button>';
 								echo '</div>';
 							}
-							$postComments = (new CommentController())->loadCommentsByPost($post["post_id"]);
+							$postComments = (new CommentController())->loadCommentsByPost($post["post_id"], 0);
 							if (!empty($postComments)) {
 								foreach($postComments as $comment){
 									echo '<article class="rounded p-4 px-0">';
@@ -211,14 +211,6 @@
 					}
 				?>
 				</div>		
-					<!-- <div class="reply-post my-3">
-								<form method="post">
-									<h6>Comment as <span><a href="/account/1">d3li0n</a>.</span></h6>
-									<textarea name="post-comment" id="postComment" class="w-100"></textarea>
-									<button type="submit" class="btn btn-sm btn-reply-post">Post Reply</button>
-								</form>
-							</div> -->
-							
 			</div>
 			<div class="col-md-3">
 				<?php if ($threadInfo[0]["is_locked"] == 0){?>

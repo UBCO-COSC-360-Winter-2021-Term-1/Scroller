@@ -219,22 +219,30 @@ class CommentController extends Controller {
 		return $result;
 	}
 
-	public function loadCommentsByPost(int $postId): array {
+	public function loadCommentsByPost(int $postId, bool $loadAllComments) : array {
 		$conn = (new DatabaseConnector())->getConnection();
 		$sql = "SELECT id FROM users WHERE username='".$_SESSION["USERNAME"]."' LIMIT 1";
 		$result = mysqli_query($conn, $sql);
-		
 		$user = mysqli_fetch_row($result);
 		$userId = $user[0];
 
-		$sql = "SELECT comments.comment_id, comments.body, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(comments.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url,
-		CASE WHEN EXISTS(SELECT comment_votes.user_id FROM comment_votes WHERE comment_votes.user_id = $userId AND comments.comment_id = comment_votes.comment_id) THEN 1 ELSE 0 END as voted,
-		IF ((SELECT comment_votes.vote FROM comment_votes WHERE comment_votes.user_id = $userId AND comments.comment_id = comment_votes.comment_id AND comment_votes.vote = 1), 1, -1) as voteType,
-		(SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 1 AND comments.comment_id = comment_votes.comment_id) - (SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 0 AND comments.comment_id = comment_votes.comment_id) as numOfVotes
-		FROM comments JOIN users ON comments.user_id = users.id JOIN threads ON threads.thread_id = comments.thread_id LEFT JOIN comment_votes ON comment_votes.comment_id = comments.comment_id 
-		WHERE comments.is_hidden = 0 AND comments.is_deleted = 0 AND comments.post_id=$postId GROUP BY comments.comment_id ORDER BY numOfVotes DESC LIMIT 3";
+		if ($loadAllComments == false) {
+			$sql = "SELECT comments.comment_id, comments.body, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(comments.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url,
+			CASE WHEN EXISTS(SELECT comment_votes.user_id FROM comment_votes WHERE comment_votes.user_id = $userId AND comments.comment_id = comment_votes.comment_id) THEN 1 ELSE 0 END as voted,
+			IF ((SELECT comment_votes.vote FROM comment_votes WHERE comment_votes.user_id = $userId AND comments.comment_id = comment_votes.comment_id AND comment_votes.vote = 1), 1, -1) as voteType,
+			(SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 1 AND comments.comment_id = comment_votes.comment_id) - (SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 0 AND comments.comment_id = comment_votes.comment_id) as numOfVotes
+			FROM comments JOIN users ON comments.user_id = users.id JOIN threads ON threads.thread_id = comments.thread_id LEFT JOIN comment_votes ON comment_votes.comment_id = comments.comment_id 
+			WHERE comments.is_hidden = 0 AND comments.is_deleted = 0 AND comments.post_id=$postId GROUP BY comments.comment_id ORDER BY numOfVotes DESC LIMIT 3";
+		} else if ($loadAllComments == true) {
+			$sql = "SELECT comments.comment_id, comments.body, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(comments.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url,
+			CASE WHEN EXISTS(SELECT comment_votes.user_id FROM comment_votes WHERE comment_votes.user_id = $userId AND comments.comment_id = comment_votes.comment_id) THEN 1 ELSE 0 END as voted,
+			IF ((SELECT comment_votes.vote FROM comment_votes WHERE comment_votes.user_id = $userId AND comments.comment_id = comment_votes.comment_id AND comment_votes.vote = 1), 1, -1) as voteType,
+			(SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 1 AND comments.comment_id = comment_votes.comment_id) - (SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 0 AND comments.comment_id = comment_votes.comment_id) as numOfVotes
+			FROM comments JOIN users ON comments.user_id = users.id JOIN threads ON threads.thread_id = comments.thread_id LEFT JOIN comment_votes ON comment_votes.comment_id = comments.comment_id 
+			WHERE comments.is_hidden = 0 AND comments.is_deleted = 0 AND comments.post_id=$postId GROUP BY comments.comment_id ORDER BY numOfVotes";
+		}
+		
 		$response = mysqli_query($conn, $sql);
-
 		$result = array();
 
 		while($row = mysqli_fetch_assoc($response)) {
