@@ -153,13 +153,14 @@ class PostController extends Controller {
 	public function getPostByQuery(string $query) : array {
 		$conn = (new DatabaseConnector())->getConnection();
 		if(!isset($_SESSION['USERNAME'])) {
-			$sql = "SELECT posts.post_id, posts.title, posts.body, posts.post_image, posts.media_url, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(posts.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, threads.thread_url, COUNT(comments.post_id) as totalComments,
-			CASE WHEN EXISTS(SELECT post_votes.user_id FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id) THEN 1 ELSE 0 END as voted,
-			IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
-			(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
-			FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id LEFT JOIN comments ON posts.post_id = comments.post_id LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
-			WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 AND (posts.title LIKE '%$query%' OR posts.body LIKE '%$query%')
-			GROUP BY posts.post_id ORDER BY numOfVotes DESC";
+			$sql = "SELECT posts.post_id, posts.title, posts.body, posts.post_image, posts.media_url, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(posts.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, threads.thread_url, (SELECT COUNT(comments.post_id) FROM comments WHERE comments.is_deleted=0 AND comments.post_id=posts.post_id) as totalComments,
+            CASE WHEN EXISTS(SELECT post_votes.user_id FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id) THEN 1 ELSE 0 END as voted,
+            IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
+            (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
+            FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id LEFT JOIN comments ON posts.post_id = comments.post_id LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
+            WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 AND (posts.title LIKE '%$query%' OR posts.body LIKE '%$query%')
+            GROUP BY posts.post_id ORDER BY numOfVotes DESC";
+			
 			$response = mysqli_query($conn, $sql);
 
 			$result = array();
@@ -193,7 +194,7 @@ class PostController extends Controller {
 		$user = mysqli_fetch_row($result);
 		$userId = $user[0];
 
-		$sql = "SELECT posts.post_id, posts.title, posts.body, posts.post_image, posts.media_url, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(posts.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, threads.thread_url, COUNT(comments.post_id) as totalComments,
+		$sql = "SELECT posts.post_id, posts.title, posts.body, posts.post_image, posts.media_url, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(posts.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, threads.thread_url, (SELECT COUNT(comments.post_id) FROM comments WHERE comments.is_deleted=0 AND comments.post_id=posts.post_id) as totalComments,
 		CASE WHEN EXISTS(SELECT post_votes.user_id FROM post_votes WHERE post_votes.user_id = $userId AND posts.post_id = post_votes.post_id) THEN 1 ELSE 0 END as voted,
 		IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = $userId AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
 		(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
@@ -282,13 +283,13 @@ class PostController extends Controller {
 		$conn = (new DatabaseConnector())->getConnection();
 
 		if (!isset($_SESSION['USERNAME'])) {
-			$sql = "SELECT posts.post_id, posts.title, posts.body, posts.post_image, posts.media_url, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(posts.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, threads.thread_url, COUNT(comments.post_id) as totalComments,
-			CASE WHEN EXISTS(SELECT post_votes.user_id FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id) THEN 1 ELSE 0 END as voted,
-			IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
-			(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
-			FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id LEFT JOIN comments ON posts.post_id = comments.post_id LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
-			WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 
-			GROUP BY posts.post_id ORDER BY numOfVotes DESC";
+			$sql = "SELECT posts.post_id, posts.title, posts.body, posts.post_image, posts.media_url, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(posts.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, threads.thread_url, (SELECT COUNT(comments.post_id) FROM comments WHERE comments.is_deleted=0 AND comments.post_id=posts.post_id) as totalComments,
+            CASE WHEN EXISTS(SELECT post_votes.user_id FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id) THEN 1 ELSE 0 END as voted,
+            IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
+            (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
+            FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id LEFT JOIN comments ON posts.post_id = comments.post_id LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
+            WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 
+            GROUP BY posts.post_id ORDER BY numOfVotes DESC";
 			$response = mysqli_query($conn, $sql);
 
 			$result = array();
@@ -322,7 +323,7 @@ class PostController extends Controller {
 		$user = mysqli_fetch_row($result);
 		$userId = $user[0];
 
-		$sql = "SELECT posts.post_id, posts.title, posts.body, posts.post_image, posts.media_url, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(posts.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, threads.thread_url, COUNT(comments.post_id) as totalComments,
+		$sql = "SELECT posts.post_id, posts.title, posts.body, posts.post_image, posts.media_url, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(posts.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url, threads.thread_url, (SELECT COUNT(comments.post_id) FROM comments WHERE comments.is_deleted=0 AND comments.post_id=posts.post_id) as totalComments,
 		CASE WHEN EXISTS(SELECT post_votes.user_id FROM post_votes WHERE post_votes.user_id = $userId AND posts.post_id = post_votes.post_id) THEN 1 ELSE 0 END as voted,
 		IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = $userId AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
 		(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
