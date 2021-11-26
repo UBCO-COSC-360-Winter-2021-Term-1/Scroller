@@ -87,7 +87,7 @@ class ThreadController extends Controller {
 
 	public function findThreadByUrl(string $url) : bool {
 		$conn = (new DatabaseConnector())->getConnection();
-		$sql = "SELECT thread_url FROM threads where thread_url = '$url' AND is_deleted != 1";
+		$sql = "SELECT thread_url FROM threads where thread_url = '$url' AND is_deleted = 0";
 		
 		$result = mysqli_query($conn, $sql);
 		while ($row = mysqli_fetch_assoc($result)) {
@@ -165,6 +165,85 @@ class ThreadController extends Controller {
 	public function findAll(array $params) : array {
 
 		return array();
+	}
+
+	public function getTitle(string $params): string {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "SELECT thread_title FROM threads WHERE thread_url = '$params' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		$title = mysqli_fetch_row($result);
+		return $title[0];
+	}
+
+	public function getThread(string $threadUrl) {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "SELECT threads.thread_title, threads.background_picture, threads.thread_picture, threads.is_locked, CASE WHEN EXISTS(SELECT user_threads.user_id FROM user_threads JOIN users ON user_threads.user_id = users.id WHERE users.username = '".$_SESSION["USERNAME"]."' AND user_threads.thread_id = threads.thread_id) THEN 1 ELSE 0 END as isSubscribed FROM threads WHERE threads.thread_url = '$threadUrl'";
+		$response = mysqli_query($conn, $sql);
+
+		$result = array();
+
+		while($row = mysqli_fetch_assoc($response)) {
+			array_push($result, [
+				"thread_title" => $row['thread_title'],
+				"thread_background" => $row['background_picture'],
+				"thread_profile" => $row['thread_picture'],
+				"is_locked" => $row['is_locked'],
+				"isSubscribed" => $row['isSubscribed']
+			]);
+		}
+		mysqli_close($conn);
+		return $result;
+	}
+
+	public function userThreadsOperations(array $params): array {
+		$conn = (new DatabaseConnector())->getConnection();
+		$dataStatus = (int)$params[1];
+		$get_user_query = "SELECT id FROM users WHERE username = '".$_SESSION["USERNAME"]."' LIMIT 1";
+		$result = mysqli_query($conn, $get_user_query);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$user_id = $row["id"];
+		}
+		
+		$sql = "SELECT thread_id FROM threads WHERE thread_url = '$params[0]' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$thread_id = $row["thread_id"];
+		}
+		
+		switch ($dataStatus) {
+			case 0:
+				$sql = "INSERT INTO user_threads(thread_id, user_id) VALUES ($thread_id, $user_id)";
+				break;
+			case 1:
+				$sql = "DELETE FROM user_threads WHERE thread_id=$thread_id AND user_id=$user_id";
+				break;
+		}
+
+		mysqli_query($conn, $sql);
+		mysqli_close($conn);
+		return array("response" => 200);
+	}
+
+	public function getTopUsers(string $url): array {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "SELECT threads.thread_id FROM threads WHERE threads.thread_url = '$url' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$thread_id = $row["thread_id"];
+		}
+		
+		$sql = "SELECT count(posts.user_id), users.id, users.username, users.avatar_url FROM posts JOIN users ON posts.user_id=users.id WHERE posts.thread_id=$thread_id GROUP BY (posts.user_id) ORDER BY count(posts.user_id) DESC LIMIT 5";
+		$result = mysqli_query($conn, $sql);
+		$resultArray = array();
+		while ($row = mysqli_fetch_assoc($result)) {
+			array_push($resultArray, [
+				"count" => $row["count(posts.user_id)"],
+				"username" => $row["username"],
+				"avatar_url" => $row["avatar_url"],
+				"userId" => $row["id"]
+			]);
+		}
+		return $resultArray;
 	}
 }
 ?>

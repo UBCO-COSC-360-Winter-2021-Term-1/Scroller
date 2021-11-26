@@ -347,7 +347,6 @@ $(document).ready(() => {
 			return;
 		} 
 		
-		// get current url
 		var threadUrl = window.location.pathname.split("/")[2];
 
 		var form_data = new FormData();
@@ -375,6 +374,334 @@ $(document).ready(() => {
 					$(".system-message div:last-child p").text(result["data"]["message"]);
 				}
 			},
+		});
+	});
+
+	/* Join Thread */
+	$(".join-thread-button").click((e) => {
+		e.preventDefault();
+		var threadUrl = window.location.pathname.split("/")[2];
+		var form_data = new FormData();
+		form_data.append("threadUrl", threadUrl);
+		form_data.append("dataStatus", $(".join-thread-button").data("status"));
+
+		$.ajax({
+			url: `http://${$(location).attr('host')}/server/middlewares/ThreadMiddleware.class.php`,
+			type: 'POST',
+			data: form_data,
+			contentType: false,
+			cache: false,
+			processData: false,
+			success: (result) => {
+				if (parseInt(result["response"]) === 200) {
+					if ($(".join-thread-button").data("status") == 0) {
+						$(".join-thread-button").data("status", 1);
+						$(".join-thread-button").text("Leave");
+					} else {
+						$(".join-thread-button").data("status", 0);
+						$(".join-thread-button").text("Join");
+					}
+				} else if (parseInt(result["response"]) === 403) {
+					$(location).prop('href', '/');
+				} 
+			},
+		});
+	});
+
+	/* Sort Posts by Top Votes or Newest In Thread*/
+	$("#top-posts-sort, #new-posts-sort").click((e) => {
+		e.preventDefault();
+		var threadUrl = window.location.pathname.split("/")[2];
+		var sortType = $(e.target).text().trim() == "Top" ? $("#top-posts-sort").text().trim() : $("#new-posts-sort").text().trim();
+		$.ajax({
+			url: `http://${$(location).attr('host')}/server/middlewares/PostMiddleware.class.php`,
+			dataType: "json",
+			contentType: "application/json;charset=utf-8",
+			type: 'GET',
+			data: {
+				threadUrl: threadUrl,
+				sortType: sortType
+			},
+			success: function (result) {
+				$("article").remove();
+				$(".post-results-block").html("");
+				if (parseInt(result["response"]) !== 400 && !jQuery.isEmptyObject(result)) {
+					$.each(result, (_, element) => {
+						var result = `<article class="rounded p-4 mb-5">`;
+						result += `<div class="row">`;
+						result += `<div class="col-md-2">`;
+						result += `<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting" data-post-id="${element['post_id']}">`;
+						if (element['isVoted'] == 0) {
+							result += `<i class="fas fa-arrow-up my-auto"></i>`;
+							result += `<span class="d-block mt-2 mb-2"><a href="#">${element['numOfVotes']}</a></span>`;
+							result += `<i class="fas fa-arrow-down my-auto"></i>`;
+						} else if (element['isVoted'] == 1 && element['typeVote'] == 1) {
+							result += `<i class="fas fa-arrow-up voted-up my-auto"></i>`;
+							result += `<span class="d-block mt-2 mb-2"><a href="#" class="voted-up">${element['numOfVotes']}</a></span>`;
+							result += `<i class="fas fa-arrow-down my-auto"></i>`;
+						} else if (element['isVoted'] == 1 && element['typeVote'] == -1) {
+							result += `<i class="fas fa-arrow-up my-auto"></i>`;
+							result += `<span class="d-block mt-2 mb-2"><a href="#" class="voted-down">${element['numOfVotes']}</a></span>`;
+							result += `<i class="fas fa-arrow-down my-auto voted-down"></i>`;
+						}
+						result += `</div></div><div class="col-sm-10">`;
+						result += `<h4><a href="/t/${element['thread_url']}/${element['post_id']}">${element['title']}</a></h4>`;
+						result += `<p class="no-border">`;
+						if (element['post_image'] == null && element['media_url'] == null && element['body'] != null) {
+							result += `${element['body']}`;
+						} else if (element['post_image'] != null && element['media_url'] == null && element['body'] == null) {
+							result += `<img src="http://${$(location).attr('host')}/server/uploads/post_images/${element['post_image']}" alt="content-img">`;
+						} else if (element['post_image'] == null && element['media_url'] != null && element['body'] == null) {
+							result += `<iframe class="pt-2" width="100%" height="300" src="${element['media_url']}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+						} else if (element['post_image'] != null && element['media_url'] == null && element['body'] != null) {
+							result += `${element['body']}`;
+							result += `<img src="http://${$(location).attr('host')}/server/uploads/post_images/${element['post_image']}" alt="content-img">`;
+						} else if (element['post_image'] == null && element['media_url'] != null && element['body'] != null) {
+							result += `${element['body']}`;
+							result += `<iframe class="pt-2" width="100%" height="300" src="${element['media_url']}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+						} else if (element['post_image'] != null && element['media_url'] != null && element['body'] != null) {
+							result += `${element['body']}`;
+							result += `<img src="http://${$(location).attr('host')}/server/uploads/post_images/${element['post_image']}" alt="content-img">`;
+							result += `<iframe class="pt-2" width="100%" height="300" src="${element['media_url']}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+						} else {
+							result += element['body'];
+						}
+						result += `</p>`;
+						result += `<div class="post-info-container override d-flex justify-content-between mt-0"><div class="profile-info-sm d-flex align-middle">`;
+						result += `<img class="img-fluid my-auto img-header-profile" src="http://${$(location).attr('host')}/server/uploads/user_images/${element['avatar_url']}" alt="${element['username']}-profile-picture"/>`;
+						result += `<span class="ms-2">Posted by <a href="/account/${element['ownerId']}">${element['username']}</a></span>`;
+						result += `</div>`;
+						if (element['timestamp'] / 60 < 60) {
+							result += `<span class="d-block time-post">${Math.ceil(element['timestamp'] / 60)}m ago</span>`;
+						} else if (element['timestamp'] / 60 >= 60 && element['timestamp'] / 60 < 1409) {
+							result += `<span class="d-block time-post">${Math.ceil(element['timestamp'] / 3600)}h ago</span>`;
+						} else {
+							result += `<span class="d-block time-post">${Math.ceil(element['timestamp'] / 86400)}d ago</span>`;
+						}
+						result += `<div class="post-info-comments">`;
+						result += `<a href="/t/${element['thread_url']}/${element['post_id']}"><i class="far fa-comment-alt"></i><span class="ms-1">${element['totalComments']}</span></a>`;
+						result += `</div>`;
+						result += `</div>`;
+						if (element['isAdmin'] == 1 || element['isOwner'] == 1) {
+							result += `<div class="mt-2">`;
+							result += `<button id="hide" class="me-4 post-hide data-post-id="${element['post_id']}">Hide</button>`;
+							result += `<button id="delete" class="post-delete" data-post-id="${element['post_id']}">Delete</button>`;
+							result += `</div>`;
+						}
+						element['comments'].forEach((comment) => {
+							result += `<article class="rounded p-4 px-0">`;
+							result += `<div class="row">`;
+							result +=  `<div class="col-sm-2">`;
+							result += `<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center comment-voting" data-comment-id="${comment['comment_id']}">`;
+							if (comment['isVoted'] == 0) {
+								result += `<i class="fas fa-arrow-up my-auto"></i>`;
+								result += `<span class="d-block mt-2 mb-2"><a href="#">${comment['numOfVotes']}</a></span>`;
+								result += `<i class="fas fa-arrow-down my-auto"></i>`;
+							} else if (comment['isVoted'] == 1 && comment['typeVote'] == 1) {
+								result += `<i class="fas fa-arrow-up voted-up my-auto"></i>`;
+								result += `<span class="d-block mt-2 mb-2"><a href="#" class="voted-up">${comment['numOfVotes']}</a></span>`;
+								result += `<i class="fas fa-arrow-down my-auto"></i>`;
+							} else if (comment['isVoted'] == 1 && comment['typeVote'] == -1) {
+								result += `<i class="fas fa-arrow-up my-auto"></i>`;
+								result += `<span class="d-block mt-2 mb-2"><a href="#" class="voted-down">${comment['numOfVotes']}</a></span>`;
+								result += `<i class="fas fa-arrow-down voted-down my-auto"></i>`;
+							}
+							result += `</div>`;
+							result += `</div>`;
+							result += `<div class="col-sm-10">`;
+							result += `<p class="no-border">${comment['body']}</p>`;
+							result += `<div class="post-info-container override d-flex justify-content-between">`;
+							result += `<div class="profile-info-sm d-flex align-middle">`;
+							result += `<img class="img-fluid my-auto img-header-profile" src="http://${$(location).attr('host')}/server/uploads/user_images/${comment['avatar_url']}" alt="${comment['username']}-profile-picture"/>`
+							result += `<span class="ms-2"><a href="/account/${comment['ownerId']}">${comment['username']}</a> replied</span>`;
+							result += `</div>`;
+							if (comment['timestamp'] / 60 < 60) {
+								result += `<span class="d-block time-post">${Math.ceil(comment['timestamp'] / 60)}m ago</span>`;
+							} else if (comment['timestamp'] / 60 >= 60 && comment['timestamp'] / 60 < 1409) {
+								result += `<span class="d-block time-post">${Math.ceil(comment['timestamp'] / 3600)}h ago</span>`;
+							} else {
+								result += `<span class="d-block time-post">${Math.ceil(comment['timestamp'] / 86400)}d ago</span>`;
+							}
+							result += `</div>`;
+							if (comment['isAdmin'] == 1 || comment['isOwner'] == 1) {
+								result += `<div class="mt-2">`;
+								result += `<button id="delete" class="comment-delete" data-comment-id="${comment['comment_id']}">Delete</button>`;
+								result += `</div>`;
+							}
+							result += `</div>`;
+							result += `</div>`;
+							result += `</article>`;
+						});
+						result += `</div>`;
+						result += `</div>`;
+						result += `</article>`;
+						$(".post-results-block").append(result);
+					});
+					return;
+				}
+			}
+		});
+	});
+
+	/* Search Posts on Thread */
+	$(".search-thread").on("keydown", (e) => {
+		if (e.key == "Enter") e.preventDefault();
+	});
+
+	$(".search-thread").on("input", (e) => {
+		e.preventDefault();
+		$.ajax({
+			url: `http://${$(location).attr('host')}/server/middlewares/PostMiddleware.class.php`,
+			dataType: "json",
+			contentType: "application/json;charset=utf-8",
+			type: "GET",
+			data: {
+				query: e.target.value,
+				threadUrl: window.location.pathname.split("/")[2],
+				postSearch: true
+			},
+			success: function (result) {
+				$("article").remove();
+				$(".post-results-block").html("");
+				if (parseInt(result["response"]) !== 400 && !jQuery.isEmptyObject(result)) {
+					$.each(result, (_, element) => {
+						console.log(element);
+						var result = `<div class="search-result post bg-white mb-3 p-3"><div class="row"><div class="col-sm-2"><div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting" data-post-id="${element['post_id']}">`;
+						if (element['isVoted'] == 0) {
+							result += `<i class="fas fa-arrow-up my-auto"></i>`;
+							result += `<span class="d-block mt-2 mb-2"><a href="#">${element['numOfVotes']}</a></span>`;
+							result += `<i class="fas fa-arrow-down my-auto"></i>`;
+						} else if (element['isVoted'] == 1 && element['typeVote'] == 1) {
+							result += `<i class="fas fa-arrow-up voted-up my-auto"></i>`;
+							result += `<span class="d-block mt-2 mb-2"><a href="#" class="voted-up">${element['numOfVotes']}</a></span>`;
+							result += `<i class="fas fa-arrow-down my-auto"></i>`;
+						} else if (element['isVoted'] == 1 && element['typeVote'] == -1) {
+							result += `<i class="fas fa-arrow-up my-auto"></i>`;
+							result += `<span class="d-block mt-2 mb-2"><a href="#" class="voted-down">${element['numOfVotes']}</a></span>`;
+							result += `<i class="fas fa-arrow-down my-auto voted-down"></i>`;
+						}
+						result += `</div></div><div class="col-sm-10">`;
+						result += `<h4><a href="/t/${element['thread_url']}/${element['post_id']}">${element['title']}</a></h4>`;
+						result += `<p class="no-border">`;
+						if (element['post_image'] == null && element['media_url'] == null && element['body'] != null) {
+							result += `${element['body']}`;
+						} else if (element['post_image'] != null && element['media_url'] == null && element['body'] == null) {
+							result += `<img src="http://${$(location).attr('host')}/server/uploads/post_images/${element['post_image']}" alt="content-img">`;
+						} else if (element['post_image'] == null && element['media_url'] != null && element['body'] == null) {
+							result += `<iframe class="pt-2" width="100%" height="300" src="${element['media_url']}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+						} else if (element['post_image'] != null && element['media_url'] == null && element['body'] != null) {
+							result += `${element['body']}`;
+							result += `<img src="http://${$(location).attr('host')}/server/uploads/post_images/${element['post_image']}" alt="content-img">`;
+						} else if (element['post_image'] == null && element['media_url'] != null && element['body'] != null) {
+							result += `${element['body']}`;
+							result += `<iframe class="pt-2" width="100%" height="300" src="${element['media_url']}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+						} else if (element['post_image'] != null && element['media_url'] != null && element['body'] != null) {
+							result += `${element['body']}`;
+							result += `<img src="http://${$(location).attr('host')}/server/uploads/post_images/${element['post_image']}" alt="content-img">`;
+							result += `<iframe class="pt-2" width="100%" height="300" src="${element['media_url']}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+						} else {
+							result += element['body'];
+						}
+						result += `</p>`;
+
+						result += `<div class="post-info-container override d-flex justify-content-between mt-0"><div class="profile-info-sm d-flex align-middle">`;
+						result += `<img class="img-fluid my-auto img-header-profile" src="http://${$(location).attr('host')}/server/uploads/user_images/${element['avatar_url']}" alt="${element['username']}-profile-picture"/>`
+						result += `<span class="ms-2">Posted by <a href="/account/${element['ownerId']}">${element['username']}</a></span>`;
+						result += `</div>`;
+
+						if (element['timestamp'] / 60 < 60) {
+							result += `<span class="d-block time-post">${Math.ceil(element['timestamp'] / 60)}m ago</span>`;
+						} else if (element['timestamp'] / 60 >= 60 && element['timestamp'] / 60 < 1409) {
+							result += `<span class="d-block time-post">${Math.ceil(element['timestamp'] / 3600)}h ago</span>`;
+						} else {
+							result += `<span class="d-block time-post">${Math.ceil(element['timestamp'] / 86400)}d ago</span>`;
+						}
+						result += `<div class="post-info-comments">`;
+						result += `<a href="/t/${element['thread_url']}/${element['post_id']}"><i class="far fa-comment-alt"></i><span class="ms-1">${element['totalComments']}</span></a>`;
+						result += `</div>`
+						result += `</div>`
+						if (element['isAdmin'] == 1 || element['isOwner'] == 1) {
+							result+= `<div class="mt-2">`;
+							result += `<button id="hide" class="me-4 post-hide data-post-id="${element['post_id']}">Hide</button>`;
+							result += `<button id="delete" class="post-delete" data-post-id="${element['post_id']}">Delete</button>`;
+							result += `</div>`;
+						}
+						element['comments'].forEach((comment) => {
+							result += `<article class="rounded p-4 px-0">`;
+							result += `<div class="row">`;
+							result +=  `<div class="col-sm-2">`;
+							result += `<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center comment-voting" data-comment-id="${comment['comment_id']}">`;
+							if (comment['isVoted'] == 0) {
+								result += `<i class="fas fa-arrow-up my-auto"></i>`;
+								result += `<span class="d-block mt-2 mb-2"><a href="#">${comment['numOfVotes']}</a></span>`;
+								result += `<i class="fas fa-arrow-down my-auto"></i>`;
+							} else if (comment['isVoted'] == 1 && comment['typeVote'] == 1) {
+								result += `<i class="fas fa-arrow-up voted-up my-auto"></i>`;
+								result += `<span class="d-block mt-2 mb-2"><a href="#" class="voted-up">${comment['numOfVotes']}</a></span>`;
+								result += `<i class="fas fa-arrow-down my-auto"></i>`;
+							} else if (comment['isVoted'] == 1 && comment['typeVote'] == -1) {
+								result += `<i class="fas fa-arrow-up my-auto"></i>`;
+								result += `<span class="d-block mt-2 mb-2"><a href="#" class="voted-down">${comment['numOfVotes']}</a></span>`;
+								result += `<i class="fas fa-arrow-down voted-down my-auto"></i>`;
+							}
+							result += `</div>`;
+							result += `</div>`;
+							result += `<div class="col-sm-10">`;
+							result += `<p class="no-border">${comment['body']}</p>`;
+							result += `<div class="post-info-container override d-flex justify-content-between">`;
+							result += `<div class="profile-info-sm d-flex align-middle">`;
+							result += `<img class="img-fluid my-auto img-header-profile" src="http://${$(location).attr('host')}/server/uploads/user_images/${comment['avatar_url']}" alt="${comment['username']}-profile-picture"/>`;
+							result += `<span class="ms-2"><a href="/account/${comment['ownerId']}">${comment['username']}</a> replied</span>`;
+							result += `</div>`;
+							if (comment['timestamp'] / 60 < 60) {
+								result += `<span class="d-block time-post">${Math.ceil(comment['timestamp'] / 60)}m ago</span>`;
+							} else if (comment['timestamp'] / 60 >= 60 && comment['timestamp'] / 60 < 1409) {
+								result += `<span class="d-block time-post">${Math.ceil(comment['timestamp'] / 3600)}h ago</span>`;
+							} else {
+								result += `<span class="d-block time-post">${Math.ceil(comment['timestamp'] / 86400)}d ago</span>`;
+							}
+							result += `</div>`;
+							if (comment['isAdmin'] == 1 || comment['isOwner'] == 1) {
+								result += `<div class="mt-2">`;
+								result += `<button id="delete" class="comment-delete" data-comment-id="${comment['comment_id']}">Delete</button>`;
+								result += `</div>`;
+							}
+							result += `</div>`;
+							result += `</div>`;
+							result += `</article>`;
+						});
+						result += `</div>`;
+						result += `</div>`;
+						result += `</article>`;
+						$(".post-results-block").append(result);
+					});
+					return;
+				}
+			}
+		});
+	});
+
+	/* Delete Post */
+	$(document).on("click", ".post-delete", (e) => {
+		let postId = $(e.target).attr("data-post-id");
+		$.post(`http://${$(location).attr('host')}/server/middlewares/PostMiddleware.class.php`, {
+			postId: postId,
+			deletePost: true
+		}).done((result) => {
+			if (parseInt(result["response"]) === 200)
+				window.location.href=window.location.href;
+		});
+	});
+
+	/* Delete Comment */
+	$(document).on("click", ".comment-delete", (e) => {
+		let commentId = $(e.target).attr("data-comment-id");
+		$.post(`http://${$(location).attr('host')}/server/middlewares/CommentMiddleware.class.php`, {
+			commentId: commentId,
+			deleteComment: true
+		}).done((result) => {
+			if (parseInt(result["response"]) === 200)
+				window.location.href=window.location.href;
 		});
 	});
 
@@ -529,7 +856,6 @@ $(document).ready(() => {
 								result += element['body'];
 							}
 							result += `</p>`;
-
 
 							result += `<div class="post-info-container override d-flex justify-content-between mt-0"><div class="profile-info-sm d-flex align-middle">`;
 							result += `<img class="img-fluid my-auto img-header-profile" src="http://${$(location).attr('host')}/server/uploads/user_images/${element['avatar_url']}" alt="${element['username']}-profile-picture"/>`
@@ -1209,9 +1535,6 @@ $(document).ready(() => {
 	$(document).on("click",".admin-threads-act-delete", (e) => {
 		e.preventDefault();
 	
-		console.log($(".admin-threads-act-delete").data("status"));
-		console.log($(".admin-threads-act-delete").data("id"));
-
 		$.post(`http://${$(location).attr('host')}/server/middlewares/AdminMiddleware.class.php`, {
 			actionTypeDelete: $(".admin-threads-act-delete").data("status"),
 			threadId: $(".admin-threads-act-delete").data("id")

@@ -14,6 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
 } else if ($_SERVER['REQUEST_METHOD'] === "POST") {
 	if (!empty($_POST['commentId']) && !empty($_POST['type']) && ($_POST['type'] === "voteUp" || $_POST['type'] === "voteDown")) {
 		$response = (new CommentMiddleware())->vote([$_POST['commentId'], $_POST['type']]);
+	} else if (!empty($_POST['commentId']) && (bool)$_POST['deleteComment']) {
+		$response = (new CommentMiddleware())->removeComment($_POST['commentId']);
 	}
 }
 
@@ -49,6 +51,18 @@ class CommentMiddleware {
 		$query = htmlspecialchars($query);
 
 		return (new CommentController())->getCommentByQuery($query);
+	}
+
+	public function removeComment(int $commentId) : array {
+		if (empty($commentId)) {
+			return array("response" => 400, "data" => array("message" => "You must click a valid delete button in a valid thread of a valid post of a valid comment."));
+		} 
+
+		if ($commentId <= 0) {
+			return array("response" => 400, "data" => array("message" => "You must click a valid delete button in a valid thread of a valid post of a valid comment."));
+		}
+		
+		return (new CommentController())->deleteComment([$commentId]);
 	}
 }
 

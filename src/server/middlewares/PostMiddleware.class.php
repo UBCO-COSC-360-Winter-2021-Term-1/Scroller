@@ -22,16 +22,24 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 			$response = (new PostMiddleware())->createPost([6, $_POST['postTitle'], $_FILES['postImage'], $_POST['threadUrl']]);
 		} else if (empty($_POST['postBody']) && empty($_FILES['postImage']) && !empty($_POST['postYoutubeLink'])) {
 			$response = (new PostMiddleware())->createPost([7, $_POST['postTitle'], $_POST['postYoutubeLink'], $_POST['threadUrl']]);
-		}
+		} 
 	} else if (!empty($_POST['postId']) && !empty($_POST['type']) && ($_POST['type'] === "voteUp" || $_POST['type'] === "voteDown")) {
 		$response = (new PostMiddleware())->vote([$_POST['postId'], $_POST['type']]);
+	} else if (!empty($_POST['postId']) && (bool)$_POST['deletePost']) {
+		$response = (new PostMiddleware())->removePost($_POST['postId']);
 	}
 } else if ($_SERVER['REQUEST_METHOD'] === "GET") {
-	if (!empty($_GET['query']) && isset($_GET['postSearch']) && (bool) $_GET['postSearch']) {
+	if (!empty($_GET['threadUrl']) && !empty($_GET['sortType'])) {
+		$response = (new PostMiddleware())->sortPosts([$_GET['threadUrl'], $_GET['sortType']]);
+	} else if (!empty($_GET['query']) && !empty($_GET['threadUrl']) && isset($_GET['postSearch']) && (bool) $_GET['postSearch']) {
+		$response = (new PostMiddleware())->searchPostsInThread([$_GET['query'], $_GET['threadUrl']]);
+	} else if (!empty($_GET['threadUrl']) && empty($_GET['sortType'])) {
+		$response = (new PostMiddleware())->sortPosts([$_GET['threadUrl']]);
+	} else if (!empty($_GET['query']) && isset($_GET['postSearch']) && (bool) $_GET['postSearch']) {
 		$response = (new PostMiddleware())->searchPosts([$_GET['query']]);
 	} else if (empty($_GET['query'])) {
 		$response =(new PostController())->loadAllPosts();
-	}
+	} 
 }
 
 class PostMiddleware {
@@ -49,6 +57,16 @@ class PostMiddleware {
 		$query = htmlspecialchars($query);
 
 		return (new PostController())->getPostByQuery($query);
+	}
+
+	public function searchPostsInThread(array $params) : array {
+		
+		$query = filter_var($params[0], FILTER_SANITIZE_STRING);
+		$query = trim($query);
+		$query = stripslashes($query);
+		$query = htmlspecialchars($query);
+
+		return (new PostController())->searchPostByQueryInThread([$query, $params[1]]);
 	}
 
 	public function vote(array $params) : array {
@@ -271,6 +289,34 @@ class PostMiddleware {
 					$threadUrl
 			]);
 		}
+	}
+
+	public function sortPosts(array $params) {
+		if (empty($params[0])) {
+			return array("response" => 400, "data" => array("message" => "You must click a sort button in a valid thread."));
+		}
+
+		if (!empty($params[1]) && !($params[1] == "Top" || $params[1] == "New")) {
+			return array("response" => 400, "data" => array("message" => "You must click a sort button in a valid thread."));
+		}
+
+		if (empty($params[1])) {
+			return (new PostController())->loadPostByThread([$params[0]]);
+		}
+
+		return (new PostController())->loadPostByThread([$params[0], $params[1]]);
+	}
+
+	public function removePost(int $postId) : array {
+		if (empty($postId)) {
+			return array("response" => 400, "data" => array("message" => "You must click a valid delete button in a valid thread of a valid post."));
+		} 
+
+		if ($postId <= 0) {
+			return array("response" => 400, "data" => array("message" => "You must click a valid delete button in a valid thread of a valid post."));
+		}
+
+		return (new PostController())->deletePost([$postId]);
 	}
 }
 

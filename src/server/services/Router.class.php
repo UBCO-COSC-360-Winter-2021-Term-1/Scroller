@@ -118,6 +118,8 @@ class Router {
 						if (!$auth)
 							return PUBLIC_DIR.'/login.php';
 						return PUBLIC_DIR.'/thread-create.php';
+					} else if ($this->url[1] != "create") {
+						return PUBLIC_DIR.'/thread.php';
 					}
 					return PUBLIC_DIR.'/layout/main.php';
 				}
