@@ -15,10 +15,11 @@ class PostController extends Controller {
 		$conn = (new DatabaseConnector())->getConnection();
 		
 		$threadUrl = end($params);
-		$thread_id_query = "SELECT thread_id from threads WHERE thread_url = '$threadUrl' AND is_deleted != 1";
+		$thread_id_query = "SELECT thread_id, owner_id from threads WHERE thread_url = '$threadUrl' AND is_deleted != 1";
 		$result = mysqli_query($conn, $thread_id_query);
 		while ($row = mysqli_fetch_assoc($result)) {
 			$thread_id = $row["thread_id"];
+			$owner_id = $row["owner_id"];
 		}
 		
 		$get_user_query = "SELECT id FROM users WHERE username = '".$_SESSION["USERNAME"]."' LIMIT 1";
@@ -63,6 +64,10 @@ class PostController extends Controller {
 				mysqli_query($conn, $sql);
 				break;
 		}
+
+		$sql = "INSERT INTO notifications (user_id,	replied_user_id, action_type, thread_id) VALUES ($user_id, $owner_id, 1, $thread_id)";
+		$result = mysqli_query($conn, $sql);
+
 		mysqli_close($conn);
 		return array("response" => 200);
 	}

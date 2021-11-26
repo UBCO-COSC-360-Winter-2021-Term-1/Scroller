@@ -111,7 +111,7 @@
 							echo '</div>';
 							echo '</div>';
 							echo '<div class="col-sm-10">';
-							echo '<h4><a href="/t/1">'.$post["title"].'</a></h4>';
+							echo '<h4><a href="/t/'.$post['thread_url'].'/'.$post['post_id'].'">'.$post["title"].'</a></h4>';
 							echo '<p class="no-border">';
 							if (is_null($post['post_image']) && is_null($post['media_url']) && !is_null($post['body'])) {
 								echo $post['body'];

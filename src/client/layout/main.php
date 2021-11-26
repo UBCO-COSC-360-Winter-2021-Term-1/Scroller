@@ -121,15 +121,15 @@
 								echo '<div class="top-thread-info-name me-auto">';
 								if ($counter == 0) {
 									echo '<i class="fas fa-trophy first-place"></i>';
-									echo '<span class="ms-1"><a href="/t/'.$thread['thread_url'].'/">t/'.$thread['thread_url'].'/</a></span>';
+									echo '<span class="ms-1"><a href="/t/'.$thread['thread_url'].'">t/'.$thread['thread_url'].'</a></span>';
 								} else if ($counter == 1) {
 									echo '<i class="fas fa-trophy second-place"></i>';
-									echo '<span class="ms-1"><a href="/t/'.$thread['thread_url'].'/">t/'.$thread['thread_url'].'/</a></span>';
+									echo '<span class="ms-1"><a href="/t/'.$thread['thread_url'].'">t/'.$thread['thread_url'].'</a></span>';
 								} else if ($counter == 2) {
 									echo '<i class="fas fa-trophy third-place"></i>';
-									echo '<span class="ms-1"><a href="/t/'.$thread['thread_url'].'/">t/'.$thread['thread_url'].'/</a></span>';
+									echo '<span class="ms-1"><a href="/t/'.$thread['thread_url'].'">t/'.$thread['thread_url'].'</a></span>';
 								} else {
-									echo '<span class="ms-1"><a href="/t/'.$thread['thread_url'].'/">t/'.$thread['thread_url'].'/</a></span>';
+									echo '<span class="ms-1"><a href="/t/'.$thread['thread_url'].'">t/'.$thread['thread_url'].'</a></span>';
 								}
 								echo '</div><div class="top-thread-info-upvote"><span class="me-2">'.$thread['total_posts'].'</span><i class="fas fa-arrow-up"></i>';
 								echo '</div>';
