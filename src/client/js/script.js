@@ -871,7 +871,7 @@ $(document).ready(() => {
 							}
 							result += `<div class="post-info-comments">`;
 							result += `<a href="/t/${element['thread_url']}/${element['post_id']}"><i class="far fa-comment-alt"></i><span class="ms-1">${element['totalComments']}</span></a>`;
-							result += `</div></div><div class="mt-2"><button id="hide" class="me-4 thread-hide">Hide</button><button id="delete" class="thread-delete">Delete</button></div>
+							result += `</div></div><div class="mt-2"><button id="hide" class="me-4 post-hide">Hide</button><button id="delete" class="thread-delete">Delete</button></div>
 							</div>
 						</div>
 					</div>`;
