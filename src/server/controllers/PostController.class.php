@@ -440,7 +440,22 @@ class PostController extends Controller {
 		$conn = (new DatabaseConnector())->getConnection();
 		$sql = "UPDATE posts SET is_deleted=1 WHERE posts.post_id=$params[0] LIMIT 1";
 		$result = mysqli_query($conn, $sql);
-		// $sql = "INSERT INTO notifications (user_id,	replied_user_id, action_type, thread_id) VALUES (, , 5, )"
+		
+		$sql = "SELECT user_id , thread_id FROM posts WHERE post_id = $params[0] LIMIT 1";
+		$response = mysqli_query($conn, $sql);
+		$row = mysqli_fetch_assoc($response);
+		$userId = $row['user_id'];
+		$threadId = $row['thread_id'];
+
+		$get_user_query = "SELECT id FROM users WHERE username = '".$_SESSION["USERNAME"]."' LIMIT 1";
+		$result = mysqli_query($conn, $get_user_query);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$repliedUserId = $row["id"];
+		}
+
+		$sql = "INSERT INTO notifications (user_id,	replied_user_id, action_type, thread_id) VALUES ($userId, $repliedUserId, 5, $threadId)";
+		$result = mysqli_query($conn, $sql);
+
 		mysqli_close($conn);
 		return array("response" => 200);
 	} 
