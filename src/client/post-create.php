@@ -1,57 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!-- Bootstrap CDN -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-	<!-- JQuery-->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha512-U6K1YLIFUWcvuw5ucmMtT9HH4t0uz3M366qrF5y4vnyH6dgDzndlcGvH/Lz5k8NFh80SN95aJ5rqGZEdaQZ7ZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	
-	<!-- Fonts -->
-	<link rel="stylesheet" href="css/fonts.css">
-	<!-- Custom CSS -->
-	<link rel="stylesheet" href="css/style.css">
-
-	<script src="https://kit.fontawesome.com/104f28ad82.js" crossorigin="anonymous"></script>
-	<title>Scroller | Create a Post</title>
-</head>
-<body>
-	<header>
-		<nav class="d-flex justify-content-center justify-content-md-between w-75 mx-auto py-3">
-			<a href="/" class="d-flex align-items-center brand me-3">
-				<i class="fas fa-mouse"></i><span class="ms-2">Scroller</span>
-			</a>
-	
-			<div class="text-end ms-3">
-				<ul>
-					<li class="me-3">
-						<a href="/notifications" class="header-icon"><i class="far fa-bell"></i></a>
-					</li>
-					<li>
-						<a href="/account" class="header-icon d-inline-flex">
-							<img id="img-header-profile" class="img-fluid" src="https://thumbor.forbes.com/thumbor/fit-in/416x416/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F5f47d4de7637290765bce495%2F0x0.jpg%3Fbackground%3D000000%26cropX1%3D1699%26cropX2%3D3845%26cropY1%3D559%26cropY2%3D2704" alt="d3li0n-profile-picture" />
-							<span class="ms-2">d3li0n</span>
-						</a>
-					</li>
-					<li class="ms-3">
-						<a href="/logout" class="header-icon">
-							<i class="fas fa-sign-out-alt"></i>
-						</a>
-					</li>
-					<!--
-					<li>
-						<a href="/account" class="header-icon active-sign-in-header">
-							Sign in
-						</a>
-					</li>
-					-->
-				</ul> 
-			</div>
-		</nav>
-	</header>
+<?php 
+	$urlSecurity = $_SERVER['REQUEST_URI'];
+	$urlSecurity = substr($urlSecurity, strpos($urlSecurity, ".") + 1);
+	if ($urlSecurity === "php")
+		header("Location: /");
+?>
 	<!-- Main Content -->
 	<main class="w-75 mx-auto mt-5">
   	<div class="row">
@@ -60,22 +12,26 @@
 				<nav class="mt-3">
 					<ul>
 						<li><a href="/" class="rounded"><i class="fas fa-home"></i><span class="ms-2">Home</span></a></li>
-						<li><a href="/admin" class="rounded"><i class="fas fa-toolbox"></i><span class="ms-2">Admin Portal</span></a></li>
-						<li><a href="/search?q=all" class="active rounded"><i class="far fa-compass"></i><span class="ms-2">Threads</span></a></li>
-						<li><a href="/search?q=d3li0n" class="rounded"><i class="fas fa-question"></i><span class="ms-2">My Threads</span></a></li>
-						<li><a href="/serach?q=d3li0n&comments=d3li0n" class="rounded"><i class="far fa-comment-alt"></i><span class="ms-2">My Replies</span></a></li>
+						
+						<?php if (isset($_SESSION['IS_AUTHORIZED']) && isset($_SESSION['IS_ADMIN']) && $_SESSION['IS_ADMIN']) { ?>
+                        <li><a href="/admin" class="rounded"><i class="fas fa-toolbox"></i><span class="ms-2">Admin Portal</span></a></li>
+                        <?php } ?>
+						
+						<li><a href="/search" class="active rounded"><i class="far fa-compass"></i><span class="ms-2">Threads</span></a></li>
+						<li><a href="/search" class="rounded"><i class="fas fa-question"></i><span class="ms-2">My Threads</span></a></li>
+						<li><a href="/search" class="rounded"><i class="far fa-comment-alt"></i><span class="ms-2">My Replies</span></a></li>
 					</ul>
 				</nav>
 			</div>
 			<div class="create-post-big-container col-md-9 overflow-auto mx-auto mb-4 p-4">
 				<h2>Create a Post</h2>
 				<!-- Error Thread Creating-->
-				<!--<div class="system-message bg-danger mb-3 mt-4">
+				<div class="system-message bg-danger d-none mb-3 mt-4">
 					<div class="system-message-content d-inline-flex px-3 py-3 w-100">
 						<i class="fas fa-ban text-center my-auto text-light"></i>
-						<p class="ms-3 my-auto">This thread cannot be created. <br><span class="fw-bolder">Reason: </span> Invalid title. Image Error.</p>
+						<p class="ms-3 my-auto">This post cannot be created. <br><span class="fw-bolder">Reason: </span><span class="error-message"></span></p>
 					</div>
-				</div>-->
+				</div>
 				<!-- Normal content flow -->
 				<form enctype="multipart/form-data">
 					<div class="create-post-title-container mt-4">
@@ -150,6 +106,3 @@
 			</div>
 		</div>
 	</main>
-	<script src="js/script.js"></script>
-</body>
-</html>

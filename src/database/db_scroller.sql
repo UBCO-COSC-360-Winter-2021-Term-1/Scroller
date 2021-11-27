@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Oct 31, 2021 at 09:22 PM
+-- Generation Time: Nov 11, 2021 at 12:58 AM
 -- Server version: 8.0.27
 -- PHP Version: 7.4.20
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `scroller_db`
+-- Database: `db_scroller`
 --
 
 -- --------------------------------------------------------
@@ -61,6 +61,7 @@ CREATE TABLE `notifications` (
   `user_id` int NOT NULL,
   `replied_user_id` int NOT NULL,
   `action_type` int NOT NULL,
+  `thread_id` int NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -75,6 +76,18 @@ CREATE TABLE `notification_types` (
   `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `notification_types`
+--
+
+INSERT INTO `notification_types` (`id`, `description`) VALUES
+(1, 'created a post in your thread'),
+(2, 'replied to your comment in thread'),
+(3, 'voted down your post in thread'),
+(4, 'voted up your post in thread'),
+(5, 'removed your post in thread'),
+(6, 'removed your thread');
+
 -- --------------------------------------------------------
 
 --
@@ -85,8 +98,9 @@ CREATE TABLE `posts` (
   `post_id` int NOT NULL,
   `user_id` int NOT NULL,
   `thread_id` int NOT NULL,
-  `title` varchar(15) NOT NULL,
+  `title` varchar(75) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `body` text,
+  `post_image` varchar(256) DEFAULT NULL,
   `is_hidden` tinyint(1) NOT NULL DEFAULT '0',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   `media_url` varchar(256) DEFAULT NULL,
@@ -114,6 +128,7 @@ CREATE TABLE `post_votes` (
 CREATE TABLE `threads` (
   `thread_id` int NOT NULL,
   `thread_title` varchar(25) NOT NULL,
+  `thread_url` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `background_picture` varchar(256) NOT NULL,
   `thread_picture` varchar(256) NOT NULL,
   `owner_id` int NOT NULL,
@@ -132,7 +147,7 @@ CREATE TABLE `tokens` (
   `id` int NOT NULL,
   `token` varchar(256) NOT NULL,
   `key_code` int DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `expires_at` datetime NOT NULL,
   `user_id` int NOT NULL,
   `is_email_confirmation` tinyint(1) DEFAULT '1' COMMENT 'FALSE = restore'
@@ -148,14 +163,14 @@ CREATE TABLE `users` (
   `id` int NOT NULL,
   `username` varchar(10) NOT NULL,
   `email` varchar(25) NOT NULL,
-  `is_email_confirmed` tinyint(1) NOT NULL DEFAULT '0',
+  `is_email_confirmed` tinyint(1) DEFAULT '0',
   `password` varchar(512) NOT NULL,
-  `avatar_url` varchar(256) NOT NULL DEFAULT 'to change later',
+  `avatar_url` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'default.png',
   `salt` varchar(10) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `is_account_disabled` tinyint(1) NOT NULL DEFAULT '0'
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_account_disabled` tinyint(1) DEFAULT '0',
+  `is_admin` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 -- --------------------------------------------------------
 
 --
@@ -194,7 +209,8 @@ ALTER TABLE `notifications`
   ADD PRIMARY KEY (`id`,`user_id`,`replied_user_id`),
   ADD KEY `notifications_user_id` (`user_id`),
   ADD KEY `notifications_replied_user_id` (`replied_user_id`),
-  ADD KEY `notifications_action_type` (`action_type`);
+  ADD KEY `notifications_action_type` (`action_type`),
+  ADD KEY `notifications_thread_id` (`thread_id`);
 
 --
 -- Indexes for table `notification_types`
@@ -223,6 +239,7 @@ ALTER TABLE `post_votes`
 ALTER TABLE `threads`
   ADD PRIMARY KEY (`thread_id`),
   ADD UNIQUE KEY `thread_title_index` (`thread_title`),
+  ADD UNIQUE KEY `thread_thread_url_index` (`thread_url`),
   ADD KEY `threads_owner_id` (`owner_id`);
 
 --
@@ -268,7 +285,7 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `notification_types`
 --
 ALTER TABLE `notification_types`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `posts`
@@ -319,6 +336,7 @@ ALTER TABLE `comment_votes`
 ALTER TABLE `notifications`
   ADD CONSTRAINT `notifications_action_type` FOREIGN KEY (`action_type`) REFERENCES `notification_types` (`id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `notifications_replied_user_id` FOREIGN KEY (`replied_user_id`) REFERENCES `users` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `notifications_thread_id` FOREIGN KEY (`thread_id`) REFERENCES `threads` (`thread_id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON UPDATE CASCADE;
 
 --

@@ -5,6 +5,18 @@
 	--navigation-link-hover: #673AB7;
 }
 
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
 ::-webkit-scrollbar {
   display: none;
 }
@@ -142,18 +154,23 @@ ul > li > a:hover{
 	transition: 0.2s ease-out;
 }
 
-.topic-threads {
+.topic-threads, .post-results-block {
 	max-height: 90vh;
 }
 
-.topic-threads > article {
+.topic-threads > article, .post-results-block > article {
 	background-color: #fff !important;
 	height: auto;
 	-webkit-box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36); 
 	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
 }
 
-.topic-threads > article > .row > .col-sm-10 > p {
+.no-border > img {
+	max-width: 100%;
+}
+
+.topic-threads > article > .row > .col-sm-10 > p, .admin-d-trending > article > .row > .col-sm-10 > p,
+.post-results-block > .row > .col-sm-10 > p, .admin-d-trending > article > .row > .col-sm-10 > p {
 	color: #919191;
 	padding-top: 1.2em;
 	padding-bottom: 1.5em;
@@ -162,12 +179,16 @@ ul > li > a:hover{
 	line-height: 2;
 }
 
-.topic-threads > article > .row > .col-sm-10 > p.no-border {
+.topic-threads > article > .row > .col-sm-10 > p.no-border,
+.post-results-block > article > .row > .col-sm-10 > p.no-border {
 	border-bottom: none;
 	padding-bottom: 1em;
 }
 
-.topic-threads > article > .row > .col-sm-10 > p > img, .topic-threads > article > .row > .col-sm-10 > p > iframe {
+.topic-threads > article > .row > .col-sm-10 > p > img, .topic-threads > article > .row > .col-sm-10 > p > iframe,
+.admin-d-trending > article > .row > .col-sm-10 > p > img,
+.post-results-block > article > .row > .col-sm-10 > p > img, .post-results-block > article > .row > .col-sm-10 > p > iframe,
+.admin-d-trending > .post-results-block > article > .row > .col-sm-10 > p > img {
 	max-width: 100%;
 }
 
@@ -180,11 +201,13 @@ ul > li > a:hover{
 	color: var(--navigation-link-hover);
 }
 
-.topic-threads > article > .row > .col-sm-10 > h4 > a {
+.topic-threads > article > .row > .col-sm-10 > h4 > a,
+.post-results-block > article > .row > .col-sm-10 > h4 > a {
 	color: #000;
 }
 
-.topic-threads > article > .row > .col-sm-10 > h4 > a:hover {
+.topic-threads > article > .row > .col-sm-10 > h4 > a:hover,
+.post-results-block > article > .row > .col-sm-10 > h4 > a:hover {
 	color: var(--navigation-link-hover);
 }
 
@@ -213,31 +236,31 @@ ul > li > a:hover{
 	float: right;
 }
 
-.post-voting > i {
+.post-voting > i, .comment-voting > i {
 	font-size: 1.5em;
 }
 
-.post-voting > span {
+.post-voting > span, .comment-voting > span {
 	font-size: 1.5em;
 }
 
-.post-voting > span > a {
+.post-voting > span > a, .comment-voting > span > a {
 	color: #000;
 }
 
-.post-voting > span > a.voted-up {
+.post-voting > span > a.voted-up, .comment-voting > span > a.voted-up {
 	color: var(--navigation-link-hover);
 }
 
-.post-voting > i.voted-up {
+.post-voting > i.voted-up, .comment-voting > i.voted-up {
 	color: var(--navigation-link-hover);
 }
 
-.post-voting > span > a.voted-down {
+.post-voting > span > a.voted-down, .comment-voting > span > a.voted-down {
 	color: #BD3F32;
 }
 
-.post-voting > i.voted-down {
+.post-voting > i.voted-down, .comment-voting > i.voted-down {
 	color: #BD3F32;
 }
 
@@ -294,6 +317,7 @@ ul > li > a:hover{
 }
 
 .useful-links > .row > .col-md-6 > nav ul li > a {
+	font-size: 1em;
 	color: #858383;
 	margin-bottom: .5em;
 }
@@ -308,8 +332,8 @@ ul > li > a:hover{
 	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
 }
 
-.useful-links > .row > .col > h5 {
-	font-size: 1em !important;
+.useful-links > .row > .col-md-6 > h5 {
+	font-size: 1.2em !important;
 	text-transform: uppercase;
 	font-weight: 600;
 }
@@ -394,13 +418,14 @@ ul > li > a:hover{
 	font-weight: 600;
 }
 
-.btn-container button {
+.btn-container button, .btn-container a  {
 	display: block;
 	width: 100%;
 	background-color: transparent;
 	border: none;
 	border-radius: 20px;
 	padding: 0.675em 0.675em;
+	text-align: center;
 }
 
 .btn-container button:first-child {
@@ -409,13 +434,13 @@ ul > li > a:hover{
 	color: #fff;
 }
 
-.btn-container button:last-child {
+.btn-container a {
 	border: 1px solid var(--navigation-link-hover);
 	color: #000;
 	transition: .5s ease-in-out;
 }
 
-.btn-container button:last-child:hover {
+.btn-container a:hover {
 	transition: .5s ease-in;
 	background-color: var(--navigation-link-hover);
 	color: #fff;
@@ -651,11 +676,11 @@ ul > li > a:hover{
 	box-shadow: 0px 7px 13px -10px rgba(0, 0, 0, 0.36);
 }
 
-.system-message-content > .fa-ban {
+.system-message-content > .fa-ban, .system-message-content > .fa-check {
 	font-size: 2em;
 }
 
-.reply-post > form > h6 > span > a {
+.reply-post > h6 > span > a {
 	color: var(--navigation-link-hover);
 }
 
@@ -734,7 +759,7 @@ ul > li > a:hover{
 	object-fit: cover;
 }
 
-.thread-hide, .thread-delete {
+.thread-delete, .post-hide, .post-delete, .comment-delete {
 	background-color: transparent;
 	font-size: small;
 	color:  #858383;
@@ -1001,4 +1026,76 @@ article > .row > .col-sm-10 > h4 > a {
 	border: none;
 	background-color: var(--navigation-link-hover);
 	color: #fff;
+}
+
+.account-no-content img {
+	width: 15em;
+	height: 15em;
+}
+
+.fa-arrow-up:hover, .fa-arrow-down:hover {
+	cursor: pointer;
+}
+
+@media only screen 
+  and (min-device-width: 280px) 
+  and (max-device-width: 480px) {
+
+		header > nav > div > ul > li {
+			margin-left: 1.5vw;
+			margin-right: 1.5vw;
+		}
+		.brand {
+			display: none !important;
+		}
+		.active-sign-in-header {
+			width: 100%;
+		}
+		.header-icon {
+			padding: 0.475em 0.55em;
+		}
+		.post-info-container > .profile-info-sm > span, .time-post, .post-info-comments {
+			font-size: 0.75em;
+		}
+		.profile-info-sm {
+			width:min-content;
+		}
+}
+
+@media only screen 
+  and (min-device-width: 768px) 
+  and (max-device-width: 1024px) {
+	main > .row, .admin-dashboard > .row {
+		flex-direction: column !important;
+	}
+	.admin-dashboard > .row > .col-sm-5, .admin-dashboard > .row > .col-sm-7 {
+		width: 100%;
+	}
+
+	main > .row > .col-md-2 {
+		width: 100%;
+	}
+
+	.search-big-container {
+		width: 100%;
+	}
+
+	.login-page > .row, .recover-page > .row, .register-page > .row {
+		flex-direction: row !important;
+	}
+	.topic-threads, .account-page, .notifications-container {
+		width: 100%;
+	}
+	
+	.register-desc-bg-image, .register-desc-container, .recover-desc-container{
+		height: 100%;
+	}
+
+	.profile-activity {
+		height: auto;
+	}
+
+	main > .row > .col-md-3 {
+		width: 100%;
+	}
 }

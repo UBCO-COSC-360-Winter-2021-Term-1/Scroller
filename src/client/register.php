@@ -1,23 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!-- Bootstrap CDN -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-	<!-- JQuery-->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha512-U6K1YLIFUWcvuw5ucmMtT9HH4t0uz3M366qrF5y4vnyH6dgDzndlcGvH/Lz5k8NFh80SN95aJ5rqGZEdaQZ7ZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<!-- Fonts -->
-	<link rel="stylesheet" href="css/fonts.css">
-	<!-- Custom CSS -->
-	<link rel="stylesheet" href="css/style.css">
-
-	<script src="https://kit.fontawesome.com/104f28ad82.js" crossorigin="anonymous"></script>
-	<title>Scroller | Register</title>
-</head>
-<body>
+<?php 
+	$urlSecurity = $_SERVER['REQUEST_URI'];
+	$urlSecurity = substr($urlSecurity, strpos($urlSecurity, ".") + 1);
+	if ($urlSecurity === "php")
+		header("Location: /");
+?>
 	<main class="register-page w-75">
 		<div class="row">
 			<div class="col-md-6 bg-white">
@@ -39,7 +25,7 @@
 						</div>
 					</form>
 
-					<div class="system-message mt-3 bg-info-custom d-inline-flex px-3 py-1 fade-in-text mb-4 w-100">
+					<div class="system-message mt-1 bg-info-custom d-inline-flex px-3 py-1 fade-in-text mb-2 w-100">
 							
 						<div class="align-self-center">
 							<i class="fas fa-info"></i>
@@ -47,6 +33,17 @@
 						<div class="ms-3 mt-1 align-self-center">
 							<h5>Your Username</h5>
 							<p>Our community guidelines say that your username should not be longer than 8 characters and doesn't include any special characters.</p>
+						</div>
+					</div>
+
+					<div class="system-message bg-danger d-inline-flex px-3 py-2 fade-in-text w-100 d-none">
+						
+						<div class="align-self-center">
+							<i class="fas fa-exclamation-triangle"></i>
+						</div>
+						<div class="ms-3 mt-1 align-self-center">
+							<h5>Oops...</h5>
+							<p></p>
 						</div>
 					</div>
 				</div>
@@ -64,7 +61,3 @@
 			</div>
 		</div>
 	</main>
-
-	<script src="js/script.js"></script>
-</body>
-</html>
