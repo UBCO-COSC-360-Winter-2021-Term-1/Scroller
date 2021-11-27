@@ -484,7 +484,8 @@ $(document).ready(() => {
 						result += `</div>`;
 						if (element['isAdmin'] == 1 || element['isOwner'] == 1) {
 							result += `<div class="mt-2">`;
-							result += `<button id="hide" class="me-4 post-hide data-post-id="${element['post_id']}">Hide</button>`;
+							var hideButtonText = element['isHidden'] == 1 ? 'Unhide' : 'Hide';
+							result += `<button id="hide" class="me-4 post-hide data-post-id="${element['post_id']}">${hideButtonText}</button>`;
 							result += `<button id="delete" class="post-delete" data-post-id="${element['post_id']}">Delete</button>`;
 							result += `</div>`;
 						}
@@ -622,7 +623,8 @@ $(document).ready(() => {
 						result += `</div>`
 						if (element['isAdmin'] == 1 || element['isOwner'] == 1) {
 							result+= `<div class="mt-2">`;
-							result += `<button id="hide" class="me-4 post-hide data-post-id="${element['post_id']}">Hide</button>`;
+							var hideButtonText = element['isHidden'] == 1 ? 'Unhide' : 'Hide';
+							result += `<button id="hide" class="me-4 post-hide data-post-id="${element['post_id']}">${hideButtonText}</button>`;
 							result += `<button id="delete" class="post-delete" data-post-id="${element['post_id']}">Delete</button>`;
 							result += `</div>`;
 						}
@@ -686,10 +688,26 @@ $(document).ready(() => {
 		let postId = $(e.target).attr("data-post-id");
 		$.post(`http://${$(location).attr('host')}/server/middlewares/PostMiddleware.class.php`, {
 			postId: postId,
-			deletePost: true
+			postDelete: true
 		}).done((result) => {
 			if (parseInt(result["response"]) === 200)
-				window.location.href=window.location.href;
+				location.reload();
+		});
+	});
+
+	/* Hide(Disable) Post */
+	$(document).on("click", ".post-hide", (e) => {
+		let buttonText = $(e.target).text().trim().toLowerCase();
+		let postId = $(e.target).attr("data-post-id");
+		$.post(`http://${$(location).attr('host')}/server/middlewares/PostMiddleware.class.php`, {
+			postId: postId,
+			hidePost: true,
+			buttonText: buttonText
+		}).done((result) => {
+			if (parseInt(result["response"]) === 200) {
+				$(e.target).text(result["changeButtonText"]);
+				location.reload();
+			}
 		});
 	});
 
@@ -701,7 +719,7 @@ $(document).ready(() => {
 			deleteComment: true
 		}).done((result) => {
 			if (parseInt(result["response"]) === 200)
-				window.location.href=window.location.href;
+				window.reload();
 		});
 	});
 

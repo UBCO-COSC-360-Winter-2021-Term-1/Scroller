@@ -151,7 +151,8 @@
 							echo '</div>';
 							if ((isset($_SESSION['IS_AUTHORIZED']) && isset($_SESSION['IS_ADMIN']) && $_SESSION['IS_ADMIN']) || $_SESSION["USERNAME"] == $post["username"]) {
 								echo '<div class="mt-2 mb-2">';
-								echo '<button id="hide" class="me-4 post-hide" data-post-id="'.$post['post_id'].'">Hide</button>';
+								$post['isHidden'] == 0 ? $buttonText = 'Hide' : $buttonText = 'Unhide';
+								echo '<button id="hide" class="me-4 post-hide" data-post-id="'.$post['post_id'].'">'.$buttonText.'</button>';
 								echo '<button id="delete" class="post-delete" data-post-id="'.$post['post_id'].'">Delete</button>';
 								echo '</div>';
 							}

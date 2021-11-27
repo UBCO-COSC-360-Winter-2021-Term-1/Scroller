@@ -5,7 +5,9 @@
 		header("Location: /");
 
 	require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/ThreadController.class.php';
+	require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/PostController.class.php';
 	$threadInfo = (new ThreadController())->getThread($url[1]);
+	$currentPost = (new PostController())->loadSpecificPost([$url[1], $url[2]]);
 ?>
    <div class="thread-navbar mb-5">
         <div class="img-thread-background" 
@@ -17,7 +19,7 @@
                     <img id="img-thread-profile" src="<?php echo 'http://'.''.$_SERVER['HTTP_HOST'].'/server/uploads/thread_profile/'.$threadInfo[0]['thread_profile'];?>" alt="thread_profile_picture" class="img-thumbnail me-2">
 					<div class="py-2">
 						<h3 class=""><?php echo $threadInfo[0]["thread_title"]?></h3>
-						<a href="<?php echo 'thread.php' ?>" class="thread-sm-link"><?php echo "t/" . $url[1]?></a>
+						<a href="<?php echo "/t" ."/". "$url[1]"?>" class="thread-sm-link"><?php echo "t/" . $url[1]?></a>
 					</div>
 					<div class="py-2 ms-3">
 						<button type="button" class="join-thread-button" data-status="<?php echo $threadInfo[0]["isSubscribed"];?>">
@@ -54,9 +56,8 @@
 			<div class="col-md-6 topic-threads overflow-auto mx-auto mb-4">
 				<!-- Disabled Thread -->
 				<?php 
-					require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/PostController.class.php';
-					$currentPost = (new PostController())->loadSpecificPost([$url[1], $url[2]]);
-					if ($threadInfo[0]["is_locked"] == 1 || $currentPost['isHidden'] == 1) {
+					if (!empty($currentPost)) {
+						if ($threadInfo[0]["is_locked"] == 1 || $currentPost['isHidden'] == 1) {
 				?>
 				<div class="system-message bg-danger mb-3">
 					<div class="system-message-content d-inline-flex px-3 py-3 w-100">
@@ -64,10 +65,9 @@
 						<p class="ms-3 my-auto">This post was disabled by Administrator.<br><span class="fw-bolder">Reason:</span> Violation of Community Guidelines.</p>
 					</div>
 				</div>
-				<?php } ?>
-				
+				<?php } }?>
 				<!-- Normal Content-->
-				<?php
+				<?php if (!empty($currentPost)) { 
 					require_once $_SERVER["DOCUMENT_ROOT"].'/server/controllers/CommentController.class.php';
 					echo '<article class="rounded p-4 mb-5">';
 					echo '<div class="row">';
@@ -129,7 +129,8 @@
 					echo '</div>';
 					if ((isset($_SESSION['IS_AUTHORIZED']) && isset($_SESSION['IS_ADMIN']) && $_SESSION['IS_ADMIN']) || $_SESSION["USERNAME"] == $currentPost["username"]) {
 						echo '<div class="mt-2 mb-2">';
-						echo '<button id="hide" class="me-4 post-hide" data-post-id="'.$currentPost['post_id'].'">Hide</button>';
+						$currentPost['isHidden'] == 0 ? $buttonText = 'Hide' : $buttonText = 'Unhide';
+						echo '<button id="hide" class="me-4 post-hide" data-post-id="'.$currentPost['post_id'].'">'.$buttonText.'</button>';
 						echo '<button id="delete" class="post-delete" data-post-id="'.$currentPost['post_id'].'">Delete</button>';
 						echo '</div>';
 					}
@@ -137,7 +138,7 @@
 					?>
 						<div class="reply-post my-3">
 							<form method="post">
-								<h6>Comment as <span><a href="<?php echo '/account/1'?>"><?php echo $_SESSION['USERNAME'] ?></a>.</span></h6>
+								<h6>Comment as <span><a href="<?php echo '/' . 'account/' . $currentPost["currentUserId"].''?>"><?php echo $_SESSION['USERNAME']; ?></a></span></h6>
 								<textarea name="post-comment" id="postComment" class="w-100"></textarea>
 								<button type="submit" class="btn btn-sm btn-reply-post">Post Reply</button>
 							</form>
@@ -193,11 +194,20 @@
 						echo '</div>';
 						echo '</div>';
 						echo '</article>';
-			?>
+					} else {
+						echo '<div class="system-message error-content text-center bg-none p-3 mt-2">'; ?>
+						<img src="<?php echo "http://".$_SERVER['HTTP_HOST']; ?>/client/img/error-empty-content.svg" alt="no content available" class="d-block no-content mx-auto">
+						<?php
+						echo '<p class="pt-5">It\'s a little bit lonely here. We couldn\'t find anything...</p>';
+						echo '</div>';
+					}
+				?>
 			</div>
 			<div class="col-md-3">
 				<div class="post-create-block text-center rounded">
-				<?php if ($threadInfo[0]["is_locked"] == 0 && $currentPost['isHidden'] == 0) {?>
+				<?php 
+					if (!empty($currentPost))
+						if ($threadInfo[0]["is_locked"] == 0 && $currentPost['isHidden'] == 0) {?>
 				<div class="post-create-block text-center rounded"><?php echo '<a href=/t/'.$url[1].'/create-post>';?><i class="fas fa-plus"></i><span class="ms-3">Start a New Topic</span></a></div>
 				<?php } ?>
 				</div>

@@ -151,7 +151,7 @@ class CommentController extends Controller {
 			IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
 			(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
 			FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id LEFT JOIN comments ON posts.post_id = comments.post_id LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
-			WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 
+			WHERE posts.is_deleted = 0 
 			GROUP BY posts.post_id ORDER BY numOfVotes DESC";
 			$response = mysqli_query($conn, $sql);
 
@@ -191,7 +191,7 @@ class CommentController extends Controller {
 		IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = $userId AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
 		(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
 		FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id LEFT JOIN comments ON posts.post_id = comments.post_id LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
-		WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 
+		WHERE posts.is_deleted = 0 
 		GROUP BY posts.post_id ORDER BY numOfVotes DESC";
 		$response = mysqli_query($conn, $sql);
 
