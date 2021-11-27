@@ -36,7 +36,7 @@ class CommentMiddleware {
 		
 		$commentId = intval($params[0]);
 		if ($commentId <= 0) return array("response" => 403);
-
+		
 		if (!(new CommentController())->isExist($commentId)) return array("response" => 403);
 
 		if ($params[1] === "voteUp" || $params[1] === "voteDown")
@@ -82,6 +82,7 @@ class CommentMiddleware {
 			return array("response" => 400, "data" => array("message" => "You may only enter a string comment"));
 		}
 
+		$params[0] = htmlspecialchars($params[0]);
 		$results = (new CommentController())->verifyPostAndThread([$params[0], $params[1], $params[2]]);
 		
 		if ($results == true)

@@ -117,7 +117,7 @@ class PostMiddleware {
 		$caseNumber = $params[0];
 		switch ($caseNumber) {
 			case 1:
-				$postBody = $params[2];
+				$postBody = htmlspecialchars($params[2]);
 				$postImage = $params[3];
 				$youtubeLink = $params[4];
 
@@ -157,7 +157,7 @@ class PostMiddleware {
 				]);
 		
 			case 2:
-				$postBody = $params[2];
+				$postBody =  htmlspecialchars($params[2]);
 				$postImage = $params[3];
 				
 				if ($postImage['size'] == 0 || $postImage['size'] > (5 * 1024 * 1024)) {
@@ -190,7 +190,7 @@ class PostMiddleware {
 				]);
 			
 			case 3:
-				$postBody = $params[2];
+				$postBody =  htmlspecialchars($params[2]);
 				$youtubeLink = $params[3];
 
 				if (strlen($youtubeLink) > 0 && !preg_match("/^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/", $youtubeLink)) {

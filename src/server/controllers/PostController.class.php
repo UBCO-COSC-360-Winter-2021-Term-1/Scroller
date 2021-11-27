@@ -519,12 +519,19 @@ class PostController extends Controller {
 		if ($params[1] == "hide") {
 			$sql = "UPDATE posts SET is_hidden = 1 WHERE posts.post_id=$params[0] LIMIT 1";
 			$changeButtonText = "Unhide";
+			$result = mysqli_query($conn, $sql);
+
+			$sql = "UPDATE comments SET is_hidden = 1 WHERE comments.post_id = $params[0]";
+			$result = mysqli_query($conn, $sql);
 		} else {
 			$sql = "UPDATE posts SET is_hidden = 0 WHERE posts.post_id=$params[0] LIMIT 1";
 			$changeButtonText = "Hide";
+			$result = mysqli_query($conn, $sql);
+
+			$sql = "UPDATE comments SET is_hidden = 0 WHERE comments.post_id = $params[0]";
+			$result = mysqli_query($conn, $sql);
 		}
 		
-		$result = mysqli_query($conn, $sql);
 		mysqli_close($conn);
 		return array("response" => 200, "changeButtonText" => $changeButtonText);
 	}
