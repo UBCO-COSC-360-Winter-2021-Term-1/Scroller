@@ -778,6 +778,9 @@ ul > li > a:hover{
 	width: 50%;
 }
 
+.post-results-block > .system-message.error-content > .no-content {
+	width: 100%;
+}
 .topic-threads > .system-message.error-content > p {
 	font-size: 1.1em;
 }
