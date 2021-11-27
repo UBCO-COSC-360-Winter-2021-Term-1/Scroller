@@ -301,14 +301,20 @@ class CommentController extends Controller {
 		$user = mysqli_fetch_row($result);
 		$userId = $user[0];
 		
-		$sql = "SELECT threads.thread_id FROM threads WHERE threads.thread_url = '$params[2]' LIMIT 1";
+		$sql = "SELECT threads.thread_id, threads.owner_id FROM threads WHERE threads.thread_url = '$params[2]' LIMIT 1";
 		$result = mysqli_query($conn, $sql);
 		while ($row = mysqli_fetch_assoc($result)) {
 			$threadId = $row["thread_id"];
+			$ownerId = $row["owner_id"];
 		}
 		
 		$sql = "INSERT INTO comments (body, user_id, post_id, thread_id) VALUES ('$params[0]', $userId, $params[1], $threadId)";
 		$result = mysqli_query($conn, $sql);
+
+
+		$sql = "INSERT INTO notifications (user_id,	replied_user_id, action_type, thread_id) VALUES ($ownerId, $userId, 2, $threadId)";
+		$result = mysqli_query($conn, $sql);
+
 		mysqli_close($conn);
 		return array("response" => 200);
 	}
