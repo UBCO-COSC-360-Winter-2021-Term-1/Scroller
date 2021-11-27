@@ -17,8 +17,10 @@
 	if ($router->getTitle() == "Account" && !isset($_SESSION['IS_AUTHORIZED']))
 		header("Location: /login");
 	
-	if ($url[0] == "t" && is_numeric($url[2]) && !isset($_SESSION['IS_AUTHORIZED'])) {
-		header("Location: /login");
+	if (count($url) == 3) {
+		if ($url[0] == "t" && is_numeric($url[2]) && !isset($_SESSION['IS_AUTHORIZED'])) {
+			header("Location: /login");
+		} 
 	}
 
 	if (count($url) == 2 && $url[1] != "create" && $url[0] == "t" && $router->getTitle() == "Create Thread") {

@@ -685,6 +685,7 @@ $(document).ready(() => {
 
 	/* Delete Post */
 	$(document).on("click", ".post-delete", (e) => {
+		e.preventDefault();
 		let postId = $(e.target).attr("data-post-id");
 		$.post(`http://${$(location).attr('host')}/server/middlewares/PostMiddleware.class.php`, {
 			postId: postId,
@@ -697,6 +698,7 @@ $(document).ready(() => {
 
 	/* Hide(Disable) Post */
 	$(document).on("click", ".post-hide", (e) => {
+		e.preventDefault();
 		let buttonText = $(e.target).text().trim().toLowerCase();
 		let postId = $(e.target).attr("data-post-id");
 		$.post(`http://${$(location).attr('host')}/server/middlewares/PostMiddleware.class.php`, {
@@ -713,6 +715,7 @@ $(document).ready(() => {
 
 	/* Delete Comment */
 	$(document).on("click", ".comment-delete", (e) => {
+		e.preventDefault();
 		let commentId = $(e.target).attr("data-comment-id");
 		$.post(`http://${$(location).attr('host')}/server/middlewares/CommentMiddleware.class.php`, {
 			commentId: commentId,
@@ -720,6 +723,32 @@ $(document).ready(() => {
 		}).done((result) => {
 			if (parseInt(result["response"]) === 200)
 				location.reload();
+		});
+	});
+
+	/* Insert Comment */
+	$(document).on("click", ".btn-reply-post", (e) => {
+		e.preventDefault();
+		$splitUrl = window.location.pathname.split("/");
+		$threadUrl = $splitUrl[2];
+		$postId = $splitUrl[3];
+		let commentBody = $("#postComment").val();
+		let formData = new FormData();
+		formData.append("commentBody", commentBody);
+		formData.append("postId", $postId);
+		formData.append("threadUrl", $threadUrl);
+		$.ajax({
+			url: `http://${$(location).attr('host')}/server/middlewares/CommentMiddleware.class.php`,
+			type: "POST",
+			data: formData,
+			processData: false,
+			cache: false,
+			contentType: false,
+			success: (result) => {
+				if (parseInt(result["response"]) === 200) {
+					location.reload();
+				}
+			}
 		});
 	});
 

@@ -275,5 +275,42 @@ class CommentController extends Controller {
 		mysqli_close($conn);
 		return array("response" => 200);
 	} 
+
+	public function verifyPostAndThread(array $params) : bool {
+		$conn = (new DatabaseConnector())->getConnection();
+		
+		$sql = "SELECT threads.thread_id FROM threads WHERE threads.thread_url = '$params[2]' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$threadId = $row["thread_id"];
+		}
+
+		$sql = "SELECT COUNT(*) FROM posts WHERE post_id=$params[1] AND thread_id=$threadId AND is_deleted=0 AND is_hidden=0";
+		$result = mysqli_query($conn, $sql);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$postCount = $row["COUNT(*)"];
+		}
+	
+		return $postCount == 1 ? true : false;
+	}
+
+	public function insertComment(array $params) : array {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "SELECT id FROM users WHERE username='".$_SESSION["USERNAME"]."' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		$user = mysqli_fetch_row($result);
+		$userId = $user[0];
+		
+		$sql = "SELECT threads.thread_id FROM threads WHERE threads.thread_url = '$params[2]' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$threadId = $row["thread_id"];
+		}
+		
+		$sql = "INSERT INTO comments (body, user_id, post_id, thread_id) VALUES ('$params[0]', $userId, $params[1], $threadId)";
+		$result = mysqli_query($conn, $sql);
+		mysqli_close($conn);
+		return array("response" => 200);
+	}
 }
 ?>

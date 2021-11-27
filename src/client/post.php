@@ -137,11 +137,9 @@
 					if ($currentPost['isHidden'] == 0 && $threadInfo[0]['is_locked'] == 0) {
 					?>
 						<div class="reply-post my-3">
-							<form method="post">
 								<h6>Comment as <span><a href="<?php echo '/' . 'account/' . $currentPost["currentUserId"].''?>"><?php echo $_SESSION['USERNAME']; ?></a></span></h6>
-								<textarea name="post-comment" id="postComment" class="w-100"></textarea>
-								<button type="submit" class="btn btn-sm btn-reply-post">Post Reply</button>
-							</form>
+								<textarea id="postComment" class="w-100"></textarea>
+								<button class="btn btn-sm btn-reply-post">Post Reply</button>
 						</div>
 					<?php }
 						$postComments = (new CommentController())->loadCommentsByPost($currentPost["post_id"], 1);
