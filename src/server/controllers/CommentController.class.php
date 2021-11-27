@@ -239,7 +239,7 @@ class CommentController extends Controller {
 			IF ((SELECT comment_votes.vote FROM comment_votes WHERE comment_votes.user_id = $userId AND comments.comment_id = comment_votes.comment_id AND comment_votes.vote = 1), 1, -1) as voteType,
 			(SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 1 AND comments.comment_id = comment_votes.comment_id) - (SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 0 AND comments.comment_id = comment_votes.comment_id) as numOfVotes
 			FROM comments JOIN users ON comments.user_id = users.id JOIN threads ON threads.thread_id = comments.thread_id LEFT JOIN comment_votes ON comment_votes.comment_id = comments.comment_id 
-			WHERE comments.is_hidden = 0 AND comments.is_deleted = 0 AND comments.post_id=$postId GROUP BY comments.comment_id ORDER BY numOfVotes";
+			WHERE comments.is_hidden = 0 AND comments.is_deleted = 0 AND comments.post_id=$postId GROUP BY comments.comment_id ORDER BY createdFromNowInSeconds DESC";
 		}
 		
 		$response = mysqli_query($conn, $sql);
