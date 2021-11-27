@@ -680,7 +680,7 @@ ul > li > a:hover{
 	font-size: 2em;
 }
 
-.reply-post > form > h6 > span > a {
+.reply-post > h6 > span > a {
 	color: var(--navigation-link-hover);
 }
 

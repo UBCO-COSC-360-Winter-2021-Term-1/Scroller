@@ -111,7 +111,7 @@
 							echo '</div>';
 							echo '</div>';
 							echo '<div class="col-sm-10">';
-							echo '<h4><a href="/t/1">'.$post["title"].'</a></h4>';
+							echo '<h4><a href="/t/'.$post['thread_url'].'/'.$post['post_id'].'">'.$post["title"].'</a></h4>';
 							echo '<p class="no-border">';
 							if (is_null($post['post_image']) && is_null($post['media_url']) && !is_null($post['body'])) {
 								echo $post['body'];
@@ -151,11 +151,12 @@
 							echo '</div>';
 							if ((isset($_SESSION['IS_AUTHORIZED']) && isset($_SESSION['IS_ADMIN']) && $_SESSION['IS_ADMIN']) || $_SESSION["USERNAME"] == $post["username"]) {
 								echo '<div class="mt-2 mb-2">';
-								echo '<button id="hide" class="me-4 post-hide" data-post-id="'.$post['post_id'].'">Hide</button>';
+								$post['isHidden'] == 0 ? $buttonText = 'Hide' : $buttonText = 'Unhide';
+								echo '<button id="hide" class="me-4 post-hide" data-post-id="'.$post['post_id'].'">'.$buttonText.'</button>';
 								echo '<button id="delete" class="post-delete" data-post-id="'.$post['post_id'].'">Delete</button>';
 								echo '</div>';
 							}
-							$postComments = (new CommentController())->loadCommentsByPost($post["post_id"]);
+							$postComments = (new CommentController())->loadCommentsByPost($post["post_id"], 0);
 							if (!empty($postComments)) {
 								foreach($postComments as $comment){
 									echo '<article class="rounded p-4 px-0">';
@@ -211,14 +212,6 @@
 					}
 				?>
 				</div>		
-					<!-- <div class="reply-post my-3">
-								<form method="post">
-									<h6>Comment as <span><a href="/account/1">d3li0n</a>.</span></h6>
-									<textarea name="post-comment" id="postComment" class="w-100"></textarea>
-									<button type="submit" class="btn btn-sm btn-reply-post">Post Reply</button>
-								</form>
-							</div> -->
-							
 			</div>
 			<div class="col-md-3">
 				<?php if ($threadInfo[0]["is_locked"] == 0){?>

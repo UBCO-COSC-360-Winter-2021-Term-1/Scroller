@@ -37,8 +37,12 @@ class Router {
 					return $this->titles[$this->url[0]][1];
 				else "Page Not Found";
 		} else if (count($this->url) == 3) {
-			if (isset($this->titles[$this->url[0]][2]))
+			if (isset($this->titles[$this->url[0]][2])) { 
+				if (is_numeric($this->url[2]) && $this->url[0] == "t") {
+					return $this->url[0].'/'.$this->url[1].' Post';
+				}
 				return $this->titles[$this->url[0]][2];
+			}
 			else "Page Not Found";
 		}
 		
@@ -151,6 +155,11 @@ class Router {
 						if (!$auth)
 							return PUBLIC_DIR.'/login.php';
 						return PUBLIC_DIR.'/post-create.php';
+					} else if (is_numeric($this->url[2])) {
+						if (!$auth) {
+							return PUBLIC_DIR.'/login.php';
+						}
+						return PUBLIC_DIR.'/post.php';
 					}
 				}
 				default: return PUBLIC_DIR.'/error.php';

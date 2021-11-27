@@ -34,7 +34,7 @@ class CommentController extends Controller {
 			IF ((SELECT comment_votes.vote FROM comment_votes WHERE comment_votes.user_id = -1 AND comments.comment_id = comment_votes.comment_id AND comment_votes.vote = 1), 1, -1) as voteType,
 			(SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 1 AND comments.comment_id = comment_votes.comment_id) - (SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 0 AND comments.comment_id = comment_votes.comment_id) as numOfVotes
 			FROM comments JOIN users ON comments.user_id = users.id JOIN threads ON threads.thread_id = comments.thread_id LEFT JOIN comment_votes ON comment_votes.comment_id = comments.comment_id 
-			WHERE comments.is_hidden = 0 AND comments.is_deleted = 0 AND comments.body LIKE '%$query%' GROUP BY comments.comment_id ORDER BY numOfVotes DESC";
+			WHERE comments.is_deleted = 0 AND comments.body LIKE '%$query%' GROUP BY comments.comment_id ORDER BY numOfVotes DESC";
 			$response = mysqli_query($conn, $sql);
 
 			$result = array();
@@ -65,7 +65,7 @@ class CommentController extends Controller {
 		IF ((SELECT comment_votes.vote FROM comment_votes WHERE comment_votes.user_id = $userId AND comments.comment_id = comment_votes.comment_id AND comment_votes.vote = 1), 1, -1) as voteType,
 		(SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 1 AND comments.comment_id = comment_votes.comment_id) - (SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 0 AND comments.comment_id = comment_votes.comment_id) as numOfVotes
 		FROM comments JOIN users ON comments.user_id = users.id JOIN threads ON threads.thread_id = comments.thread_id LEFT JOIN comment_votes ON comment_votes.comment_id = comments.comment_id 
-		WHERE comments.is_hidden = 0 AND comments.is_deleted = 0 AND comments.body LIKE '%$query%' GROUP BY comments.comment_id ORDER BY numOfVotes DESC";
+		WHERE comments.is_deleted = 0 AND comments.body LIKE '%$query%' GROUP BY comments.comment_id ORDER BY numOfVotes DESC";
 		$response = mysqli_query($conn, $sql);
 
 		$result = array();
@@ -151,7 +151,7 @@ class CommentController extends Controller {
 			IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = -1 AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
 			(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
 			FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id LEFT JOIN comments ON posts.post_id = comments.post_id LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
-			WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 
+			WHERE posts.is_deleted = 0 
 			GROUP BY posts.post_id ORDER BY numOfVotes DESC";
 			$response = mysqli_query($conn, $sql);
 
@@ -191,7 +191,7 @@ class CommentController extends Controller {
 		IF ((SELECT post_votes.votes FROM post_votes WHERE post_votes.user_id = $userId AND posts.post_id = post_votes.post_id AND post_votes.votes = 1), 1, -1) as voteType,
 		(SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 1 AND posts.post_id = post_votes.post_id) - (SELECT COUNT(*) FROM post_votes WHERE post_votes.votes = 0 AND posts.post_id = post_votes.post_id) as numOfVotes
 		FROM posts JOIN users ON posts.user_id = users.id JOIN threads ON threads.thread_id = posts.thread_id LEFT JOIN comments ON posts.post_id = comments.post_id LEFT JOIN post_votes ON post_votes.post_id = posts.post_id 
-		WHERE posts.is_hidden = 0 AND posts.is_deleted = 0 
+		WHERE posts.is_deleted = 0 
 		GROUP BY posts.post_id ORDER BY numOfVotes DESC";
 		$response = mysqli_query($conn, $sql);
 
@@ -219,22 +219,30 @@ class CommentController extends Controller {
 		return $result;
 	}
 
-	public function loadCommentsByPost(int $postId): array {
+	public function loadCommentsByPost(int $postId, bool $loadAllComments) : array {
 		$conn = (new DatabaseConnector())->getConnection();
 		$sql = "SELECT id FROM users WHERE username='".$_SESSION["USERNAME"]."' LIMIT 1";
 		$result = mysqli_query($conn, $sql);
-		
 		$user = mysqli_fetch_row($result);
 		$userId = $user[0];
 
-		$sql = "SELECT comments.comment_id, comments.body, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(comments.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url,
-		CASE WHEN EXISTS(SELECT comment_votes.user_id FROM comment_votes WHERE comment_votes.user_id = $userId AND comments.comment_id = comment_votes.comment_id) THEN 1 ELSE 0 END as voted,
-		IF ((SELECT comment_votes.vote FROM comment_votes WHERE comment_votes.user_id = $userId AND comments.comment_id = comment_votes.comment_id AND comment_votes.vote = 1), 1, -1) as voteType,
-		(SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 1 AND comments.comment_id = comment_votes.comment_id) - (SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 0 AND comments.comment_id = comment_votes.comment_id) as numOfVotes
-		FROM comments JOIN users ON comments.user_id = users.id JOIN threads ON threads.thread_id = comments.thread_id LEFT JOIN comment_votes ON comment_votes.comment_id = comments.comment_id 
-		WHERE comments.is_hidden = 0 AND comments.is_deleted = 0 AND comments.post_id=$postId GROUP BY comments.comment_id ORDER BY numOfVotes DESC LIMIT 3";
+		if ($loadAllComments == false) {
+			$sql = "SELECT comments.comment_id, comments.body, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(comments.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url,
+			CASE WHEN EXISTS(SELECT comment_votes.user_id FROM comment_votes WHERE comment_votes.user_id = $userId AND comments.comment_id = comment_votes.comment_id) THEN 1 ELSE 0 END as voted,
+			IF ((SELECT comment_votes.vote FROM comment_votes WHERE comment_votes.user_id = $userId AND comments.comment_id = comment_votes.comment_id AND comment_votes.vote = 1), 1, -1) as voteType,
+			(SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 1 AND comments.comment_id = comment_votes.comment_id) - (SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 0 AND comments.comment_id = comment_votes.comment_id) as numOfVotes
+			FROM comments JOIN users ON comments.user_id = users.id JOIN threads ON threads.thread_id = comments.thread_id LEFT JOIN comment_votes ON comment_votes.comment_id = comments.comment_id 
+			WHERE comments.is_deleted = 0 AND comments.post_id=$postId GROUP BY comments.comment_id ORDER BY numOfVotes DESC LIMIT 3";
+		} else if ($loadAllComments == true) {
+			$sql = "SELECT comments.comment_id, comments.body, UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(comments.created_at) as createdFromNowInSeconds, users.username, users.id as ownerId, users.avatar_url,
+			CASE WHEN EXISTS(SELECT comment_votes.user_id FROM comment_votes WHERE comment_votes.user_id = $userId AND comments.comment_id = comment_votes.comment_id) THEN 1 ELSE 0 END as voted,
+			IF ((SELECT comment_votes.vote FROM comment_votes WHERE comment_votes.user_id = $userId AND comments.comment_id = comment_votes.comment_id AND comment_votes.vote = 1), 1, -1) as voteType,
+			(SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 1 AND comments.comment_id = comment_votes.comment_id) - (SELECT COUNT(*) FROM comment_votes WHERE comment_votes.vote = 0 AND comments.comment_id = comment_votes.comment_id) as numOfVotes
+			FROM comments JOIN users ON comments.user_id = users.id JOIN threads ON threads.thread_id = comments.thread_id LEFT JOIN comment_votes ON comment_votes.comment_id = comments.comment_id 
+			WHERE comments.is_deleted = 0 AND comments.post_id=$postId GROUP BY comments.comment_id ORDER BY createdFromNowInSeconds DESC";
+		}
+		
 		$response = mysqli_query($conn, $sql);
-
 		$result = array();
 
 		while($row = mysqli_fetch_assoc($response)) {
@@ -267,5 +275,48 @@ class CommentController extends Controller {
 		mysqli_close($conn);
 		return array("response" => 200);
 	} 
+
+	public function verifyPostAndThread(array $params) : bool {
+		$conn = (new DatabaseConnector())->getConnection();
+		
+		$sql = "SELECT threads.thread_id FROM threads WHERE threads.thread_url = '$params[2]' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$threadId = $row["thread_id"];
+		}
+
+		$sql = "SELECT COUNT(*) FROM posts WHERE post_id=$params[1] AND thread_id=$threadId AND is_deleted=0 AND is_hidden=0";
+		$result = mysqli_query($conn, $sql);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$postCount = $row["COUNT(*)"];
+		}
+	
+		return $postCount == 1 ? true : false;
+	}
+
+	public function insertComment(array $params) : array {
+		$conn = (new DatabaseConnector())->getConnection();
+		$sql = "SELECT id FROM users WHERE username='".$_SESSION["USERNAME"]."' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		$user = mysqli_fetch_row($result);
+		$userId = $user[0];
+		
+		$sql = "SELECT threads.thread_id, threads.owner_id FROM threads WHERE threads.thread_url = '$params[2]' LIMIT 1";
+		$result = mysqli_query($conn, $sql);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$threadId = $row["thread_id"];
+			$ownerId = $row["owner_id"];
+		}
+		
+		$sql = "INSERT INTO comments (body, user_id, post_id, thread_id) VALUES ('$params[0]', $userId, $params[1], $threadId)";
+		$result = mysqli_query($conn, $sql);
+
+
+		$sql = "INSERT INTO notifications (user_id,	replied_user_id, action_type, thread_id) VALUES ($ownerId, $userId, 2, $threadId)";
+		$result = mysqli_query($conn, $sql);
+
+		mysqli_close($conn);
+		return array("response" => 200);
+	}
 }
 ?>

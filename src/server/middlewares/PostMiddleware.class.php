@@ -25,8 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 		} 
 	} else if (!empty($_POST['postId']) && !empty($_POST['type']) && ($_POST['type'] === "voteUp" || $_POST['type'] === "voteDown")) {
 		$response = (new PostMiddleware())->vote([$_POST['postId'], $_POST['type']]);
-	} else if (!empty($_POST['postId']) && (bool)$_POST['deletePost']) {
+	} else if (!empty($_POST['postId']) && isset($_POST['postDelete'])) {
 		$response = (new PostMiddleware())->removePost($_POST['postId']);
+	} else if (!empty($_POST['postId']) && (bool)$_POST['hidePost'] == true && ($_POST['buttonText'] == "hide" || $_POST['buttonText'] == "unhide")) {
+		$response = (new PostMiddleware())->hidePost([$_POST['postId'], $_POST['buttonText']]);
 	}
 } else if ($_SERVER['REQUEST_METHOD'] === "GET") {
 	if (!empty($_GET['threadUrl']) && !empty($_GET['sortType'])) {
@@ -115,7 +117,7 @@ class PostMiddleware {
 		$caseNumber = $params[0];
 		switch ($caseNumber) {
 			case 1:
-				$postBody = $params[2];
+				$postBody = htmlspecialchars($params[2]);
 				$postImage = $params[3];
 				$youtubeLink = $params[4];
 
@@ -155,7 +157,7 @@ class PostMiddleware {
 				]);
 		
 			case 2:
-				$postBody = $params[2];
+				$postBody =  htmlspecialchars($params[2]);
 				$postImage = $params[3];
 				
 				if ($postImage['size'] == 0 || $postImage['size'] > (5 * 1024 * 1024)) {
@@ -188,7 +190,7 @@ class PostMiddleware {
 				]);
 			
 			case 3:
-				$postBody = $params[2];
+				$postBody =  htmlspecialchars($params[2]);
 				$youtubeLink = $params[3];
 
 				if (strlen($youtubeLink) > 0 && !preg_match("/^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/", $youtubeLink)) {
@@ -308,6 +310,12 @@ class PostMiddleware {
 	}
 
 	public function removePost(int $postId) : array {
+		if (!$this->isLogged()) return array("response" => 403);
+		
+		if (!(new UserController())->isEmailConfirmedByUserName($_SESSION['USERNAME'])) return array( "response" => 400, "data" => array("message" => "Email is not verified."));
+	
+		if ((new UserController())->isAccountDisabled($_SESSION['USERNAME'])) return array( "response" => 400, "data" => array("message" => "Unathorized attempt. Account is disabled."));
+		
 		if (empty($postId)) {
 			return array("response" => 400, "data" => array("message" => "You must click a valid delete button in a valid thread of a valid post."));
 		} 
@@ -317,6 +325,25 @@ class PostMiddleware {
 		}
 
 		return (new PostController())->deletePost([$postId]);
+	}
+
+	public function hidePost(array $params) : array {
+		$postId = $params[0];
+		$buttonText = $params[1];
+		if (!$this->isLogged()) return array("response" => 403);
+		
+		if (!(new UserController())->isEmailConfirmedByUserName($_SESSION['USERNAME'])) return array( "response" => 400, "data" => array("message" => "Email is not verified."));
+	
+		if ((new UserController())->isAccountDisabled($_SESSION['USERNAME'])) return array( "response" => 400, "data" => array("message" => "Unathorized attempt. Account is disabled."));
+		
+		if (empty($postId)) {
+			return array("response" => 400, "data" => array("message" => "You must click a valid delete button in a valid thread of a valid post."));
+		} 
+
+		if ($postId <= 0) {
+			return array("response" => 400, "data" => array("message" => "You must click a valid delete button in a valid thread of a valid post."));
+		}
+		return (new PostController())->disablePost([$postId, $buttonText]);
 	}
 }
 
