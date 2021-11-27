@@ -719,7 +719,7 @@ $(document).ready(() => {
 			deleteComment: true
 		}).done((result) => {
 			if (parseInt(result["response"]) === 200)
-				window.reload();
+				location.reload();
 		});
 	});
 

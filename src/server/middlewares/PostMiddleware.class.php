@@ -26,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 	} else if (!empty($_POST['postId']) && !empty($_POST['type']) && ($_POST['type'] === "voteUp" || $_POST['type'] === "voteDown")) {
 		$response = (new PostMiddleware())->vote([$_POST['postId'], $_POST['type']]);
 	} else if (!empty($_POST['postId']) && isset($_POST['postDelete'])) {
-		echo $_POST['postDelete'];
 		$response = (new PostMiddleware())->removePost($_POST['postId']);
 	} else if (!empty($_POST['postId']) && (bool)$_POST['hidePost'] == true && ($_POST['buttonText'] == "hide" || $_POST['buttonText'] == "unhide")) {
 		$response = (new PostMiddleware())->hidePost([$_POST['postId'], $_POST['buttonText']]);
