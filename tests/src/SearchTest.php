@@ -33,5 +33,41 @@ final class SearchTest extends TestCase
 		$this->assertSame(0, $response[0]->isVoted);
 		$this->assertSame(0, $response[0]->typeVote);
 	}
+
+	/**
+	 * @covers @codeCoverageIgnore
+	 */
+	public function testInvalidRequestSearchPost() : void {
+		$response = file_get_contents($this->serverUrl."middlewares/PostMiddleware.class.php?query=tesdfgdft&postSearch=true");
+		$response = json_decode($response);
+		$this->assertSame(0, count($response));
+	}
+
+	/**
+	 * @covers @codeCoverageIgnore
+	 */
+	public function testValidRequestSearchPost() : void {
+		$response = file_get_contents($this->serverUrl."middlewares/PostMiddleware.class.php?query=test&postSearch=true");
+		$response = json_decode($response);
+		$this->assertSame("test", $response[0]->title);
+	}
+
+	/**
+	 * @covers @codeCoverageIgnore
+	 */
+	public function testInvalidRequestSearchComment() : void {
+		$response = file_get_contents($this->serverUrl."middlewares/CommentMiddleware.class.php?query=tesdfgdft&commentSearch=true");
+		$response = json_decode($response);
+		$this->assertSame(0, count($response));
+	}
+
+	/**
+	 * @covers @codeCoverageIgnore
+	 */
+	public function testInvalidSearchTread() : void {
+		$response = file_get_contents($this->serverUrl."middlewares/ThreadMiddleware.class.php?query=tesdfgdft&threadSearch=true");
+		$response = json_decode($response);
+		$this->assertSame(0, count($response));
+	}
 }
 ?>
