@@ -3,3 +3,9 @@
 *.jpg
 *.png
 *.gif
+
+vendor/
+
+composer.lock
+.phpunit.cache/
+phpunit.xml
