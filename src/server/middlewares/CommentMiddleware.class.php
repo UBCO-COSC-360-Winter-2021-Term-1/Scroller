@@ -8,6 +8,8 @@ $response = array("response" => 400, "data" => array("message" => "Fields are em
 if ($_SERVER['REQUEST_METHOD'] === "GET") {
 	if (!empty($_GET['query']) && isset($_GET['commentSearch']) && (bool) $_GET['commentSearch']) {
 		$response = (new CommentMiddleware())->searchComments([$_GET['query']]);
+	} else if (!isset($_GET['query']) && !empty($_GET['postUrl']) && isset($_GET['commentFind'])) {
+		$response = (new CommentMiddleware())->postUpdateLoadComments([$_GET['postUrl']]);
 	} else if (empty($_GET['query'])) {
 		$response = (new CommentMiddleware())->loadAllComments();
 	}
@@ -26,6 +28,20 @@ class CommentMiddleware {
   public function isLogged() : bool {
 		if (isset($_SESSION['IS_AUTHORIZED'])) return true;
 		return false;
+	}
+
+	public function postUpdateLoadComments(array $params) : array {
+		if (!$this->isLogged()) return array("response" => 403);
+		if (!(new UserController())->isEmailConfirmedByUserName($_SESSION['USERNAME'])) return array( "response" => 400, "data" => array("message" => "Email is not verified."));
+	
+		if ((new UserController())->isAccountDisabled($_SESSION['USERNAME'])) return array( "response" => 400, "data" => array("message" => "Unathorized attempt. Account is disabled."));
+		
+		$postId = intVal($params[0]);
+
+		if ($postId <= 0) return array("response" => 403);
+
+		return (new CommentController())->loadCommentsByPostId($postId);
+		
 	}
 
 	public function vote(array $params) : array {

@@ -691,8 +691,7 @@ $(document).ready(() => {
 			postId: postId,
 			postDelete: true
 		}).done((result) => {
-			if (parseInt(result["response"]) === 200)
-				location.reload();
+			
 		});
 	});
 
@@ -708,7 +707,6 @@ $(document).ready(() => {
 		}).done((result) => {
 			if (parseInt(result["response"]) === 200) {
 				$(e.target).text(result["changeButtonText"]);
-				location.reload();
 			}
 		});
 	});
@@ -721,22 +719,21 @@ $(document).ready(() => {
 			commentId: commentId,
 			deleteComment: true
 		}).done((result) => {
-			if (parseInt(result["response"]) === 200)
-				location.reload();
+			
 		});
 	});
 
 	/* Insert Comment */
 	$(document).on("click", ".btn-reply-post", (e) => {
 		e.preventDefault();
-		$splitUrl = window.location.pathname.split("/");
-		$threadUrl = $splitUrl[2];
-		$postId = $splitUrl[3];
+		let splitUrl = window.location.pathname.split("/");
+		let threadUrl = splitUrl[2];
+		let postId = splitUrl[3];
 		let commentBody = $("#postComment").val();
 		let formData = new FormData();
 		formData.append("commentBody", commentBody);
-		formData.append("postId", $postId);
-		formData.append("threadUrl", $threadUrl);
+		formData.append("postId", postId);
+		formData.append("threadUrl", threadUrl);
 		$.ajax({
 			url: `http://${$(location).attr('host')}/server/middlewares/CommentMiddleware.class.php`,
 			type: "POST",
@@ -745,9 +742,7 @@ $(document).ready(() => {
 			cache: false,
 			contentType: false,
 			success: (result) => {
-				if (parseInt(result["response"]) === 200) {
-					location.reload();
-				}
+				$("#postComment").val("");
 			}
 		});
 	});
@@ -1681,4 +1676,213 @@ $(document).ready(() => {
 			return;
 		});
 	});
+
+	setInterval(() => {
+		if ($('.post-article-r').length != 0) {
+			$.ajax({ 
+				url: `http://${$(location).attr('host')}/server/middlewares/CommentMiddleware.class.php`,
+				dataType: "json",
+				contentType: "application/json;charset=utf-8",
+				type: "GET",
+				data: {
+					postUrl: window.location.pathname.split("/")[3],
+					commentFind: true
+				},
+				success: (response) => {
+					let result = "";
+					$.each(response, (_, comment) => {
+					
+						result += `<article class="rounded p-4 px-0">`;
+							result += `<div class="row">`;
+							result +=  `<div class="col-sm-2">`;
+							result += `<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center comment-voting" data-comment-id="${comment['comment_id']}">`;
+							if (comment['isVoted'] == 0) {
+								result += `<i class="fas fa-arrow-up my-auto"></i>`;
+								result += `<span class="d-block mt-2 mb-2"><a href="#">${comment['numOfVotes']}</a></span>`;
+								result += `<i class="fas fa-arrow-down my-auto"></i>`;
+							} else if (comment['isVoted'] == 1 && comment['typeVote'] == 1) {
+								result += `<i class="fas fa-arrow-up voted-up my-auto"></i>`;
+								result += `<span class="d-block mt-2 mb-2"><a href="#" class="voted-up">${comment['numOfVotes']}</a></span>`;
+								result += `<i class="fas fa-arrow-down my-auto"></i>`;
+							} else if (comment['isVoted'] == 1 && comment['typeVote'] == -1) {
+								result += `<i class="fas fa-arrow-up my-auto"></i>`;
+								result += `<span class="d-block mt-2 mb-2"><a href="#" class="voted-down">${comment['numOfVotes']}</a></span>`;
+								result += `<i class="fas fa-arrow-down voted-down my-auto"></i>`;
+							}
+							result += `</div>`;
+							result += `</div>`;
+							result += `<div class="col-sm-10">`;
+							result += `<p class="no-border">${comment['body']}</p>`;
+							result += `<div class="post-info-container override d-flex justify-content-between">`;
+							result += `<div class="profile-info-sm d-flex align-middle">`;
+							result += `<img class="img-fluid my-auto img-header-profile" src="http://${$(location).attr('host')}/server/uploads/user_images/${comment['avatar_url']}" alt="${comment['username']}-profile-picture"/>`;
+							result += `<span class="ms-2"><a href="/account/${comment['ownerId']}">${comment['username']}</a> replied</span>`;
+							result += `</div>`;
+							if (comment['timestamp'] / 60 < 60) {
+								result += `<span class="d-block time-post">${Math.ceil(comment['timestamp'] / 60)}m ago</span>`;
+							} else if (comment['timestamp'] / 60 >= 60 && comment['timestamp'] / 60 < 1409) {
+								result += `<span class="d-block time-post">${Math.ceil(comment['timestamp'] / 3600)}h ago</span>`;
+							} else {
+								result += `<span class="d-block time-post">${Math.ceil(comment['timestamp'] / 86400)}d ago</span>`;
+							}
+							result += `</div>`;
+							if (comment['isAdmin'] == 1 || comment['isOwner'] == 1) {
+								result += `<div class="mt-2">`;
+								result += `<button id="delete" class="comment-delete" data-comment-id="${comment['comment_id']}">Delete</button>`;
+								result += `</div>`;
+							}
+							result += `</div>`;
+							result += `</div>`;
+							result += `</article>`;
+						
+					});
+
+					$(".post-article-r").html(result);
+				}
+			});
+		}
+	}, 4000);
+	
+	setInterval(() => { 
+		if ($('#threads-content').length != 0) {
+			var threadUrl = window.location.pathname.split("/")[2];
+			var sortType = "Top";
+			$.ajax({
+				url: `http://${$(location).attr('host')}/server/middlewares/PostMiddleware.class.php`,
+				dataType: "json",
+				contentType: "application/json;charset=utf-8",
+				type: 'GET',
+				data: {
+					threadUrl: threadUrl,
+					sortType: sortType
+				},
+				success: function (result) {
+					$("article").remove();
+					$(".post-results-block").html("");
+					if (parseInt(result["response"]) !== 400 && !jQuery.isEmptyObject(result)) {
+						$.each(result, (_, element) => {
+							var result = `<article class="rounded p-4 mb-5">`;
+							result += `<div class="row">`;
+							result += `<div class="col-md-2">`;
+							result += `<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center post-voting" data-post-id="${element['post_id']}">`;
+							if (element['isVoted'] == 0) {
+								result += `<i class="fas fa-arrow-up my-auto"></i>`;
+								result += `<span class="d-block mt-2 mb-2"><a href="#">${element['numOfVotes']}</a></span>`;
+								result += `<i class="fas fa-arrow-down my-auto"></i>`;
+							} else if (element['isVoted'] == 1 && element['typeVote'] == 1) {
+								result += `<i class="fas fa-arrow-up voted-up my-auto"></i>`;
+								result += `<span class="d-block mt-2 mb-2"><a href="#" class="voted-up">${element['numOfVotes']}</a></span>`;
+								result += `<i class="fas fa-arrow-down my-auto"></i>`;
+							} else if (element['isVoted'] == 1 && element['typeVote'] == -1) {
+								result += `<i class="fas fa-arrow-up my-auto"></i>`;
+								result += `<span class="d-block mt-2 mb-2"><a href="#" class="voted-down">${element['numOfVotes']}</a></span>`;
+								result += `<i class="fas fa-arrow-down my-auto voted-down"></i>`;
+							}
+							result += `</div></div><div class="col-sm-10">`;
+							result += `<h4><a href="/t/${element['thread_url']}/${element['post_id']}">${element['title']}</a></h4>`;
+							result += `<p class="no-border">`;
+							if (element['post_image'] == null && element['media_url'] == null && element['body'] != null) {
+								result += `${element['body']}`;
+							} else if (element['post_image'] != null && element['media_url'] == null && element['body'] == null) {
+								result += `<img src="http://${$(location).attr('host')}/server/uploads/post_images/${element['post_image']}" alt="content-img">`;
+							} else if (element['post_image'] == null && element['media_url'] != null && element['body'] == null) {
+								result += `<iframe class="pt-2" width="100%" height="300" src="${element['media_url']}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+							} else if (element['post_image'] != null && element['media_url'] == null && element['body'] != null) {
+								result += `${element['body']}`;
+								result += `<img src="http://${$(location).attr('host')}/server/uploads/post_images/${element['post_image']}" alt="content-img">`;
+							} else if (element['post_image'] == null && element['media_url'] != null && element['body'] != null) {
+								result += `${element['body']}`;
+								result += `<iframe class="pt-2" width="100%" height="300" src="${element['media_url']}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+							} else if (element['post_image'] != null && element['media_url'] != null && element['body'] != null) {
+								result += `${element['body']}`;
+								result += `<img src="http://${$(location).attr('host')}/server/uploads/post_images/${element['post_image']}" alt="content-img">`;
+								result += `<iframe class="pt-2" width="100%" height="300" src="${element['media_url']}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+							} else {
+								result += element['body'];
+							}
+							result += `</p>`;
+							result += `<div class="post-info-container override d-flex justify-content-between mt-0"><div class="profile-info-sm d-flex align-middle">`;
+							result += `<img class="img-fluid my-auto img-header-profile" src="http://${$(location).attr('host')}/server/uploads/user_images/${element['avatar_url']}" alt="${element['username']}-profile-picture"/>`;
+							result += `<span class="ms-2">Posted by <a href="/account/${element['ownerId']}">${element['username']}</a></span>`;
+							result += `</div>`;
+							if (element['timestamp'] / 60 < 60) {
+								result += `<span class="d-block time-post">${Math.ceil(element['timestamp'] / 60)}m ago</span>`;
+							} else if (element['timestamp'] / 60 >= 60 && element['timestamp'] / 60 < 1409) {
+								result += `<span class="d-block time-post">${Math.ceil(element['timestamp'] / 3600)}h ago</span>`;
+							} else {
+								result += `<span class="d-block time-post">${Math.ceil(element['timestamp'] / 86400)}d ago</span>`;
+							}
+							result += `<div class="post-info-comments">`;
+							result += `<a href="/t/${element['thread_url']}/${element['post_id']}"><i class="far fa-comment-alt"></i><span class="ms-1">${element['totalComments']}</span></a>`;
+							result += `</div>`;
+							result += `</div>`;
+							if (element['isAdmin'] == 1 || element['isOwner'] == 1) {
+								result += `<div class="mt-2">`;
+								var hideButtonText = element['isHidden'] == 1 ? 'Unhide' : 'Hide';
+								result += `<button id="hide" class="me-4 post-hide data-post-id="${element['post_id']}">${hideButtonText}</button>`;
+								result += `<button id="delete" class="post-delete" data-post-id="${element['post_id']}">Delete</button>`;
+								result += `</div>`;
+							}
+							element['comments'].forEach((comment) => {
+								result += `<article class="rounded p-4 px-0">`;
+								result += `<div class="row">`;
+								result +=  `<div class="col-sm-2">`;
+								result += `<div class="d-flex flex-md-column flex-sm-row justify-content-center justify-content-evenly text-center comment-voting" data-comment-id="${comment['comment_id']}">`;
+								if (comment['isVoted'] == 0) {
+									result += `<i class="fas fa-arrow-up my-auto"></i>`;
+									result += `<span class="d-block mt-2 mb-2"><a href="#">${comment['numOfVotes']}</a></span>`;
+									result += `<i class="fas fa-arrow-down my-auto"></i>`;
+								} else if (comment['isVoted'] == 1 && comment['typeVote'] == 1) {
+									result += `<i class="fas fa-arrow-up voted-up my-auto"></i>`;
+									result += `<span class="d-block mt-2 mb-2"><a href="#" class="voted-up">${comment['numOfVotes']}</a></span>`;
+									result += `<i class="fas fa-arrow-down my-auto"></i>`;
+								} else if (comment['isVoted'] == 1 && comment['typeVote'] == -1) {
+									result += `<i class="fas fa-arrow-up my-auto"></i>`;
+									result += `<span class="d-block mt-2 mb-2"><a href="#" class="voted-down">${comment['numOfVotes']}</a></span>`;
+									result += `<i class="fas fa-arrow-down voted-down my-auto"></i>`;
+								}
+								result += `</div>`;
+								result += `</div>`;
+								result += `<div class="col-sm-10">`;
+								result += `<p class="no-border">${comment['body']}</p>`;
+								result += `<div class="post-info-container override d-flex justify-content-between">`;
+								result += `<div class="profile-info-sm d-flex align-middle">`;
+								result += `<img class="img-fluid my-auto img-header-profile" src="http://${$(location).attr('host')}/server/uploads/user_images/${comment['avatar_url']}" alt="${comment['username']}-profile-picture"/>`
+								result += `<span class="ms-2"><a href="/account/${comment['ownerId']}">${comment['username']}</a> replied</span>`;
+								result += `</div>`;
+								if (comment['timestamp'] / 60 < 60) {
+									result += `<span class="d-block time-post">${Math.ceil(comment['timestamp'] / 60)}m ago</span>`;
+								} else if (comment['timestamp'] / 60 >= 60 && comment['timestamp'] / 60 < 1409) {
+									result += `<span class="d-block time-post">${Math.ceil(comment['timestamp'] / 3600)}h ago</span>`;
+								} else {
+									result += `<span class="d-block time-post">${Math.ceil(comment['timestamp'] / 86400)}d ago</span>`;
+								}
+								result += `</div>`;
+								if (comment['isAdmin'] == 1 || comment['isOwner'] == 1) {
+									result += `<div class="mt-2">`;
+									result += `<button id="delete" class="comment-delete" data-comment-id="${comment['comment_id']}">Delete</button>`;
+									result += `</div>`;
+								}
+								result += `</div>`;
+								result += `</div>`;
+								result += `</article>`;
+							});
+							result += `</div>`;
+							result += `</div>`;
+							result += `</article>`;
+							$(".post-results-block").append(result);
+						});
+						return;
+					} else if (jQuery.isEmptyObject(result)) {
+						$("article").remove();
+						$(".post-results-block").html(`<div class="system-message error-content text-center bg-none p-3 mt-2">
+						<img src="http://${$(location).attr('host')}/client/img/error-empty-content.svg" alt="no content available" class="d-block no-content mx-auto">
+						<p class="pt-5">It's a little bit lonely here. We couldn't find anything...</p>
+					</div>`);
+					}
+				}
+			});
+		}
+	}, 10000);
+
 });
