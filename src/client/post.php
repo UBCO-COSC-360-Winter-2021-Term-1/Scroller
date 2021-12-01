@@ -143,6 +143,7 @@
 						</div>
 					<?php }
 						$postComments = (new CommentController())->loadCommentsByPost($currentPost["post_id"], 1);
+						echo '<div class="post-article-r">';
 							foreach($postComments as $comment){
 								echo '<article class="rounded p-4 px-0">';
 								echo '<div class="row">';
@@ -189,6 +190,7 @@
 								echo '</div>';
 								echo '</article>';
 						}
+						echo '</div>';
 						echo '</div>';
 						echo '</div>';
 						echo '</article>';

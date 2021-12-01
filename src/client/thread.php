@@ -51,7 +51,7 @@
 					</ul>
 				</nav>
 			</div>
-			<div class="col-md-6 topic-threads overflow-auto mx-auto mb-4">
+			<div class="col-md-6 topic-threads overflow-auto mx-auto mb-4" id="threads-content">
 				<!-- Disabled Thread -->
 				<?php 
 					if ($threadInfo[0]["is_locked"] == 1) {
@@ -157,6 +157,7 @@
 								echo '</div>';
 							}
 							$postComments = (new CommentController())->loadCommentsByPost($post["post_id"], 0);
+							
 							if (!empty($postComments)) {
 								foreach($postComments as $comment){
 									echo '<article class="rounded p-4 px-0">';
