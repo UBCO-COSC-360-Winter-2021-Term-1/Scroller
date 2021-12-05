@@ -1579,7 +1579,7 @@ $(document).ready(() => {
 	
 		$.post(`http://${$(location).attr('host')}/server/middlewares/AdminMiddleware.class.php`, {
 			actionTypeDelete: $(".admin-threads-act-delete").data("status"),
-			threadId: $(".admin-threads-act-delete").data("id")
+			threadId: parseInt(e.target.attributes[1].nodeValue)
 		}).done(function (_) {
 			setTimeout(() => { window.location = "/admin/threads"; }, 1000);
 			return;
@@ -1591,7 +1591,7 @@ $(document).ready(() => {
 		e.preventDefault();
 		$.post(`http://${$(location).attr('host')}/server/middlewares/AdminMiddleware.class.php`, {
 			actionTypeHide: $(".admin-threads-act-hide").data("status"),
-			threadId: $(".admin-threads-act-hide").data("id")
+			threadId: parseInt(e.target.attributes[1].nodeValue)
 		}).done(function (_) {
 			setTimeout(() => { window.location = "/admin/threads"; }, 1000);
 			return;
@@ -1602,7 +1602,7 @@ $(document).ready(() => {
 		e.preventDefault();
 		$.post(`http://${$(location).attr('host')}/server/middlewares/AdminMiddleware.class.php`, {
 			actionTypeRecover: $(".admin-threads-act-restore").data("status"),
-			threadId: $(".admin-threads-act-restore").data("id")
+			threadId: parseInt(e.target.attributes[1].nodeValue)
 		}).done(function (_) {
 			setTimeout(() => { window.location = "/admin/threads"; }, 1000);
 			return;
