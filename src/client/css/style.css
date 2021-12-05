@@ -154,6 +154,9 @@ ul > li > a:hover{
 	transition: 0.2s ease-out;
 }
 
+.notifications-container {
+	max-height: 90vh;
+}
 .topic-threads, .post-results-block {
 	max-height: 90vh;
 }
@@ -502,6 +505,7 @@ ul > li > a:hover{
 	display: inline-block;
 	position: relative;
 	top: -1em;
+	object-fit: cover;
 }
 
 .thread-sm-link {
@@ -647,6 +651,7 @@ ul > li > a:hover{
 	background-size: cover;
 	background-position: right;
 }
+
 
 .notification-message {
 	background-color: #fff;
@@ -997,6 +1002,7 @@ article > .row > .col-sm-10 > h4 > a {
 	line-height: 1;
 	font-weight: bold;
 	font-size: 1.2em;
+	word-break: break-all;
 }
 
 .profile-activity-content > .desc > .desc-link {
@@ -1105,4 +1111,8 @@ article > .row > .col-sm-10 > h4 > a {
 
 article > .row > .col-sm-10 > p.no-border {
 	word-break: break-all;
+}
+
+.admin-d-trending > .system-message > img {
+    max-width: 100%;
 }

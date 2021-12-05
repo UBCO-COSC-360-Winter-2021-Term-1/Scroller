@@ -690,8 +690,8 @@ $(document).ready(() => {
 		$.post(`http://${$(location).attr('host')}/server/middlewares/PostMiddleware.class.php`, {
 			postId: postId,
 			postDelete: true
-		}).done((result) => {
-			
+		}).done((_) => {
+			window.location = `/t/${window.location.pathname.split("/")[2]}`;
 		});
 	});
 
@@ -1743,6 +1743,52 @@ $(document).ready(() => {
 		}
 	}, 4000);
 	
+	setInterval(() => {
+		if ($('.topic-post-single').length != 0) {
+			var threadUrl = window.location.pathname.split("/")[2];
+			var postId = window.location.pathname.split("/")[3];
+			$.ajax({
+				url: `http://${$(location).attr('host')}/server/middlewares/PostMiddleware.class.php`,
+				dataType: "json",
+				contentType: "application/json;charset=utf-8",
+				type: 'GET',
+				data: {
+					threadUrl: threadUrl,
+					postId: parseInt(postId)
+				},
+				success: (result) => {
+					console.log(Object.keys(result).length);
+					if (Object.keys(result).length === 0) {
+						window.location = `/t/${threadUrl}`;
+					} else {
+						if (Boolean(parseInt(result.isHidden))) {
+							if ($('.system-message').length == 0) {
+								$(".topic-post-single").prepend(`<div class="system-message bg-danger mb-3">
+								<div class="system-message-content d-inline-flex px-3 py-3 w-100">
+									<i class="fas fa-ban text-center my-auto text-light"></i>
+									<p class="ms-3 my-auto">This post was disabled.<br><span class="fw-bolder">Reason:</span> Violation of Community Guidelines.</p>
+								</div>
+							</div>`);
+							}
+
+							if ($('.reply-post').length != 0) {
+								$(".reply-post").hide();
+							}
+						} else {
+							if ($('.system-message').length != 0) {
+								$('.system-message').remove();
+							}
+
+							if ($('.reply-post').length != 0) {
+								$(".reply-post").show();
+							}
+						}
+					}
+				}
+			});
+		}
+	}, 7000);
+
 	setInterval(() => { 
 		if ($('#threads-content').length != 0) {
 			var threadUrl = window.location.pathname.split("/")[2];

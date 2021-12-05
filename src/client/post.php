@@ -53,7 +53,7 @@
 					</ul>
 				</nav>
 			</div>
-			<div class="col-md-6 topic-threads overflow-auto mx-auto mb-4">
+			<div class="col-md-6 topic-threads topic-post-single overflow-auto mx-auto mb-4">
 				<!-- Disabled Thread -->
 				<?php 
 					if (!empty($currentPost)) {
