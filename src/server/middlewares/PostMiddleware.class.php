@@ -31,17 +31,21 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 		$response = (new PostMiddleware())->hidePost([$_POST['postId'], $_POST['buttonText']]);
 	}
 } else if ($_SERVER['REQUEST_METHOD'] === "GET") {
-	if (!empty($_GET['threadUrl']) && !empty($_GET['sortType'])) {
-		$response = (new PostMiddleware())->sortPosts([$_GET['threadUrl'], $_GET['sortType']]);
-	} else if (!empty($_GET['query']) && !empty($_GET['threadUrl']) && isset($_GET['postSearch']) && (bool) $_GET['postSearch']) {
-		$response = (new PostMiddleware())->searchPostsInThread([$_GET['query'], $_GET['threadUrl']]);
-	} else if (!empty($_GET['threadUrl']) && empty($_GET['sortType'])) {
-		$response = (new PostMiddleware())->sortPosts([$_GET['threadUrl']]);
-	} else if (!empty($_GET['query']) && isset($_GET['postSearch']) && (bool) $_GET['postSearch']) {
-		$response = (new PostMiddleware())->searchPosts([$_GET['query']]);
-	} else if (empty($_GET['query'])) {
-		$response =(new PostController())->loadAllPosts();
-	} 
+	if(!empty($_GET['threadUrl']) && !empty($_GET['postId'])) {
+		$response = (new PostController())->loadSpecificPost([$_GET['threadUrl'], $_GET['postId']]);
+	} else {
+		if (!empty($_GET['threadUrl']) && !empty($_GET['sortType'])) {
+			$response = (new PostMiddleware())->sortPosts([$_GET['threadUrl'], $_GET['sortType']]);
+		} else if (!empty($_GET['query']) && !empty($_GET['threadUrl']) && isset($_GET['postSearch']) && (bool) $_GET['postSearch']) {
+			$response = (new PostMiddleware())->searchPostsInThread([$_GET['query'], $_GET['threadUrl']]);
+		} else if (!empty($_GET['threadUrl']) && empty($_GET['sortType'])) {
+			$response = (new PostMiddleware())->sortPosts([$_GET['threadUrl']]);
+		} else if (!empty($_GET['query']) && isset($_GET['postSearch']) && (bool) $_GET['postSearch']) {
+			$response = (new PostMiddleware())->searchPosts([$_GET['query']]);
+		} else if (empty($_GET['query'])) {
+			$response =(new PostController())->loadAllPosts();
+		}
+	}
 }
 
 class PostMiddleware {
@@ -147,8 +151,8 @@ class PostMiddleware {
 				move_uploaded_file($postImage["tmp_name"], $targetFile);
 
 
-				if (strlen($youtubeLink) > 0 && !preg_match("/^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/", $youtubeLink)) {
-						return array("response" => 400, "data" => array("message" => "The YouTube link is not valid."));
+				if (strlen($youtubeLink) > 0 && !preg_match("/^(https|http):\/\/(?:www\.)?youtube.com\/embed\/[A-z0-9]+$/", $youtubeLink)) {
+						return array("response" => 400, "data" => array("message" => "The YouTube link is not valid. It should contain \"embed\" in the link."));
 				}
 
 				return (new PostController())->post([
