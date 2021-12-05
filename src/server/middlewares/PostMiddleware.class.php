@@ -147,8 +147,8 @@ class PostMiddleware {
 				move_uploaded_file($postImage["tmp_name"], $targetFile);
 
 
-				if (strlen($youtubeLink) > 0 && !preg_match("/^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/", $youtubeLink)) {
-						return array("response" => 400, "data" => array("message" => "The YouTube link is not valid."));
+				if (strlen($youtubeLink) > 0 && !preg_match("/^(https|http):\/\/(?:www\.)?youtube.com\/embed\/[A-z0-9]+$/", $youtubeLink)) {
+						return array("response" => 400, "data" => array("message" => "The YouTube link is not valid. It should contain \"embed\" in the link."));
 				}
 
 				return (new PostController())->post([

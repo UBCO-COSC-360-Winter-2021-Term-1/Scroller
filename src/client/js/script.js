@@ -304,7 +304,7 @@ $(document).ready(() => {
 		var postTitle = $("#create-post-name").val();
 		var youtubeLink = $("#create-post-text-url").val();
 		var titleRegex = /^[a-zA-Z0-9\s]+$/;
-		var youtubeRegex = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/
+		var youtubeRegex = /^(https|http):\/\/(?:www\.)?youtube.com\/embed\/[A-z0-9]+$/
 
 		// Title validation
 		if (postTitle.length == 0) {
@@ -336,7 +336,7 @@ $(document).ready(() => {
 		}
 
 		if (youtubeLink.length > 0 && !youtubeRegex.test(youtubeLink)) {
-			$("span.error-message").text("The YouTube link is invalid.");
+			$("span.error-message").text("The YouTube link is invalid. It should contain \"embed\" in the link.");
 			$(".system-message").removeClass("d-none");
 			return;
 		}
@@ -1464,11 +1464,11 @@ $(document).ready(() => {
 	$(document).on("click",".admin-users-act-block", (e) => {
 		e.preventDefault();
 
-		var action = ($(".admin-users-act-block").data("status") == "block") ? true : false;
+		var action = (e.target.attributes[2].nodeValue == "block") ? true : false;
 		
 		$.post(`http://${$(location).attr('host')}/server/middlewares/AdminMiddleware.class.php`, {
 			action: action,
-			userId: $(".admin-users-act-block").data("id")
+			userId: parseInt(e.target.attributes[1].value)
 		}).done(function (_) {
 			setTimeout(() => { window.location = "/admin/users"; }, 1000);
 			return;
@@ -1479,12 +1479,12 @@ $(document).ready(() => {
 	$(document).on("click",".admin-users-act-admin", (e) => {
 		e.preventDefault();
 
-		var action = ($(".admin-users-act-admin").data("status") === "new-admin") ? true : false;
-
+		var action = (e.target.attributes[2].nodeValue === "new-admin") ? true : false;
+		//console.log(e.target.attributes[2].nodeValue);
 		$.post(`http://${$(location).attr('host')}/server/middlewares/AdminMiddleware.class.php`, {
 			actionAdmin: action,
-			userId: $(".admin-users-act-admin").data("id")
-		}).done(function (result) {
+			userId: parseInt(e.target.attributes[1].value)
+		}).done(function (_) {
 			setTimeout(() => { window.location = "/admin/users"; }, 1000);
 			return;
 		});
